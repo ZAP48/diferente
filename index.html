@@ -89,17 +89,26 @@
     .formation-group.open .formation-arrow { transform: rotate(180deg); }
     .formation-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; background: #fafafa; }
     .formation-group.open .formation-content { max-height: 2000px; padding: 15px; border-top: var(--border); }
+    .formation-idol-icon { width: 26px; height: 26px; border-radius: 50%; background: var(--black); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; border: 1px solid var(--primary); }
     
     .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; }
     .member-card-static { text-align: center; position: relative; cursor: pointer; }
     .member-card-static img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #ccc; object-fit: cover; background: #fff; transition: 0.2s; }
     .member-card-static.is-center img { border-color: var(--primary); box-shadow: 0 0 0 3px #000; transform: scale(1.05); }
     .member-info h3 { font-size: 0.65rem; font-weight: 900; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tracklist { list-style: none; padding: 0; margin: 0; }
+    .tracklist li { padding: 14px 0; border-bottom: 1px dashed #ccc; font-size: 0.9rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
 
-    /* SELEÇÃO VISUAL DE MEMBROS */
+    /* SELEÇÃO VISUAL DE MEMBROS (NOVO PARA SHUFFLE/DELETE) */
     .member-card-static.is-selected img { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary); opacity: 0.8; }
-    .member-card-static.is-selected::after { content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; top: -5px; right: -5px; background: var(--primary); color: #000; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; display: flex; align-items: center; justify-content: center; border: 2px solid #000; z-index: 10; }
-    #md-list.member-grid .member-card-static.is-selected::after { content: '\f014'; background: #ff4757; color: #fff; border-color: #000; }
+    .member-card-static.is-selected::after {
+        content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; top: -5px; right: -5px;
+        background: var(--primary); color: #000; border-radius: 50%; width: 22px; height: 22px; font-size: 12px;
+        display: flex; align-items: center; justify-content: center; border: 2px solid #000; z-index: 10;
+    }
+    #md-list.member-grid .member-card-static.is-selected::after {
+        content: '\f014'; background: #ff4757; color: #fff; border-color: #000;
+    }
     #md-list.member-grid .member-card-static.is-selected img { border-color: #ff4757; box-shadow: 0 0 0 3px #ff4757; }
 
     .filter-row { display: flex; gap: 8px; margin-bottom: 10px; }
@@ -111,6 +120,12 @@
     .stage-info { flex: 1; }
     .stage-title { font-weight: 900; font-size: 1rem; text-transform: uppercase; line-height: 1.1; }
     .stage-badge { font-size: 0.6rem; padding: 2px 6px; background: var(--black); color: var(--primary); border-radius: 4px; font-weight: 900; display: inline-block; margin-top: 6px; }
+
+    .setlist-wrap { padding: 10px 0; font-family: 'Roboto', sans-serif; }
+    .sl-row { padding: 8px 0; border-bottom: 1px dashed #ddd; font-size: 0.85rem; font-weight: 600; display: flex; align-items: flex-start; gap: 8px; }
+    .sl-music { background: var(--primary); color: #000; font-weight: 900; padding: 2px 6px; border: 1px solid #000; box-shadow: 2px 2px 0 #000; display: inline-block; }
+    .sl-mc { background: #000; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 900; }
+    .sl-header { margin-top: 20px; font-weight: 900; font-size: 1rem; text-transform: uppercase; border-bottom: 3px solid var(--primary); display: inline-block; }
 
     .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #000; display: flex; border-top: 4px solid var(--primary); z-index: 1000; }
     .nav-item { flex: 1; background: none; border: none; color: #666; font-size: 0.6rem; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; cursor: pointer; transition: 0.2s; }
@@ -124,6 +139,7 @@
     .loading-text { font-family: 'Montserrat'; font-weight: 900; color: var(--admin-color); text-transform: uppercase; font-size: 1.2rem; }
 
     .btn-edit-inline { position:absolute; top:15px; left:15px; background:var(--admin-color); color:#fff; border:2px solid #000; width:40px; height:40px; border-radius:50%; z-index:50; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 2px 2px 0 #000; font-size: 1.1rem; }
+    .btn-edit-inline:active { transform: scale(0.9); }
     .btn-edit-news { position:absolute; top:10px; right:10px; background:var(--admin-color); color:#fff; border:1px solid #000; border-radius:4px; padding:4px 8px; font-size:0.7rem; font-weight:bold; cursor:pointer; z-index:10; }
     .btn-admin-nav { background: var(--admin-color); color: #fff; border: 2px solid #000; border-radius: 8px; padding: 6px 12px; font-weight: 900; font-size: 0.7rem; cursor: pointer; box-shadow: 2px 2px 0 #000; display: flex; gap: 5px; align-items: center; }
     
@@ -134,10 +150,12 @@
     .admin-save-btn { background: var(--admin-color); color: #fff; width: 100%; padding: 15px; border: 2px solid #000; font-weight: 900; font-size: 1rem; cursor: pointer; border-radius: 8px; margin-top: 10px; box-shadow: 4px 4px 0 #000; display:flex; justify-content:center; align-items:center; gap:8px;}
     .admin-delete-btn { background: #ff4757; color: #fff; width: 100%; padding: 12px; border: 2px solid #000; font-weight: 900; cursor: pointer; border-radius: 8px; margin-top: 10px; }
 
+    /* MULTI-DELETE LISTS */
     .md-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid #eee; }
     .md-item input[type="checkbox"] { width: 20px; height: 20px; border: 2px solid #000; margin: 0; }
     .md-item span { font-size: 0.85rem; font-weight: 700; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+    /* EDITOR VISUAL DE PARTICIPAÇÕES */
     .admin-parts-list { background: #fafafa; border: 2px dashed #ccc; padding: 10px; border-radius: 8px; max-height: 200px; overflow-y: auto; margin-bottom: 10px; }
     .part-admin-item { background: #fff; border: 1px solid #ddd; padding: 8px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
     .part-admin-item .info { font-size: 0.75rem; font-weight: 700; display:flex; flex-direction:column; gap:2px; }
@@ -147,6 +165,7 @@
     .btn-remove-tb { position: absolute; top: -5px; right: -5px; background: #ff4757; color: #fff; border: 2px solid #000; border-radius: 50%; width: 22px; height: 22px; font-size: 10px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10;}
     .track-admin-item { background: #fff; border: 2px dashed #ccc; padding: 10px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
     
+    /* HISTORICO DE TIMES UI */
     .team-history-timeline { border-left: 2px solid #ddd; padding-left: 15px; margin-top: 10px; }
     .team-history-item { position: relative; margin-bottom: 10px; font-size: 0.8rem; font-weight: 700; }
     .team-history-item::before { content: ''; position: absolute; left: -21px; top: 2px; width: 10px; height: 10px; background: var(--primary); border: 2px solid #000; border-radius: 50%; }
@@ -192,7 +211,7 @@
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <h3 class="section-title" style="margin:0;">Membros</h3>
         <div style="display:flex; gap:5px;">
-            <button onclick="openManageTeams()" style="background:#fff; color:var(--admin-color); border:1px solid var(--admin-color); padding:5px; font-weight:bold; border-radius:4px; cursor:pointer;" title="Configurar Times"><i class="fas fa-cog"></i></button>
+            <button onclick="openManageTeams()" style="background:#fff; color:var(--admin-color); border:1px solid var(--admin-color); padding:5px; font-weight:bold; border-radius:4px; cursor:pointer;" title="Configurar Times e Gerações"><i class="fas fa-cog"></i></button>
             <button onclick="openShuffleModal()" style="background:#000; color:var(--primary); border:1px solid var(--primary); padding:5px 10px; font-weight:bold; border-radius:4px; cursor:pointer;">🔀 SHUFFLE</button>
             <button onclick="openAdminEditor('Membros', null)" style="background:var(--admin-color); color:#fff; border:1px solid #000; padding:5px 10px; font-weight:bold; border-radius:4px; cursor:pointer;">+ Novo</button>
         </div>
@@ -313,8 +332,10 @@
           <div style="padding:25px 20px;">
               <h2 style="color:var(--admin-color); margin-bottom:5px;"><i class="fas fa-users-cog"></i> Configurar</h2>
               <p style="font-size:0.75rem; color:#666; margin-bottom:15px; font-weight:700;">Corrija nomes errados ou exclua categorias em massa.</p>
+              
               <h3 style="font-size:1rem; border-bottom:2px solid #eee; padding-bottom:5px;">Times Ativos</h3>
               <div id="mt-teams-list" style="margin-bottom:20px;"></div>
+
               <h3 style="font-size:1rem; border-bottom:2px solid #eee; padding-bottom:5px;">Gerações Ativas</h3>
               <div id="mt-gens-list"></div>
           </div>
@@ -336,6 +357,7 @@
               <input type="text" id="sh-search" class="admin-input" placeholder="Buscar membro..." oninput="renderShuffleList()" style="margin-bottom:10px;">
               
               <div id="sh-list" class="member-grid" style="max-height: 250px; overflow-y:auto; padding:10px 5px; border:2px dashed #ddd; border-radius:8px;"></div>
+              
               <button class="admin-save-btn" onclick="executeShuffle()"><i class="fas fa-check"></i> EXECUTAR SHUFFLE</button>
           </div>
       </div>
@@ -390,7 +412,7 @@
   </div>
 
   <script>
-    /* COMPATIBILIDADE GARANTIDA DA FUNÇÃO DE IMAGENS */
+    /* COMPATIBILIDADE GARANTIDA DA FUNÇÃO DE IMAGENS E MODAIS */
     function resolveImage(f) { if(!f) return "https://placehold.co/300?text=?"; return (typeof f === "string" ? f : f.publicUrl).replace(/[\[\]"]/g, ""); }
     function switchTabModal(t, el) { const p = el.parentElement; p.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active")); el.classList.add("active"); const content = p.nextElementSibling.parentElement; content.querySelectorAll(".tab-pane").forEach(tp => tp.classList.remove("active")); content.querySelector("#tab-"+t).classList.add("active"); }
 
@@ -437,6 +459,7 @@
 
     function switchView(id, el) { document.querySelectorAll(".view-section").forEach(v => v.classList.remove("active")); document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active")); document.getElementById(id).classList.add("active"); el.classList.add("active"); window.scrollTo(0,0); }
 
+    /* --- RENDERIZAÇÃO DO HERO E VIEWS --- */
     function renderDynamicHero() {
         const wrapper = document.getElementById("hero-media-wrapper"), container = document.getElementById("hero-container");
         let b = loadedBanner; if(!b && loadedDiscos.length > 0) b = { tipo: 'imagem', url_midia: loadedDiscos[0].Capa, titulo: loadedDiscos[0].Titulo, subtitulo: 'ÚLTIMO LANÇAMENTO', link_destino: '' };
@@ -466,6 +489,7 @@
 
     function renderTracklistFromJSON(list) { if(!list || !list.length) return "<p>Vazio.</p>"; return `<ul class="tracklist">${list.map(item => { let cls='is-bside'; const k = (item.kind||"").toLowerCase(); if(k.includes('a-side')||k.includes('aside')) cls='is-aside'; else if(k.includes('unit')) cls='is-unit'; return `<li><span>${item.name}</span><span class="label-brat ${cls}">${item.kind}</span></li>`; }).join('')}</ul>`; }
     function renderFormationFromJSON(list) { if(!list || !list.length) return "<p>Vazio.</p>"; return list.map(g => `<div class="formation-group"><div class="formation-header"><div class="formation-title"><span class="formation-idol-icon"><i class="fas fa-music"></i></span>${g.name}</div><i class="fas fa-chevron-down formation-arrow"></i></div><div class="formation-content"><div class="member-grid">${(g.members||[]).map(m => { const real = loadedMembers.find(x => x.Nome === m.name); const url = real ? resolveImage(real.Foto) : `https://placehold.co/80x80/eee/333?text=${m.name.charAt(0)}`; return `<div class="member-card-static ${m.isCenter?'is-center':''}"><img src="${url}"><div class="member-info"><h3>${m.name}</h3></div></div>`; }).join('')}</div></div></div>`).join(''); }
+
     function renderStagesList() { const div = document.getElementById('stages-list'); if(!loadedStages.length) { div.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">Nenhum stage cadastrado.</div>'; return; } div.innerHTML = loadedStages.map(s => `<div class="stage-card" onclick="openStageModal(${s.id})"><img src="${resolveImage(s.Capa)}" class="stage-cover" onerror="this.src='https://placehold.co/80'"><div class="stage-info"><div class="stage-title">${s.Titulo}</div><div class="stage-sub">${s.Subtitulo || ''}</div><span class="stage-badge">${s.Status || 'Em Cartaz'}</span></div></div>`).join(''); }
 
     async function openStageModal(stageId) {
@@ -481,7 +505,7 @@
     function renderStageCasts(casts) { const div = document.getElementById('pane-s-cast'); if(!casts.length) { div.innerHTML = '<p style="color:#999; text-align:center;">Nenhum elenco.</p>'; return; } div.innerHTML = casts.map(cast => { let members = cast.Membros; try { if (typeof members === 'string') { members = JSON.parse(members); if (typeof members === 'string') members = JSON.parse(members); } } catch (e) { members = []; } if (!Array.isArray(members)) members = [members]; const grid = members.map(m => { const real = loadedMembers.find(x => x.Nome === m.name); const photo = real ? resolveImage(real.Foto) : `https://placehold.co/80`; return `<div class="member-card-static"><img src="${photo}" style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid #ccc;"><div class="member-info"><h3 style="font-size:0.6rem;">${m.name}</h3></div></div>`; }).join(''); return `<div class="formation-group open"><div class="formation-header" style="background:#000; color:#fff;"><div class="formation-title" style="font-size:0.8rem;">${cast.Nome}</div></div><div class="formation-content" style="padding:15px; display:block;"><div class="member-grid" style="grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));">${grid}</div></div></div>`; }).join(''); }
 
     /* =========================================================
-       GESTOR DE TIMES E GERAÇÕES (ATUALIZADO KENKYUUSEI/SEEDS)
+       GESTOR DE TIMES E GERAÇÕES
        ========================================================= */
     function getTeamsOptions(selected) {
         const order = ["Team Z", "Team AII", "Team P", "Team Kenkyuusei/SEEDs"];
@@ -496,7 +520,7 @@
     function getGensOptions(selected) {
         const existingGens = loadedMembers.map(m => m.Geracao).filter(Boolean);
         let allGens = [...new Set(existingGens)].sort();
-        if(allGens.length === 0) allGens = ["1ª Geração", "2ª Geração", "3ª Geração"];
+        if(allGens.length === 0) allGens = ["1ª Geração", "2ª Geração", "3ª Geração", "4ª Geração", "5ª Geração", "6ª Geração", "7ª Geração"];
         let html = '<option value="">Sem Geração...</option>';
         allGens.forEach(g => { html += `<option value="${g}" ${g === selected ? 'selected' : ''}>${g}</option>`; });
         html += `<option value="NEW" style="font-weight:900; color:#e91e63;">+ CRIAR NOVA GERAÇÃO...</option>`;
@@ -538,7 +562,6 @@
         try { 
             const ids = loadedMembers.filter(m => m[type] === oldName).map(m => m.id);
             if(ids.length > 0) {
-                // Batch Update
                 const updatePromises = ids.map(id => _sb.from('Membros').update({ [type]: newName.trim() }).eq('id', id));
                 await Promise.all(updatePromises);
             }
@@ -574,10 +597,7 @@
       
       const orderMap = {"Team Z": 1, "Team AII": 2, "Team P": 3, "Team Kenkyuusei/SEEDs": 4};
       const keys = Object.keys(groups).sort((a, b) => { 
-          if (currentFilter === 'team') { 
-              const wA = orderMap[a] || 99; const wB = orderMap[b] || 99; 
-              if (wA !== wB) return wA - wB; 
-          } 
+          if (currentFilter === 'team') { const wA = orderMap[a] || 99; const wB = orderMap[b] || 99; if (wA !== wB) return wA - wB; } 
           return a.localeCompare(b); 
       });
 
@@ -769,12 +789,18 @@
         list.innerHTML = ''; 
         
         if(table === 'Membros') {
-            filters.style.display = 'flex'; list.className = 'member-grid'; list.style.padding = '10px 5px';
+            filters.style.display = 'flex';
+            list.className = 'member-grid'; list.style.padding = '10px 5px';
             const q = document.getElementById("md-search").value.toLowerCase(); const t = document.getElementById("md-filter-team").value;
             const avail = loadedMembers.filter(m => m.Nome.toLowerCase().includes(q) && (t === '' || m.Time === t));
             
             if(avail.length === 0) { list.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999; font-size:0.8rem; padding:10px;">Nada encontrado.</div>'; return; }
-            list.innerHTML = avail.map(m => `<div class="member-card-static ${deleteSelectedIds.has(m.id) ? 'is-selected' : ''}" onclick="toggleDeleteMember(${m.id})"><img src="${resolveImage(m.Foto)}"><div class="member-info"><h3>${m.Nome}</h3></div></div>`).join('');
+            list.innerHTML = avail.map(m => `
+                <div class="member-card-static ${deleteSelectedIds.has(m.id) ? 'is-selected' : ''}" onclick="toggleDeleteMember(${m.id})">
+                    <img src="${resolveImage(m.Foto)}">
+                    <div class="member-info"><h3>${m.Nome}</h3></div>
+                </div>
+            `).join('');
         } else {
             filters.style.display = 'none'; list.className = ''; list.style.padding = '0';
             let data = []; 
