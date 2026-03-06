@@ -127,6 +127,7 @@
     #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 30000; display: none; justify-content: center; align-items: center; flex-direction: column; }
     .spinner { border: 6px solid #f3f3f3; border-top: 6px solid var(--admin-color); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin-bottom: 15px; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .loading-text { font-family: 'Montserrat'; font-weight: 900; color: var(--admin-color); text-transform: uppercase; font-size: 1.2rem; }
 
     .btn-edit-inline { position:absolute; top:15px; left:15px; background:var(--admin-color); color:#fff; border:2px solid #000; width:40px; height:40px; border-radius:50%; z-index:50; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 2px 2px 0 #000; font-size: 1.1rem; }
     .btn-edit-news { position:absolute; top:10px; right:10px; background:var(--admin-color); color:#fff; border:1px solid #000; border-radius:4px; padding:4px 8px; font-size:0.7rem; font-weight:bold; cursor:pointer; z-index:10; }
@@ -164,7 +165,7 @@
 
 <body>
 
-  <div id="loading-overlay"><div class="spinner"></div><div class="loading-text">Processando...</div></div>
+  <div id="loading-overlay"><div class="spinner"></div><div class="loading-text" id="loading-text">Processando...</div></div>
 
   <div class="header">
       <div class="logo">ZAP<span>48</span> <small style="font-size:0.5em;color:var(--admin-color);vertical-align:middle;">[ADMIN]</small></div>
@@ -320,7 +321,7 @@
           <button class="close-btn" onclick="closeModal('manage-teams-modal')">×</button>
           <div style="padding:25px 20px;">
               <h2 style="color:var(--admin-color); margin-bottom:5px;"><i class="fas fa-users-cog"></i> Configurar</h2>
-              <p style="font-size:0.75rem; color:#666; margin-bottom:15px; font-weight:700;">Corrija nomes errados ou exclua categorias.</p>
+              <p style="font-size:0.75rem; color:#666; margin-bottom:15px; font-weight:700;">Corrija nomes errados ou exclua categorias em massa.</p>
               
               <h3 style="font-size:1rem; border-bottom:2px solid #eee; padding-bottom:5px;">Times Ativos</h3>
               <div id="mt-teams-list" style="margin-bottom:20px;"></div>
@@ -417,12 +418,15 @@
     let memberPartsBuffer = [], memberTeamsHistoryBuffer = [];
     let shuffleSelectedIds = new Set(), deleteSelectedIds = new Set();
 
-    function showLoading(show) { document.getElementById("loading-overlay").style.display = show ? "flex" : "none"; }
+    function showLoading(show, text = "Processando...") { 
+        document.getElementById("loading-text").innerText = text;
+        document.getElementById("loading-overlay").style.display = show ? "flex" : "none"; 
+    }
     function closeModal(id) { document.getElementById(id).classList.remove("active"); }
     function val(id) { return document.getElementById(id).value; }
 
     async function init() {
-      showLoading(true);
+      showLoading(true, "Carregando Dados...");
       try {
         const { data: news } = await _sb.from('Noticias').select('*').order('Data', { ascending: false });
         const { data: discos } = await _sb.from('Discografia').select('*');
@@ -491,7 +495,7 @@
     function renderStageCasts(casts) { const div = document.getElementById('pane-s-cast'); if(!casts.length) { div.innerHTML = '<p style="color:#999; text-align:center;">Nenhum elenco.</p>'; return; } div.innerHTML = casts.map(cast => { let members = cast.Membros; try { if (typeof members === 'string') { members = JSON.parse(members); if (typeof members === 'string') members = JSON.parse(members); } } catch (e) { members = []; } if (!Array.isArray(members)) members = [members]; const grid = members.map(m => { const real = loadedMembers.find(x => x.Nome === m.name); const photo = real ? resolveImage(real.Foto) : `https://placehold.co/80`; return `<div class="member-card-static"><img src="${photo}" style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid #ccc;"><div class="member-info"><h3 style="font-size:0.6rem;">${m.name}</h3></div></div>`; }).join(''); return `<div class="formation-group open"><div class="formation-header" style="background:#000; color:#fff;"><div class="formation-title" style="font-size:0.8rem;">${cast.Nome}</div></div><div class="formation-content" style="padding:15px; display:block;"><div class="member-grid" style="grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));">${grid}</div></div></div>`; }).join(''); }
 
     /* =========================================================
-       GESTOR DE TIMES E GERAÇÕES
+       GESTOR DE TIMES E GERAÇÕES (CORRIGIDO: BATCH UPDATE SEGURO)
        ========================================================= */
     function getTeamsOptions(selected) {
         const order = ["Team Z", "Team AII", "Team P", "Team Kenkyuusei", "Team SEEDs"];
@@ -524,19 +528,54 @@
     }
 
     function openManageTeams() { renderManageTeams(); document.getElementById('manage-teams-modal').classList.add('active'); }
+    
     function renderManageTeams() {
-        const teams = [...new Set(loadedMembers.map(m => m.Time).filter(Boolean))]; const gens = [...new Set(loadedMembers.map(m => m.Geracao).filter(Boolean))];
-        document.getElementById('mt-teams-list').innerHTML = teams.map(t => `<div class="md-item"><span>${t}</span> <button class="btn-main" style="padding:5px; width:auto; margin:0;" onclick="renameAttribute('Time', '${t}')"><i class="fas fa-edit"></i></button> <button class="btn-main" style="padding:5px; width:auto; margin:0; background:#ff4757; border-color:#000;" onclick="deleteAttribute('Time', '${t}')"><i class="fas fa-trash"></i></button></div>`).join('') || '<div style="color:#999; font-size:0.8rem; padding:10px 0;">Nenhum time ativo.</div>';
-        document.getElementById('mt-gens-list').innerHTML = gens.map(g => `<div class="md-item"><span>${g}</span> <button class="btn-main" style="padding:5px; width:auto; margin:0;" onclick="renameAttribute('Geracao', '${g}')"><i class="fas fa-edit"></i></button> <button class="btn-main" style="padding:5px; width:auto; margin:0; background:#ff4757; border-color:#000;" onclick="deleteAttribute('Geracao', '${g}')"><i class="fas fa-trash"></i></button></div>`).join('') || '<div style="color:#999; font-size:0.8rem; padding:10px 0;">Nenhuma geração ativa.</div>';
+        const teams = [...new Set(loadedMembers.map(m => m.Time).filter(Boolean))]; 
+        const gens = [...new Set(loadedMembers.map(m => m.Geracao).filter(Boolean))];
+        
+        document.getElementById('mt-teams-list').innerHTML = teams.map(t => {
+            const safeT = t.replace(/'/g, "\\'"); // Escapa aspas para não quebrar o HTML do botão
+            return `<div class="md-item"><span>${t}</span> <button class="btn-main" style="padding:5px; width:auto; margin:0;" onclick="renameAttribute('Time', '${safeT}')"><i class="fas fa-edit"></i></button> <button class="btn-main" style="padding:5px; width:auto; margin:0; background:#ff4757; border-color:#000;" onclick="deleteAttribute('Time', '${safeT}')"><i class="fas fa-trash"></i></button></div>`;
+        }).join('') || '<div style="color:#999; font-size:0.8rem; padding:10px 0;">Nenhum time ativo.</div>';
+        
+        document.getElementById('mt-gens-list').innerHTML = gens.map(g => {
+            const safeG = g.replace(/'/g, "\\'");
+            return `<div class="md-item"><span>${g}</span> <button class="btn-main" style="padding:5px; width:auto; margin:0;" onclick="renameAttribute('Geracao', '${safeG}')"><i class="fas fa-edit"></i></button> <button class="btn-main" style="padding:5px; width:auto; margin:0; background:#ff4757; border-color:#000;" onclick="deleteAttribute('Geracao', '${safeG}')"><i class="fas fa-trash"></i></button></div>`;
+        }).join('') || '<div style="color:#999; font-size:0.8rem; padding:10px 0;">Nenhuma geração ativa.</div>';
     }
 
     async function renameAttribute(type, oldName) {
-        const newName = prompt(`Renomear "${oldName}" para:`, oldName); if(!newName || newName.trim() === oldName || newName.trim() === "") return;
-        showLoading(true); try { const membersToUpdate = loadedMembers.filter(m => m[type] === oldName); for(let m of membersToUpdate) await _sb.from('Membros').update({ [type]: newName.trim() }).eq('id', m.id); await init(); renderManageTeams(); } catch(e) {} showLoading(false);
+        const newName = prompt(`Renomear "${oldName}" para:`, oldName); 
+        if(!newName || newName.trim() === oldName || newName.trim() === "") return;
+        
+        showLoading(true, "Renomeando..."); 
+        try { 
+            const ids = loadedMembers.filter(m => m[type] === oldName).map(m => m.id);
+            if(ids.length > 0) {
+                const { error } = await _sb.from('Membros').update({ [type]: newName.trim() }).in('id', ids);
+                if(error) throw error;
+            }
+            alert("Renomeado com sucesso!");
+            await init(); 
+            renderManageTeams(); 
+        } catch(e) { alert("Erro ao renomear: " + e.message); } 
+        showLoading(false);
     }
+
     async function deleteAttribute(type, name) {
         if(!confirm(`Excluir "${name}"? Os membros desta categoria ficarão sem registro.`)) return;
-        showLoading(true); try { const membersToUpdate = loadedMembers.filter(m => m[type] === name); for(let m of membersToUpdate) await _sb.from('Membros').update({ [type]: '' }).eq('id', m.id); await init(); renderManageTeams(); } catch(e) {} showLoading(false);
+        showLoading(true, "Excluindo categoria..."); 
+        try { 
+            const ids = loadedMembers.filter(m => m[type] === name).map(m => m.id);
+            if(ids.length > 0) {
+                const { error } = await _sb.from('Membros').update({ [type]: '' }).in('id', ids);
+                if(error) throw error;
+            }
+            alert("Categoria excluída com sucesso!");
+            await init(); 
+            renderManageTeams(); 
+        } catch(e) { alert("Erro ao excluir: " + e.message); } 
+        showLoading(false);
     }
 
     /* FILTROS DE MEMBROS E EXIBIÇÃO NA HOME */
@@ -611,21 +650,21 @@
     }
 
     async function saveAdminData() {
-        showLoading(true);
+        showLoading(true, "Salvando dados...");
         const table = document.getElementById("admin-table").value; const id = document.getElementById("admin-id").value; let payload = {};
         if(table === 'Banners') { payload = { titulo: val('a-titulo'), subtitulo: val('a-sub'), tipo: val('a-tipo'), url_midia: val('a-url'), link_destino: val('a-link') }; }
         else if(table === 'Noticias') { payload = { Titulo: val('a-titulo'), Categoria: val('a-cat'), Data: val('a-data'), Texto: val('a-texto') }; }
         else if(table === 'Membros') { payload = { Nome: val('a-nome'), Time: val('a-time'), Geracao: val('a-geracao'), Status: val('a-status'), Foto: val('a-foto'), Perfil: val('a-perfil'), Participacoes: JSON.stringify(memberPartsBuffer), Historico_Times: JSON.stringify(memberTeamsHistoryBuffer) }; }
         else if(table === 'Discografia') { const fC = (adminTracksBuffer[0] && adminTracksBuffer[0].members) ? adminTracksBuffer[0].members.find(m => m.isCenter) : null; payload = { Titulo: val('a-titulo'), Tipo: val('a-tipo'), Data: val('a-data'), Center: fC ? fC.name : '', Capa: val('a-capa'), Tracklist: buildDiscoHTML() }; }
         else if(table === 'Stages') { payload = { Titulo: val('a-titulo'), Subtitulo: val('a-sub'), Status: val('a-status'), Capa: val('a-capa'), Setlist: val('a-setlist') }; }
-        try { if(id) { await _sb.from(table).update(payload).eq('id', id); } else { await _sb.from(table).insert([payload]); } closeModal('admin-editor-overlay'); await init(); } catch(e) { alert("Erro ao salvar: " + e.message); }
+        try { if(id) { await _sb.from(table).update(payload).eq('id', id); } else { await _sb.from(table).insert([payload]); } closeModal('admin-editor-overlay'); await init(); alert("Salvo com sucesso!"); } catch(e) { alert("Erro ao salvar: " + e.message); }
         showLoading(false);
     }
 
     async function deleteSingleItem() {
         const table = document.getElementById("admin-table").value; const id = document.getElementById("admin-id").value;
         if(!id || !confirm(`Tem certeza que deseja excluir permanentemente este item de ${table}?`)) return;
-        showLoading(true); try { await _sb.from(table).delete().eq('id', id); closeModal('admin-editor-overlay'); await init(); } catch(e) { alert("Erro ao deletar."); } showLoading(false);
+        showLoading(true, "Excluindo item..."); try { await _sb.from(table).delete().eq('id', id); closeModal('admin-editor-overlay'); await init(); } catch(e) { alert("Erro ao deletar."); } showLoading(false);
     }
 
     function renderTeamHistoryAdmin() {
@@ -661,7 +700,7 @@
     function removeMemberPart(pI, tI) { if(tI === null) { memberPartsBuffer.splice(pI, 1); } else { memberPartsBuffer[pI].tracks.splice(tI, 1); if(memberPartsBuffer[pI].tracks.length === 0) memberPartsBuffer.splice(pI, 1); } renderMemberPartsAdmin(); }
 
     /* =========================================================
-       SISTEMA DE SHUFFLE (GRID VISUAL)
+       SISTEMA DE SHUFFLE (GRID VISUAL / UPDATE EM LOTE SEGURO)
        ========================================================= */
     function openShuffleModal() {
         shuffleSelectedIds.clear();
@@ -702,14 +741,24 @@
         if(!targetTeam || targetTeam === "NEW") return alert("Selecione um Time de destino válido.");
         if(!shuffleDate) return alert("Selecione a data.");
 
-        showLoading(true);
+        showLoading(true, "Executando Shuffle...");
         try {
-            for(let id of ids) {
+            // Executando em Promise.all para ser mais rápido e seguro que um laço for sequencial
+            const updatePromises = ids.map(async (id) => {
                 const member = loadedMembers.find(m => m.id === id);
                 let history = []; try { history = JSON.parse(member.Historico_Times || "[]"); } catch(e) {} if(!Array.isArray(history)) history = [];
                 history.push({ data: shuffleDate, para: targetTeam });
-                await _sb.from('Membros').update({ Time: targetTeam, Historico_Times: JSON.stringify(history) }).eq('id', id);
-            }
+                
+                const { error } = await _sb.from('Membros').update({ 
+                    Time: targetTeam, 
+                    Historico_Times: JSON.stringify(history) 
+                }).eq('id', id);
+                
+                if(error) throw error;
+            });
+            
+            await Promise.all(updatePromises);
+
             alert("Shuffle executado com sucesso!"); closeModal('shuffle-modal'); await init();
         } catch (e) { alert("Erro ao executar shuffle: " + e.message); }
         showLoading(false);
@@ -764,10 +813,15 @@
         else { const checkboxes = document.querySelectorAll('.md-checkbox:checked'); ids = Array.from(checkboxes).map(cb => parseInt(cb.value)); }
 
         if(ids.length === 0) return alert("Selecione algum item!"); 
-        if(!confirm(`Excluir ${ids.length} itens permanentemente?`)) return; 
+        if(!confirm(`Excluir permanentemente os ${ids.length} itens selecionados?`)) return; 
         
-        showLoading(true); 
-        try { await _sb.from(table).delete().in('id', ids); closeModal('multi-delete-modal'); await init(); } catch(e) { alert("Erro ao deletar."); } 
+        showLoading(true, "Excluindo em massa..."); 
+        try { 
+            const { error } = await _sb.from(table).delete().in('id', ids); 
+            if(error) throw error;
+            alert("Exclusão concluída!");
+            closeModal('multi-delete-modal'); await init(); 
+        } catch(e) { alert("Erro ao excluir: " + e.message); } 
         showLoading(false); 
     }
 
