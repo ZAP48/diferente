@@ -90,20 +90,13 @@
     .btn-tag.tag-melancholy.active { background: var(--color-melancholy); color: #fff; border: var(--border); }
     .btn-tag.tag-love.active { background: var(--color-love); color: #fff; border: var(--border); }
 
-    /* MODAIS */
+    /* MODAIS VISUALIZACAO */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px); z-index: 2000; display: none; justify-content: center; align-items: flex-end; }
     .modal-overlay.active { display: flex; animation: fadeModal 0.2s forwards; }
     @keyframes fadeModal { from{opacity:0;} to{opacity:1;} }
     .modal-content { background: var(--bg); width: 100%; max-width: 600px; height: 92vh; border: var(--border); border-bottom: none; overflow-y: auto; position: relative; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); transition: background-color 0.3s;}
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     .close-btn { position: absolute; top: 15px; right: 15px; background: var(--primary); color: #fff; border: var(--border); width: 35px; height: 35px; z-index: 10; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; box-shadow: 2px 2px 0 #000; transition: 0.3s;}
-
-    /* ABAS INTERNAS DOS MODAIS */
-    .tabs { display: flex; border-bottom: var(--border); background: var(--black); position: sticky; top: 0; z-index: 5; }
-    .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: 900; font-size: 0.8rem; color: #888; cursor: pointer; text-transform: uppercase; border-bottom: 5px solid transparent; transition: 0.3s;}
-    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
-    .tab-pane, .modal-section { display: none; padding: 20px; }
-    .tab-pane.active, .modal-section.active { display: block; }
 
     /* MENU INFERIOR */
     .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: var(--white); display: flex; border-top: var(--border); z-index: 1000; }
@@ -192,17 +185,26 @@
   <div id="view-disco" class="view-section container">
     <h3 class="section-title">Discografia <i class="fas fa-compact-disc"></i></h3>
     <button class="admin-add-btn admin-only" onclick="openAdminModal('disco', -1)"><i class="fas fa-plus"></i> Adicionar Single/Álbum</button>
+    
+    <div class="tags-container">
+      <button class="btn-tag tag-all active" onclick="setUnitFilter('All')">Melancholy Love <i class="fas fa-heart"></i></button>
+      <button class="btn-tag tag-melancholy" onclick="setUnitFilter('Melancholy')">Melancholy <i class="fas fa-skull"></i></button>
+      <button class="btn-tag tag-love" onclick="setUnitFilter('Love')">Love <i class="fas fa-heart"></i></button>
+    </div>
+
     <div id="disco-grid" class="grid-2"></div>
   </div>
 
   <div id="view-members" class="view-section container">
     <h3 class="section-title">Membros <i class="fas fa-skull"></i></h3>
     <button class="admin-add-btn admin-only" onclick="openAdminModal('member', -1)"><i class="fas fa-plus"></i> Adicionar Membro</button>
+    
     <div class="tags-container">
-      <button class="btn-tag tag-all active" onclick="setUnitFilter('All', this)">Melancholy Love <i class="fas fa-heart"></i></button>
-      <button class="btn-tag tag-melancholy" onclick="setUnitFilter('Melancholy', this)">Melancholy <i class="fas fa-skull"></i></button>
-      <button class="btn-tag tag-love" onclick="setUnitFilter('Love', this)">Love <i class="fas fa-heart"></i></button>
+      <button class="btn-tag tag-all active" onclick="setUnitFilter('All')">Melancholy Love <i class="fas fa-heart"></i></button>
+      <button class="btn-tag tag-melancholy" onclick="setUnitFilter('Melancholy')">Melancholy <i class="fas fa-skull"></i></button>
+      <button class="btn-tag tag-love" onclick="setUnitFilter('Love')">Love <i class="fas fa-heart"></i></button>
     </div>
+    
     <div id="members-container"></div>
   </div>
 
@@ -232,8 +234,14 @@
     var supaKey = 'sb_publishable_vF3JVZw3vDrfLM5M6xtw_w_0VJh7uwm';
     var db = window.supabase.createClient(supaUrl, supaKey);
 
-    // --- GLOBALS & MOCK DATA (FALLBACK) ---
-    var pImg = (name, unit) => {
+    var loadedMembers = [], loadedDiscos = [], loadedStages = [], loadedNews = [], loadedBanner = null;
+    var currentUnitFilter = 'All';
+    var isAdminMode = false;
+    var editType = '';
+    var editIndex = -1;
+    var tempHist = [], tempPart = [], tempTrack = [];
+
+    const pImg = (name, unit) => {
         let hexCol = 'FF69B4'; 
         if (unit === 'Melancholy') hexCol = '8A2BE2'; 
         else if (unit === 'Love') hexCol = 'E60000'; 
@@ -241,111 +249,78 @@
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(cleanName)}&background=${hexCol}&color=111&size=200&font-size=0.33&bold=true`;
     };
 
-    var loadedMembers = [{ id:1, Nome: "Yua", Geracao: "1ª Geração", Foto: pImg("YUA", "Love"), SubUnit: "Love", Status: "Ativa", Perfil: "Mock Member", Historico_Times: "[]", Participacoes: "[]" }];
-    var loadedDiscos = [ { id:1, Titulo: "Bleeding Love", Tipo: "1st Single", Capa: pImg("BLD", "All"), Tracklist: "[]" } ];
-    var loadedStages = [];
-    var loadedNews = [ { id:1, Data: "2024-10-31", Categoria: "SISTEMA", Titulo: "Aguardando Banco de Dados" } ];
-    var loadedBanner = { url_midia: 'https://i.ibb.co/bM4DYRtR/Chat-GPT-Image-8-de-abr-de-2026-16-50-31.png', titulo: 'BEM-VINDO ADMIN', subtitulo: 'Configure seu banco', tag: 'ADMIN' };
-    
-    var currentUnitFilter = 'All';
-    var isAdminMode = false;
-    var editType = '';
-    var editIndex = -1;
-    var tempHist = [], tempPart = [], tempTrack = [];
+    const mockMembers = [{ Nome: "Yua <i class='fas fa-skull'></i>", Geracao: "1ª Geração", Foto: pImg("YUA", "Love"), SubUnit: "Love", Status: "Ativa", Perfil: "A center misteriosa.", Historico_Times: '[]', Participacoes: '[]' }];
+    const mockDiscos = [];
+    const mockNews = [];
+    const mockStages = [];
 
-    // --- INIT ---
     async function init() {
-        try {
-            const [memRes, discRes, newsRes, stageRes, banRes] = await Promise.all([
-                db.from('members').select('*').order('created_at', { ascending: true }),
-                db.from('discos').select('*').order('created_at', { ascending: false }),
-                db.from('news').select('*').order('data', { ascending: false }),
-                db.from('stages').select('*').order('created_at', { ascending: false }),
-                db.from('banner').select('*').eq('id', 1).single()
-            ]);
+      try {
+        const [memRes, discRes, newsRes, stageRes, banRes] = await Promise.all([
+          db.from('members').select('*').order('created_at', { ascending: true }),
+          db.from('discos').select('*').order('created_at', { ascending: false }),
+          db.from('news').select('*').order('data', { ascending: false }),
+          db.from('stages').select('*').order('created_at', { ascending: false }),
+          db.from('banner').select('*').eq('id', 1).single()
+        ]);
 
-            if(memRes.data) loadedMembers = memRes.data.map(m => ({ id: m.id, Nome: m.nome, Geracao: m.geracao, Foto: m.foto, SubUnit: m.subunit, Status: m.status, Perfil: m.perfil, Historico_Times: typeof m.historico_times === 'string' ? m.historico_times : JSON.stringify(m.historico_times || []), Participacoes: typeof m.participacoes === 'string' ? m.participacoes : JSON.stringify(m.participacoes || []) }));
-            if(discRes.data) loadedDiscos = discRes.data.map(d => ({ id: d.id, Titulo: d.titulo, Tipo: d.tipo, Capa: d.capa, Tracklist: typeof d.tracklist === 'string' ? d.tracklist : JSON.stringify(d.tracklist || []) }));
-            if(newsRes.data) loadedNews = newsRes.data.map(n => ({ id: n.id, Data: n.data, Categoria: n.categoria, Titulo: n.titulo }));
-            if(stageRes.data) loadedStages = stageRes.data.map(s => ({ id: s.id, Titulo: s.titulo, Subtitulo: s.subtitulo, Status: s.status, Capa: s.capa, Setlist: s.setlist }));
-            if(banRes.data) loadedBanner = banRes.data;
+        if(memRes.data) {
+            loadedMembers = memRes.data.map(m => ({ id: m.id, Nome: m.nome, Geracao: m.geracao, Foto: m.foto, SubUnit: m.subunit, Status: m.status, Perfil: m.perfil, Historico_Times: typeof m.historico_times === 'string' ? m.historico_times : JSON.stringify(m.historico_times || []), Participacoes: typeof m.participacoes === 'string' ? m.participacoes : JSON.stringify(m.participacoes || []) }));
+        } else loadedMembers = mockMembers;
 
-        } catch(e) { console.warn("Falha no DB (Tabelas faltantes ou RLS). Usando Mocks.", e); } finally { renderAll(); }
+        if(discRes.data) {
+            // ATENÇÃO: Lê a unit do banco!
+            loadedDiscos = discRes.data.map(d => ({ id: d.id, Titulo: d.titulo, Tipo: d.tipo, Capa: d.capa, Unit: d.unit || 'All', Tracklist: typeof d.tracklist === 'string' ? d.tracklist : JSON.stringify(d.tracklist || []) }));
+        } else loadedDiscos = mockDiscos;
+
+        if(newsRes.data) loadedNews = newsRes.data.map(n => ({ id: n.id, Data: n.data, Categoria: n.categoria, Titulo: n.titulo }));
+        else loadedNews = mockNews;
+
+        if(stageRes.data) loadedStages = stageRes.data.map(s => ({ id: s.id, Titulo: s.titulo, Subtitulo: s.subtitulo, Status: s.status, Capa: s.capa, Setlist: s.setlist }));
+        else loadedStages = mockStages;
+
+        if(banRes.data) loadedBanner = banRes.data;
+        else loadedBanner = { tipo: 'imagem', url_midia: 'https://i.ibb.co/bM4DYRtR/Chat-GPT-Image-8-de-abr-de-2026-16-50-31.png', titulo: 'BEM VINDO', subtitulo: '', tag: 'SISTEMA' };
+
+      } catch (e) {
+        console.warn("Falha no Supabase.", e);
+        loadedMembers = mockMembers; loadedDiscos = mockDiscos; loadedStages = mockStages; loadedNews = mockNews;
+      } finally {
+        renderAll();
+      }
     }
 
-    function renderAll() { renderDynamicHero(); renderNews(); renderDisco(); renderMembers(); renderStagesList(); }
-    function toggleAdminMode() { isAdminMode = !isAdminMode; document.body.classList.toggle('admin-mode', isAdminMode); }
+    function renderAll() {
+        renderDynamicHero();
+        renderNews();
+        setUnitFilter(currentUnitFilter); 
+        renderStagesList();
+    }
+
+    function toggleAdminMode() { isAdminMode = !isAdminMode; document.body.classList.toggle('admin-mode', isAdminMode); renderAll(); }
 
     function switchView(id, el) { 
       document.querySelectorAll(".view-section").forEach(v => v.classList.remove("active")); 
       document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active")); 
-      document.getElementById(id).classList.add("active"); el.classList.add("active"); window.scrollTo(0,0); 
+      document.getElementById(id).classList.add("active"); 
+      el.classList.add("active"); 
+      window.scrollTo(0,0); 
     }
 
-    function renderDynamicHero() { 
-        if(!loadedBanner) return; 
-        document.getElementById("hero-title").innerHTML = loadedBanner.titulo; document.getElementById("hero-sub").innerHTML = loadedBanner.subtitulo; 
-        document.getElementById("hero-tag").innerHTML = loadedBanner.tag; document.getElementById("hero-media-wrapper").innerHTML = `<img class="hero-media" src="${loadedBanner.url_midia}">`; 
-    }
-
-    function renderNews() { 
-        document.getElementById("news-list").innerHTML = loadedNews.map((n, i) => { 
-            const d = (n.Data || "0000-00-00").split("-"); 
-            return `<div class="card" style="display:flex; align-items:center; gap:15px;">
-                <button class="admin-edit-btn admin-only" onclick="openAdminModal('news', ${i})"><i class="fas fa-pen"></i></button>
-                <div style="text-align:center; min-width:50px; border-right:3px dashed #000; padding-right:15px;"><b style="font-size:1.5rem; color:var(--primary); -webkit-text-stroke:1px #000;">${d[2]||'00'}</b><br><span style="font-size:0.7rem; font-weight:900;">${d[1]||'00'}/${d[0]||'00'}</span></div>
-                <div><span class="tag" style="font-size:0.6rem; padding:2px 5px;">${n.Categoria}</span><h4 style="font-size:0.9rem; text-transform:uppercase;">${n.Titulo}</h4></div>
-            </div>`; 
-        }).join(''); 
-    }
-
-    function getCenterUnitColor(d) {
-        let themeColor = 'var(--black)';
-        if (!d || !d.Tracklist) return themeColor;
-        let fJSON = null;
-        if (typeof d.Tracklist === 'string') {
-            if (d.Tracklist.includes('ctl48-formation-data')) {
-                const temp = document.createElement("div"); temp.innerHTML = d.Tracklist; 
-                const jsonEl = temp.querySelector("#ctl48-formation-data"); 
-                if(jsonEl) { try { fJSON = JSON.parse(jsonEl.textContent.trim()); } catch(e){} }
-            } else { try { fJSON = JSON.parse(d.Tracklist); } catch(e){} }
-        } else fJSON = d.Tracklist;
-
-        if (fJSON && Array.isArray(fJSON)) {
-            const aSide = fJSON.find(t => t.kind && (t.kind.includes('A-Side') || t.kind.includes('aside')));
-            if (aSide && aSide.members) {
-              const centerMember = aSide.members.find(m => m.isCenter);
-              if (centerMember) {
-                const cleanCenter = centerMember.name.replace(/<[^>]*>?/gm, '').trim();
-                const realMember = loadedMembers.find(x => x.Nome.replace(/<[^>]*>?/gm, '').trim() === cleanCenter);
-                if (realMember) {
-                  if (realMember.SubUnit === 'Melancholy') themeColor = 'var(--color-melancholy)';
-                  else if (realMember.SubUnit === 'Love') themeColor = 'var(--color-love)';
-                  else themeColor = 'var(--color-melancholy-love)';
-                }
-              }
-            }
-        }
-        return themeColor;
-    }
-
-    function renderDisco() { 
-      document.getElementById("disco-grid").innerHTML = loadedDiscos.map((d, i) => {
-        let themeColor = getCenterUnitColor(d);
-        if (themeColor === 'var(--black)') themeColor = 'transparent';
-        return `<div class="item-card" onclick="if(!isAdminMode) alert('Ative o modo Admin no botão acima para editar!')">
-          <button class="admin-edit-btn admin-only" onclick="openAdminModal('disco', ${i}, event)"><i class="fas fa-pen"></i></button>
-          <img src="${d.Capa || pImg(d.Titulo, 'All')}" style="border-color: ${themeColor}; border-style: ${themeColor !== 'transparent' ? 'solid' : 'dashed'}; border-width: 3px;">
-          <div class="item-name">${d.Titulo}</div>
-        </div>`;
-      }).join(''); 
-    }
-
-    function setUnitFilter(unit, btn) {
-      currentUnitFilter = unit; document.querySelectorAll(".btn-tag").forEach(b => b.classList.remove("active"));
-      if(btn) btn.classList.add("active"); 
+    function renderDynamicHero() { const wrapper = document.getElementById("hero-media-wrapper"); let b = loadedBanner; if(!b) return; document.getElementById("hero-title").innerHTML = b.titulo; document.getElementById("hero-sub").innerHTML = b.subtitulo; if(b.tag) document.getElementById("hero-tag").innerHTML = b.tag; wrapper.innerHTML = `<img class="hero-media" src="${b.url_midia}">`; }
+    function renderNews() { document.getElementById("news-list").innerHTML = loadedNews.map((n, i) => { const d = (n.Data||"").split("-"); return `<div class="card" style="display:flex; align-items:center; gap:15px;"><button class="admin-edit-btn admin-only" onclick="openAdminModal('news', ${i})"><i class="fas fa-pen"></i></button><div style="text-align:center; min-width:50px; border-right:3px dashed #000; padding-right:15px;"><b style="font-size:1.5rem; color:var(--primary); -webkit-text-stroke:1px #000;">${d[2]||'00'}</b><br><span style="font-size:0.7rem; font-weight:900;">${d[1]||'00'}/${d[0]||'00'}</span></div><div><span class="tag" style="font-size:0.6rem; padding:2px 5px;">${n.Categoria}</span><h4 style="font-size:0.9rem; text-transform:uppercase;">${n.Titulo}</h4></div></div>`; }).join(''); }
+    
+    function setUnitFilter(unit) {
+      currentUnitFilter = unit;
       
+      let tagClass = unit === 'All' ? 'tag-all' : 'tag-' + unit.toLowerCase();
+      document.querySelectorAll(".btn-tag").forEach(b => {
+          b.classList.remove("active");
+          if (b.classList.contains(tagClass)) b.classList.add("active");
+      });
+
       const root = document.documentElement;
+
       if(unit === 'Melancholy') {
           root.style.setProperty('--primary', 'var(--color-melancholy)'); root.style.setProperty('--primary-light', '#D8BFD8'); 
           document.body.classList.remove('fx-flash-love', 'fx-flash-melancholy', 'fx-flash-all'); void document.body.offsetWidth; 
@@ -362,30 +337,67 @@
       
       document.querySelectorAll(".nav-item").forEach(n => unit==='All' ? n.classList.add("black-text") : n.classList.remove("black-text"));
       renderMembers();
+      renderDisco();
+    }
+
+    function renderDisco() { 
+      const grid = document.getElementById("disco-grid");
+      grid.innerHTML = "";
+      
+      let count = 0;
+      loadedDiscos.forEach((d, idx) => {
+        let unitOfDisco = d.Unit || 'All';
+        
+        if (currentUnitFilter !== 'All' && unitOfDisco !== currentUnitFilter) return;
+
+        let displayColor = 'var(--color-melancholy-love)'; 
+        if (unitOfDisco === 'Love') displayColor = 'var(--color-love)';
+        else if (unitOfDisco === 'Melancholy') displayColor = 'var(--color-melancholy)';
+        
+        count++;
+        grid.innerHTML += `<div class="item-card" onclick="if(!isAdminMode) alert('Ative o modo Admin no botão acima para editar!')">
+          <button class="admin-edit-btn admin-only" onclick="openAdminModal('disco', ${idx}, event)"><i class="fas fa-pen"></i></button>
+          <img src="${resolveImage(d.Capa)}" style="border-color: ${displayColor}; border-style: solid; border-width: 3px;">
+          <div class="item-name">${d.Titulo}</div>
+        </div>`;
+      }); 
+
+      if(count === 0) {
+        grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 20px; font-weight: 900; color: #666;">Nenhum lançamento encontrado.</div>`;
+      }
     }
 
     function renderMembers() { 
-      const container = document.getElementById("members-container"); container.innerHTML = ""; 
+      const container = document.getElementById("members-container"); 
+      container.innerHTML = ""; 
+      
       const groups = {}; 
-      loadedMembers.forEach((m, index) => { 
-        m._originalIndex = index; const key = currentUnitFilter === 'All' ? (m.Geracao || "1ª Geração") : (m.SubUnit || "Outros"); 
+      loadedMembers.forEach((m, idx) => { 
+        if(['graduada','demitida'].includes(m.Status?.toLowerCase())) return; 
+        const key = currentUnitFilter === 'All' ? (m.Geracao || "1ª Geração") : (m.SubUnit || "Outros"); 
+        
         if(currentUnitFilter !== 'All' && key !== currentUnitFilter) return;
-        if(!groups[key]) groups[key] = []; groups[key].push(m); 
+        
+        if(!groups[key]) groups[key] = []; 
+        m._idx = idx; 
+        groups[key].push(m); 
       }); 
       
       const orderMap = {"1ª Geração": 0, "2ª Geração": 1, "Love": 2, "Melancholy": 3};
-      Object.keys(groups).sort((a, b) => (orderMap[a] || 99) - (orderMap[b] || 99)).forEach(key => { 
-        let themeColor = key === 'Melancholy' ? 'var(--color-melancholy)' : (key === 'Love' ? 'var(--color-love)' : (currentUnitFilter==='All' ? 'var(--black)' : 'var(--primary)'));
-        let textColor = currentUnitFilter==='All' ? 'var(--color-melancholy-love)' : '#fff';
-        let sectionTitle = `<i class="fas fa-star"></i> ${key}`;
-        if (key === 'Melancholy' || key === 'Love') sectionTitle = `SUB UNIT: ${key}`;
+      const keys = Object.keys(groups).sort((a, b) => (orderMap[a] || 99) - (orderMap[b] || 99)); 
+      
+      keys.forEach(key => { 
+        let themeColor = 'var(--color-melancholy-love)'; let sectionTitle = `<i class="fas fa-star"></i> ${key}`; let textColor = '#fff';
+        if (key === 'Melancholy') { themeColor = 'var(--color-melancholy)'; sectionTitle = `SUB UNIT: ${key}`; } 
+        else if (key === 'Love') { themeColor = 'var(--color-love)'; sectionTitle = `SUB UNIT: ${key}`; } 
+        else if (currentUnitFilter === 'All') { themeColor = 'var(--black)'; textColor = 'var(--color-melancholy-love)'; }
         
         container.innerHTML += `<div>
           <h4 class="section-title" style="margin-top:20px; background:${themeColor}; color:${textColor};">${sectionTitle}</h4>
           <div class="grid-3">
             ${groups[key].map(m => `<div class="item-card" onclick="if(!isAdminMode) alert('Ative o modo Admin no botão acima para editar!')">
-              <button class="admin-edit-btn admin-only" onclick="openAdminModal('member', ${m._originalIndex}, event)"><i class="fas fa-pen"></i></button>
-              <img src="${m.Foto || pImg(m.Nome, m.SubUnit)}" style="border-color:${themeColor}">
+              <button class="admin-edit-btn admin-only" onclick="openAdminModal('member', ${m._idx}, event)"><i class="fas fa-pen"></i></button>
+              <img src="${resolveImage(m.Foto)}" style="border-color:${themeColor}">
               <div class="item-name">${m.Nome}</div>
             </div>`).join('')}
           </div>
@@ -402,11 +414,12 @@
     }
 
     function closeModal(id) { document.getElementById(id).classList.remove("active"); }
+    function resolveImage(f) { if(!f) return pImg("?", "All"); return (typeof f === "string" ? f : f.publicUrl).replace(/[\[\]"]/g, ""); }
 
-    // --- BUILDER HISTÓRICO ATUALIZADO (Mês dropdown, Ano input, Acontecimento Misto) ---
+    // --- BUILDER HISTÓRICO ---
     function updHist(idx, field, val) { tempHist[idx][field] = val; }
     function delHist(idx) { tempHist.splice(idx,1); renderHistBuilder(); }
-    function addHist() { tempHist.push({mes:'Jan', ano:'', acao:'', desc:''}); renderHistBuilder(); }
+    function addHist() { tempHist.push({mes:'Jan', ano:'', acao:'Debut', desc:''}); renderHistBuilder(); }
     
     function renderHistBuilder() {
         let html = '';
@@ -414,11 +427,9 @@
         const acoes = ['Debut', 'Entrou para Unit', 'Foi Transferida', 'Graduou', 'Foi Expulsa', 'Entrou em Hiatus', 'Retornou de Hiatus', 'Outro'];
 
         tempHist.forEach((h, i) => {
-            // Se for dado legado (data e para), converte pro novo formato
             if (h.data !== undefined) {
                 let p = h.data.split(' '); h.mes = p[0] || 'Jan'; h.ano = p[1] || ''; h.acao = 'Outro'; h.desc = h.para; delete h.data; delete h.para;
             }
-
             let showDesc = h.acao === 'Outro' || h.acao === 'Entrou para Unit' || h.acao === 'Foi Transferida';
 
             html += `<div class="builder-row" style="flex-direction:column; gap:8px;">
@@ -426,7 +437,7 @@
                     <select onchange="updHist(${i}, 'mes', this.value)" style="flex:0.3;">
                         ${meses.map(m => `<option value="${m}" ${h.mes === m ? 'selected' : ''}>${m}</option>`).join('')}
                     </select>
-                    <input type="number" placeholder="Ano (Ex: 2024)" value="${h.ano||''}" oninput="updHist(${i}, 'ano', this.value)" style="flex:0.3;">
+                    <input type="number" placeholder="Ano" value="${h.ano||''}" oninput="updHist(${i}, 'ano', this.value)" style="flex:0.3;">
                     <select onchange="updHist(${i}, 'acao', this.value); renderHistBuilder();" style="flex:0.8;">
                         ${acoes.map(a => `<option value="${a}" ${h.acao === a ? 'selected' : ''}>${a}</option>`).join('')}
                     </select>
@@ -439,6 +450,7 @@
         document.getElementById('bld-hist').innerHTML = html;
     }
 
+    // --- BUILDER MÚSICAS ---
     function updPart(idx, field, val) { tempPart[idx][field] = val; }
     function delPart(idx) { tempPart.splice(idx,1); renderPartBuilder(); }
     function addPart() { tempPart.push({single:'', title:'', labels:''}); renderPartBuilder(); }
@@ -456,6 +468,7 @@
         document.getElementById('bld-part').innerHTML = html;
     }
 
+    // --- BUILDER FAIXAS/DISCO ---
     function updTrack(idx, field, val) { tempTrack[idx][field] = val; }
     function delTrack(idx) { tempTrack.splice(idx,1); renderTrackBuilder(); }
     function addTrack() { tempTrack.push({kind:'A-Side', name:'', members: []}); renderTrackBuilder(); }
@@ -501,10 +514,10 @@
     function insertSetlist(text) {
         const el = document.getElementById('fm-setlist');
         if(el.value && !el.value.endsWith('\n')) el.value += '\n';
-        el.value += text;
-        el.focus();
+        el.value += text; el.focus();
     }
 
+    // --- ABRIR MODAL ADMIN ---
     function openAdminModal(type, index, event) {
         if(event) event.stopPropagation(); editType = type; editIndex = index;
         const container = document.getElementById('admin-form-container');
@@ -524,7 +537,7 @@
                      <div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo}"></div>`;
         }
         else if (type === 'disco') {
-            let d = index >= 0 ? loadedDiscos[index] : {Titulo: "", Tipo: "", Capa: "", Tracklist: "[]"};
+            let d = index >= 0 ? loadedDiscos[index] : {Titulo: "", Tipo: "", Capa: "", Unit: "All", Tracklist: "[]"};
             let rawT = []; 
             if (typeof d.Tracklist === 'string') {
                 if (d.Tracklist.includes('ctl48-formation-data')) {
@@ -535,9 +548,20 @@
             } else { rawT = d.Tracklist || []; }
 
             tempTrack = (rawT||[]).map(t => ({ kind: t.kind, name: t.name, members: JSON.parse(JSON.stringify(t.members || [])) }));
+            
             html += `<div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo}"></div>
                      <div class="form-group"><label>Tipo</label><input type="text" id="fm-tipo" value="${d.Tipo}"></div>
                      <div class="form-group"><label>URL da Capa</label><input type="text" id="fm-capa" value="${d.Capa||''}"></div>
+                     
+                     <div class="form-group">
+                        <label>Quem irá lançar? (Unit)</label>
+                        <select id="fm-unit-disco">
+                            <option value="All" ${d.Unit==='All'?'selected':''}>Melancholy Love (Grupo Completo)</option>
+                            <option value="Melancholy" ${d.Unit==='Melancholy'?'selected':''}>Melancholy</option>
+                            <option value="Love" ${d.Unit==='Love'?'selected':''}>Love</option>
+                        </select>
+                     </div>
+
                      <div class="form-group"><label>Faixas & Formação</label><div id="bld-track" class="builder-container"></div></div>`;
         }
         else if (type === 'member') {
@@ -592,7 +616,13 @@
                 if (editIndex >= 0) await db.from('news').update(obj).eq('id', loadedNews[editIndex].id); else await db.from('news').insert([obj]);
             }
             else if (editType === 'disco') {
-                let obj = { titulo: document.getElementById('fm-title').value, tipo: document.getElementById('fm-tipo').value, capa: document.getElementById('fm-capa').value || pImg(document.getElementById('fm-title').value, "All"), tracklist: tempTrack };
+                let obj = { 
+                    titulo: document.getElementById('fm-title').value, 
+                    tipo: document.getElementById('fm-tipo').value, 
+                    capa: document.getElementById('fm-capa').value || pImg(document.getElementById('fm-title').value, "All"), 
+                    unit: document.getElementById('fm-unit-disco').value,
+                    tracklist: tempTrack 
+                };
                 if (editIndex >= 0) await db.from('discos').update(obj).eq('id', loadedDiscos[editIndex].id); else await db.from('discos').insert([obj]);
             }
             else if (editType === 'member') {
@@ -602,12 +632,18 @@
                     if(p.title) groupedPart[p.single].tracks.push({ title: p.title, labels: (p.labels||'').split(',').map(s=>s.trim()).filter(s=>s) });
                 });
                 
-                // Formata o histórico antes de salvar
                 let formatHist = tempHist.map(h => {
                     let text = h.acao;
                     if (h.desc) text += `: ${h.desc}`;
                     return { data: `${h.mes} ${h.ano}`.trim(), para: text };
                 }).filter(h => h.para !== 'Outro' && h.data !== '');
+
+                const mm = { 'Jan':1, 'Fev':2, 'Mar':3, 'Abr':4, 'Mai':5, 'Jun':6, 'Jul':7, 'Ago':8, 'Set':9, 'Out':10, 'Nov':11, 'Dez':12 };
+                formatHist.sort((a,b) => {
+                    let aP=(a.data||'').split(' '), bP=(b.data||'').split(' ');
+                    let yA=parseInt(aP[1])||0, yB=parseInt(bP[1])||0;
+                    return yA!==yB ? yB-yA : (mm[bP[0]]||0) - (mm[aP[0]]||0);
+                });
 
                 let obj = {
                     nome: document.getElementById('fm-nome').value, geracao: document.getElementById('fm-gen').value, subunit: document.getElementById('fm-unit').value, 
@@ -622,7 +658,7 @@
             }
             closeModal('admin-modal'); await init(); 
         } catch (e) {
-            alert("Erro ao salvar! Veja no console (F12) se tem erro de permissão (RLS) no Supabase. Erro: " + e.message);
+            alert("Erro ao salvar! Veja no console (F12) se tem erro de permissão. Erro: " + e.message);
             document.querySelector('.btn-save').innerHTML = 'Tentar Novamente';
         }
     }
