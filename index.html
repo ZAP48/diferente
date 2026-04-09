@@ -3,836 +3,640 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ZAP48 - LIVE EDITOR PRO</title>
+  <title>Melancholy Love - Admin App</title>
   
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,900;1,900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
   <style>
-    /* --- TEMA BRAT CORE --- */
+    /* --- TEMA CUTE & EMO (Pastel Goth / Punk Neobrutalism) --- */
     :root {
-      --primary: #8ACE00; --black: #000000; --white: #ffffff; --bg: #f4f4f4;
-      --border: 2px solid #000; --shadow: 4px 4px 0px #000; --shadow-sm: 2px 2px 0px #000;
-      --radius: 16px; --admin-color: #e91e63;
+      --color-melancholy-love: #FF69B4; 
+      --color-love: #E60000;            
+      --color-melancholy: #8A2BE2;      
+      
+      --primary: var(--color-melancholy-love); 
+      --primary-light: #FFB6C1;     
+      --black: #111111; 
+      --white: #ffffff; 
+      --bg: #FFF0F5;
+      
+      --border: 3px solid var(--black); 
+      --border-dashed: 3px dashed var(--black);
+      --shadow: 5px 5px 0px var(--black); 
+      --shadow-sm: 3px 3px 0px var(--black);
+      --radius: 0px; 
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-    body { background-color: var(--bg); color: var(--black); font-family: 'Roboto', sans-serif; padding-bottom: 90px; overflow-x: hidden; }
-    h1, h2, h3, h4, .font-head { font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; }
+    
+    body { 
+      background-color: var(--bg); 
+      background-image: linear-gradient(var(--primary-light) 1px, transparent 1px), linear-gradient(90deg, var(--primary-light) 1px, transparent 1px);
+      background-size: 20px 20px;
+      color: var(--black); 
+      font-family: 'Roboto', sans-serif; 
+      padding-bottom: 90px; 
+      overflow-x: hidden; 
+      transition: background-color 0.3s ease;
+    }
+    
+    h1, h2, h3, h4, .font-head { font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: -0.5px; font-style: italic; }
 
-    /* LAYOUT BASE */
-    .header { background: var(--bg); padding: 15px 20px; position: sticky; top: 0; z-index: 100; border-bottom: var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.5rem; color: var(--black); font-style: italic; }
-    .logo span { color: var(--primary); }
-    .container { padding: 0 20px; max-width: 600px; margin: 0 auto; }
+    .header { background: var(--black); padding: 15px; position: sticky; top: 0; z-index: 100; border-bottom: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; transition: border-color 0.3s;}
+    .logo { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.1rem; color: var(--white); letter-spacing: -1px; }
+    .logo span { background: var(--primary); color: var(--black); padding: 2px 6px; margin-left: 5px; font-style: normal; transform: rotate(-3deg); display: inline-block; transition: 0.3s;}
+    
+    .container { padding: 0 15px; max-width: 600px; margin: 0 auto; }
     .view-section { display: none; padding-top: 20px; }
-    .view-section.active { display: block; animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .view-section.active { display: block; animation: slideIn 0.2s ease-out; }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+
+    /* EFEITOS ESPECIAIS DE FLASH */
+    @keyframes flash-melancholy { 0% { background-color: var(--color-melancholy); } 100% { background-color: var(--bg); } }
+    @keyframes flash-love { 0% { background-color: var(--color-love); } 100% { background-color: var(--bg); } }
+    @keyframes flash-all { 0% { background-color: var(--color-melancholy-love); } 100% { background-color: var(--bg); } }
+    
+    .fx-flash-melancholy { animation: flash-melancholy 0.4s ease-out; }
+    .fx-flash-love { animation: flash-love 0.4s ease-out; }
+    .fx-flash-all { animation: flash-all 0.4s ease-out; }
 
     /* CARDS & GRIDS */
-    .card { background: #fff; border: var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 15px; margin-bottom: 15px; position: relative; }
-    .section-title { font-size: 1.2rem; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-    .section-title::before { content: ''; width: 12px; height: 12px; background: var(--primary); border: 2px solid #000; }
+    .card { background: #fff; border: var(--border); box-shadow: var(--shadow); padding: 15px; margin-bottom: 20px; position: relative; }
+    .section-title { font-size: 1.3rem; margin-bottom: 15px; background: var(--primary); color: var(--white); display: inline-block; padding: 5px 15px; border: var(--border); transform: rotate(-2deg); box-shadow: 2px 2px 0 #000; transition: 0.3s;}
     .grid-2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; align-items: start; }
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .item-card { text-align: center; cursor: pointer; transition: transform 0.1s; display: flex; flex-direction: column; gap: 6px; }
-    .item-card:active { transform: scale(0.95); }
-    .item-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: var(--border); border-radius: 12px; background: #fff; display: block; }
-    .item-name { font-weight: 900; font-size: 0.8rem; line-height: 1.2; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    
+    .item-card { text-align: center; cursor: pointer; transition: transform 0.1s; background: #fff; border: var(--border); padding: 8px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 6px; position: relative; }
+    .item-card:active { transform: translate(3px, 3px); box-shadow: none; }
+    .item-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border: var(--border-dashed); background: #fff; display: block; transition: 0.3s; }
+    .item-name { font-weight: 900; font-size: 0.8rem; line-height: 1.2; text-transform: uppercase; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 
     /* HERO BANNER */
-    .hero { position: relative; height: 320px; border-radius: var(--radius); border: var(--border); box-shadow: var(--shadow); margin-bottom: 30px; overflow: hidden; background: #000; color: #fff; cursor: pointer; transition: transform 0.2s;}
-    .hero:active { transform: scale(0.98); }
-    .hero-media { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.6; z-index: 1; pointer-events: none; }
-    .hero-content { position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px; z-index: 2; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); pointer-events: none; }
-    .tag { background: var(--primary); color: #000; font-weight: 900; font-size: 0.7rem; padding: 4px 10px; border-radius: 4px; display: inline-block; margin-bottom: 8px; border: 1px solid #000; }
+    .hero { position: relative; height: 350px; border: var(--border); box-shadow: var(--shadow); margin-bottom: 30px; overflow: hidden; background: #000; color: #fff; cursor: pointer; transition: transform 0.2s;}
+    .hero:active { transform: translate(3px, 3px); box-shadow: none; }
+    .hero-media { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.8; z-index: 1; pointer-events: none; filter: contrast(120%);}
+    .hero-content { position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px; z-index: 2; background: linear-gradient(to top, rgba(0,0,0,1), transparent); pointer-events: none; }
+    .tag { background: var(--primary); color: var(--white); font-weight: 900; font-size: 0.7rem; padding: 4px 10px; display: inline-block; margin-bottom: 8px; border: 2px solid #000; transition: 0.3s;}
 
-    .scroll-filters { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0 15px 0; }
-    .btn-pill { white-space: nowrap; padding: 8px 16px; border: var(--border); border-radius: 50px; background: #fff; font-weight: 700; font-size: 0.8rem; cursor: pointer; box-shadow: 2px 2px 0 #000; }
-    .btn-pill.active { background: var(--primary); }
-    .btn-filter { flex: 1; padding: 12px; background: #fff; border: var(--border); border-radius: 10px; font-weight: 900; cursor: pointer; box-shadow: var(--shadow-sm); }
-    .btn-filter.active { background: var(--black); color: var(--primary); }
-    .btn-main { background: var(--primary); color: #000; border: var(--border); padding: 14px; border-radius: var(--radius); font-weight: 900; width: 100%; cursor: pointer; box-shadow: var(--shadow-sm); text-transform: uppercase; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+    /* BOTOES E FILTROS (TAGS) */
+    .tags-container { display: flex; gap: 8px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 5px; }
+    .tags-container::-webkit-scrollbar { display: none; }
+    .btn-tag { flex: 1; min-width: max-content; padding: 10px 15px; border: var(--border-dashed); background: #fff; font-weight: 900; font-size: 0.75rem; cursor: pointer; box-shadow: var(--shadow-sm); text-transform: uppercase; transition: 0.2s;}
     
-    input, select, textarea { width: 100%; padding: 12px; border: var(--border); border-radius: 8px; font-family: inherit; font-weight: 700; margin-top: 5px; background: #fff; }
+    .btn-tag.tag-all.active { background: var(--color-melancholy-love); color: #000; border: var(--border); }
+    .btn-tag.tag-melancholy.active { background: var(--color-melancholy); color: #fff; border: var(--border); }
+    .btn-tag.tag-love.active { background: var(--color-love); color: #fff; border: var(--border); }
 
     /* MODAIS */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: none; justify-content: center; align-items: flex-end; }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px); z-index: 2000; display: none; justify-content: center; align-items: flex-end; }
     .modal-overlay.active { display: flex; animation: fadeModal 0.2s forwards; }
     @keyframes fadeModal { from{opacity:0;} to{opacity:1;} }
-    .modal-content { background: var(--bg); width: 100%; max-width: 600px; height: 92vh; border-radius: 30px 30px 0 0; border: var(--border); overflow-y: auto; position: relative; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); padding-bottom: 30px; }
+    .modal-content { background: var(--bg); width: 100%; max-width: 600px; height: 92vh; border: var(--border); border-bottom: none; overflow-y: auto; position: relative; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); transition: background-color 0.3s;}
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    .close-btn { position: absolute; top: 15px; right: 15px; background: #000; color: #fff; border: none; width: 32px; height: 32px; border-radius: 50%; z-index: 10; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .close-btn { position: absolute; top: 15px; right: 15px; background: var(--primary); color: #fff; border: var(--border); width: 35px; height: 35px; z-index: 10; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; box-shadow: 2px 2px 0 #000; transition: 0.3s;}
 
-    .tabs { display: flex; border-bottom: var(--border); background: #fff; position: sticky; top: 0; z-index: 5; }
-    .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: 900; font-size: 0.75rem; color: #aaa; cursor: pointer; text-transform: uppercase; border-bottom: 4px solid transparent; }
-    .tab-btn.active { color: #000; border-bottom-color: var(--primary); }
+    /* ABAS INTERNAS DOS MODAIS */
+    .tabs { display: flex; border-bottom: var(--border); background: var(--black); position: sticky; top: 0; z-index: 5; }
+    .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: 900; font-size: 0.8rem; color: #888; cursor: pointer; text-transform: uppercase; border-bottom: 5px solid transparent; transition: 0.3s;}
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
     .tab-pane, .modal-section { display: none; padding: 20px; }
     .tab-pane.active, .modal-section.active { display: block; }
 
-    /* COMPONENTES DE EXIBIÇÃO */
-    .part-card { background: #fff; border: var(--border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; box-shadow: var(--shadow-sm); }
-    .part-header { background: #fff; padding: 12px 15px; font-weight: 900; font-size: 0.8rem; text-transform: uppercase; border-bottom: var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .part-header::after { content: ''; width: 10px; height: 10px; background: var(--primary); border: 2px solid #000; display: block; }
-    .part-row { padding: 12px 15px; border-bottom: 1px dashed #ccc; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 600; }
-    .label-brat { display: inline-flex; align-items: center; gap: 5px; font-size: 0.6rem; padding: 4px 8px; border-radius: 20px; font-weight: 900; text-transform: uppercase; border: 2px solid #000; margin-left: 5px; box-shadow: 2px 2px 0 #000; white-space: nowrap; }
-    .label-brat.is-aside { background: var(--primary); color: #000; } .label-brat.is-bside { background: #000; color: var(--primary); }
-    .label-brat.is-center { background: #fff; color: #000; border-color: #000; } .label-brat.is-unit { background: #eee; color: #555; }
+    /* MENU INFERIOR */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: var(--white); display: flex; border-top: var(--border); z-index: 1000; }
+    .nav-item { flex: 1; border: none; border-right: 2px solid #000; background: none; color: #000; font-size: 0.6rem; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.1s;}
+    .nav-item:last-child { border-right: none; }
+    .nav-item.active { background: var(--primary); color: #fff; transition: background 0.3s;}
+    .nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
+    .nav-item.active.black-text { color: #000; }
 
-    .formation-group { background: #fff; border: var(--border); border-radius: 12px; margin-bottom: 12px; overflow: hidden; }
-    .formation-header { padding: 15px; background: #fff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
-    .formation-title { font-size: 0.85rem !important; font-weight: 800 !important; display: flex; align-items: center; gap: 10px; margin: 0 !important; text-transform: uppercase; }
-    .formation-arrow { transition: transform 0.3s ease; }
-    .formation-group.open .formation-arrow { transform: rotate(180deg); }
-    .formation-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; background: #fafafa; }
-    .formation-group.open .formation-content { max-height: 2000px; padding: 15px; border-top: var(--border); }
-    .formation-idol-icon { width: 26px; height: 26px; border-radius: 50%; background: var(--black); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; border: 1px solid var(--primary); }
-    
-    .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; }
-    .member-card-static { text-align: center; position: relative; cursor: pointer; }
-    .member-card-static img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #ccc; object-fit: cover; background: #fff; transition: 0.2s; }
-    .member-card-static.is-center img { border-color: var(--primary); box-shadow: 0 0 0 3px #000; transform: scale(1.05); }
-    .member-info h3 { font-size: 0.65rem; font-weight: 900; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .tracklist { list-style: none; padding: 0; margin: 0; }
-    .tracklist li { padding: 14px 0; border-bottom: 1px dashed #ccc; font-size: 0.9rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
-
-    /* SELEÇÃO VISUAL DE MEMBROS (NOVO PARA SHUFFLE/DELETE) */
-    .member-card-static.is-selected img { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary); opacity: 0.8; }
-    .member-card-static.is-selected::after {
-        content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; top: -5px; right: -5px;
-        background: var(--primary); color: #000; border-radius: 50%; width: 22px; height: 22px; font-size: 12px;
-        display: flex; align-items: center; justify-content: center; border: 2px solid #000; z-index: 10;
-    }
-    #md-list.member-grid .member-card-static.is-selected::after {
-        content: '\f014'; background: #ff4757; color: #fff; border-color: #000;
-    }
-    #md-list.member-grid .member-card-static.is-selected img { border-color: #ff4757; box-shadow: 0 0 0 3px #ff4757; }
-
-    .filter-row { display: flex; gap: 8px; margin-bottom: 10px; }
-
-    /* STAGES */
-    .stage-card { background: #fff; border: var(--border); border-radius: var(--radius); padding: 15px; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; box-shadow: var(--shadow); cursor: pointer; transition: transform 0.1s;}
-    .stage-card:active { transform: scale(0.95); }
-    .stage-cover { width: 80px; height: 80px; border-radius: 50%; border: 2px solid #000; object-fit: cover; }
+    /* BLINDAGEM DE IMAGEM PARA SHOWS */
+    .stage-card { background: #fff; border: var(--border); padding: 15px; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; box-shadow: var(--shadow); cursor: pointer;}
+    .stage-card:active { transform: translate(3px, 3px); box-shadow: none; }
+    .stage-cover { width: 80px; min-width: 80px; height: 80px; border: var(--border-dashed); object-fit: cover; background: var(--black); }
     .stage-info { flex: 1; }
     .stage-title { font-weight: 900; font-size: 1rem; text-transform: uppercase; line-height: 1.1; }
-    .stage-badge { font-size: 0.6rem; padding: 2px 6px; background: var(--black); color: var(--primary); border-radius: 4px; font-weight: 900; display: inline-block; margin-top: 6px; }
+    .stage-sub { font-size: 0.7rem; font-weight: 700; color: #666; margin-top: 4px; }
+    .stage-badge { font-size: 0.6rem; padding: 4px 8px; background: var(--primary); color: #000; font-weight: 900; display: inline-block; margin-top: 6px; border: 2px solid #000; }
 
-    .setlist-wrap { padding: 10px 0; font-family: 'Roboto', sans-serif; }
-    .sl-row { padding: 8px 0; border-bottom: 1px dashed #ddd; font-size: 0.85rem; font-weight: 600; display: flex; align-items: flex-start; gap: 8px; }
-    .sl-music { background: var(--primary); color: #000; font-weight: 900; padding: 2px 6px; border: 1px solid #000; box-shadow: 2px 2px 0 #000; display: inline-block; }
-    .sl-mc { background: #000; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: 900; }
-    .sl-header { margin-top: 20px; font-weight: 900; font-size: 1rem; text-transform: uppercase; border-bottom: 3px solid var(--primary); display: inline-block; }
-
-    .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: #000; display: flex; border-top: 4px solid var(--primary); z-index: 1000; }
-    .nav-item { flex: 1; background: none; border: none; color: #666; font-size: 0.6rem; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; cursor: pointer; transition: 0.2s; }
-    .nav-item.active { color: var(--primary); }
-    .nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
-
-    /* LOADING & ADMIN STYLES */
-    #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 30000; display: none; justify-content: center; align-items: center; flex-direction: column; }
-    .spinner { border: 6px solid #f3f3f3; border-top: 6px solid var(--admin-color); border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin-bottom: 15px; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .loading-text { font-family: 'Montserrat'; font-weight: 900; color: var(--admin-color); text-transform: uppercase; font-size: 1.2rem; }
-
-    .btn-edit-inline { position:absolute; top:15px; left:15px; background:var(--admin-color); color:#fff; border:2px solid #000; width:40px; height:40px; border-radius:50%; z-index:50; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow: 2px 2px 0 #000; font-size: 1.1rem; }
-    .btn-edit-inline:active { transform: scale(0.9); }
-    .btn-edit-news { position:absolute; top:10px; right:10px; background:var(--admin-color); color:#fff; border:1px solid #000; border-radius:4px; padding:4px 8px; font-size:0.7rem; font-weight:bold; cursor:pointer; z-index:10; }
-    .btn-admin-nav { background: var(--admin-color); color: #fff; border: 2px solid #000; border-radius: 8px; padding: 6px 12px; font-weight: 900; font-size: 0.7rem; cursor: pointer; box-shadow: 2px 2px 0 #000; display: flex; gap: 5px; align-items: center; }
+    /* --- ESTILOS EXCLUSIVOS DO MODO ADMIN --- */
+    .admin-only { display: none; }
+    .admin-mode .admin-only { display: block; }
     
-    #admin-editor-overlay .modal-content, #shuffle-modal .modal-content, #manage-teams-modal .modal-content { background: #fff; border: 4px solid var(--admin-color); padding-bottom: 80px; }
-    .admin-form-group { margin-bottom: 12px; }
-    .admin-form-group label { display: block; font-size: 0.7rem; font-weight: 900; color: var(--admin-color); text-transform: uppercase; margin-bottom: 4px; }
-    .admin-form-group input, .admin-form-group textarea, .admin-form-group select { border-color: var(--admin-color); border-width: 2px; }
-    .admin-save-btn { background: var(--admin-color); color: #fff; width: 100%; padding: 15px; border: 2px solid #000; font-weight: 900; font-size: 1rem; cursor: pointer; border-radius: 8px; margin-top: 10px; box-shadow: 4px 4px 0 #000; display:flex; justify-content:center; align-items:center; gap:8px;}
-    .admin-delete-btn { background: #ff4757; color: #fff; width: 100%; padding: 12px; border: 2px solid #000; font-weight: 900; cursor: pointer; border-radius: 8px; margin-top: 10px; }
+    .btn-toggle-admin { background: #000; color: #fff; border: 2px solid var(--primary); padding: 5px 10px; font-weight: 900; cursor: pointer; display: flex; gap: 5px; align-items: center; font-size: 0.7rem; border-radius: 5px; transition: 0.3s;}
+    .admin-mode .btn-toggle-admin { background: #00FF00; color: #000; border-color: #000; box-shadow: 2px 2px 0 #000;}
 
-    /* MULTI-DELETE LISTS */
-    .md-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid #eee; }
-    .md-item input[type="checkbox"] { width: 20px; height: 20px; border: 2px solid #000; margin: 0; }
-    .md-item span { font-size: 0.85rem; font-weight: 700; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .admin-edit-btn { display: none; position: absolute; top: -10px; right: -10px; background: #FFFF00; color: #000; border: 2px solid #000; width: 35px; height: 35px; border-radius: 50%; font-size: 1rem; cursor: pointer; box-shadow: 2px 2px 0 #000; z-index: 10; align-items: center; justify-content: center; transition: transform 0.1s;}
+    .admin-edit-btn:active { transform: scale(0.9); }
+    .admin-mode .admin-edit-btn { display: flex; }
 
-    /* EDITOR VISUAL DE PARTICIPAÇÕES */
-    .admin-parts-list { background: #fafafa; border: 2px dashed #ccc; padding: 10px; border-radius: 8px; max-height: 200px; overflow-y: auto; margin-bottom: 10px; }
-    .part-admin-item { background: #fff; border: 1px solid #ddd; padding: 8px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-    .part-admin-item .info { font-size: 0.75rem; font-weight: 700; display:flex; flex-direction:column; gap:2px; }
-    .part-admin-item .badge { font-size: 0.55rem; background: var(--admin-color); color: #fff; padding: 2px 4px; border-radius: 4px; font-weight: 900; text-transform: uppercase; }
+    .admin-add-btn { background: #00FF00; color: #000; border: var(--border); padding: 12px; font-weight: 900; text-transform: uppercase; margin-bottom: 20px; cursor: pointer; box-shadow: var(--shadow-sm); width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 0.9rem; transition: 0.1s;}
+    .admin-add-btn:active { transform: translate(2px, 2px); box-shadow: none; }
+
+    .admin-form { padding: 20px; padding-top: 60px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-weight: 900; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: var(--border); box-shadow: 2px 2px 0 #000; font-family: 'Roboto'; font-size: 0.9rem; }
+    .form-group textarea { resize: vertical; min-height: 100px;}
+    .help-text { font-size: 0.7rem; color: #555; margin-top: 5px; font-weight: bold; }
     
-    #admin-track-modal { z-index: 10000; }
-    .btn-remove-tb { position: absolute; top: -5px; right: -5px; background: #ff4757; color: #fff; border: 2px solid #000; border-radius: 50%; width: 22px; height: 22px; font-size: 10px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10;}
-    .track-admin-item { background: #fff; border: 2px dashed #ccc; padding: 10px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-    
-    /* HISTORICO DE TIMES UI */
-    .team-history-timeline { border-left: 2px solid #ddd; padding-left: 15px; margin-top: 10px; }
-    .team-history-item { position: relative; margin-bottom: 10px; font-size: 0.8rem; font-weight: 700; }
-    .team-history-item::before { content: ''; position: absolute; left: -21px; top: 2px; width: 10px; height: 10px; background: var(--primary); border: 2px solid #000; border-radius: 50%; }
-    .team-history-date { font-size: 0.6rem; color: #666; font-weight: 900; }
+    .btn-save { background: var(--primary); color: #fff; border: var(--border); padding: 15px; width: 100%; font-weight: 900; text-transform: uppercase; cursor: pointer; box-shadow: var(--shadow); margin-top: 10px; font-size: 1rem; transition: 0.1s;}
+    .btn-save:active { transform: translate(3px, 3px); box-shadow: none; }
+    .btn-delete { background: #E60000; color: #fff; border: var(--border); padding: 15px; width: 100%; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 15px; transition: 0.1s;}
+
+    /* CONSTRUTORES VISUAIS */
+    .builder-container { background: #fff; border: var(--border); padding: 10px; box-shadow: var(--shadow-sm); }
+    .builder-row { display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; align-items: stretch; background: var(--bg); padding: 5px; border: 2px dashed #000;}
+    .builder-row input, .builder-row select { flex: 1; padding: 8px; font-size: 0.8rem; border: 2px solid #000; box-shadow: none; min-width: 100px; margin:0;}
+    .btn-builder-del { background: #E60000; color: #fff; border: 2px solid #000; padding: 0 12px; cursor: pointer; font-weight: bold; font-size: 1rem;}
+    .btn-builder-add { width: 100%; padding: 10px; background: #000; color: var(--primary); border: none; font-weight: 900; cursor: pointer; margin-top: 5px; text-transform: uppercase; font-size: 0.8rem; box-shadow: 2px 2px 0 var(--primary);}
+
+    .member-pill-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding: 10px; background: #fff; border: 2px dashed #000; width: 100%; }
+    .m-pill { display: inline-flex; align-items: stretch; border: 2px solid #000; background: #eee; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; transition: 0.2s; box-shadow: 2px 2px 0 #000;}
+    .m-pill.is-active { background: var(--primary); color: #000; }
+    .m-pill-name { padding: 6px 10px; cursor: pointer; display: flex; align-items: center;}
+    .m-pill-center { padding: 6px 10px; border-left: 2px solid #000; color: #999; cursor: pointer; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.05); transition: 0.2s;}
+    .m-pill-center:hover { color: #000; }
+    .m-pill.is-active .m-pill-center { color: #fff; }
+    .m-pill.is-active .m-pill-center.is-center { color: #FFD700; background: #000; border-left-color: #000;}
   </style>
 </head>
 
 <body>
-
-  <div id="loading-overlay"><div class="spinner"></div><div class="loading-text" id="loading-text">Processando...</div></div>
-
   <div class="header">
-      <div class="logo">ZAP<span>48</span> <small style="font-size:0.5em;color:var(--admin-color);vertical-align:middle;">[ADMIN]</small></div>
-      <button class="btn-admin-nav" onclick="openMultiDelete()"><i class="fas fa-trash-alt"></i> GERENCIAR</button>
+    <div class="logo">MELANCHOLY<span>LOVE <i class="fas fa-heart"></i></span></div>
+    <button class="btn-toggle-admin" onclick="toggleAdminMode()"><i class="fas fa-cog"></i> ADMIN</button>
   </div>
 
   <div id="view-home" class="view-section active container">
     <div class="hero" id="hero-container">
-      <button class="btn-edit-inline" style="z-index: 50;" onclick="event.stopPropagation(); openAdminEditor('Banners', (loadedBanner ? loadedBanner.id : null), loadedBanner)" title="Editar Banner"><i class="fas fa-pencil-alt"></i></button>
+      <button class="admin-edit-btn admin-only" onclick="openAdminModal('banner', 0, event)" style="top: 10px; right: 10px;"><i class="fas fa-pen"></i></button>
       <div id="hero-media-wrapper"></div>
       <div class="hero-content">
-        <span class="tag" id="hero-tag">DESTAQUE</span>
+        <span class="tag" id="hero-tag">...</span>
         <h1 id="hero-title" class="font-head" style="font-size: 1.5rem; line-height: 1.1;">...</h1>
+        <p id="hero-sub" style="font-size: 0.8rem; font-weight: 700; opacity: 0.9;">...</p>
       </div>
     </div>
-
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3 class="section-title" style="margin:0;">Notícias</h3>
-        <button onclick="openAdminEditor('Noticias', null)" style="background:var(--admin-color); color:#fff; border:1px solid #000; padding:5px 10px; font-weight:bold; border-radius:4px; cursor:pointer;">+ Nova</button>
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+        <h3 class="section-title" style="margin:0;">Últimas Notícias <i class="fas fa-newspaper"></i></h3>
     </div>
+    <button class="admin-add-btn admin-only" onclick="openAdminModal('news', -1)"><i class="fas fa-plus"></i> Adicionar Notícia</button>
     <div id="news-list"></div>
   </div>
 
   <div id="view-disco" class="view-section container">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3 class="section-title" style="margin:0;">Discografia</h3>
-        <button onclick="openAdminEditor('Discografia', null)" style="background:var(--admin-color); color:#fff; border:1px solid #000; padding:5px 10px; font-weight:bold; border-radius:4px; cursor:pointer;">+ Novo</button>
-    </div>
+    <h3 class="section-title">Discografia <i class="fas fa-compact-disc"></i></h3>
+    <button class="admin-add-btn admin-only" onclick="openAdminModal('disco', -1)"><i class="fas fa-plus"></i> Adicionar Single/Álbum</button>
     <div id="disco-grid" class="grid-2"></div>
   </div>
 
   <div id="view-members" class="view-section container">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3 class="section-title" style="margin:0;">Membros</h3>
-        <div style="display:flex; gap:5px;">
-            <button onclick="openManageTeams()" style="background:#fff; color:var(--admin-color); border:1px solid var(--admin-color); padding:5px; font-weight:bold; border-radius:4px; cursor:pointer;" title="Configurar Times e Gerações"><i class="fas fa-cog"></i></button>
-            <button onclick="openShuffleModal()" style="background:#000; color:var(--primary); border:1px solid var(--primary); padding:5px 10px; font-weight:bold; border-radius:4px; cursor:pointer;">🔀 SHUFFLE</button>
-            <button onclick="openAdminEditor('Membros', null)" style="background:var(--admin-color); color:#fff; border:1px solid #000; padding:5px 10px; font-weight:bold; border-radius:4px; cursor:pointer;">+ Novo</button>
-        </div>
+    <h3 class="section-title">Membros <i class="fas fa-skull"></i></h3>
+    <button class="admin-add-btn admin-only" onclick="openAdminModal('member', -1)"><i class="fas fa-plus"></i> Adicionar Membro</button>
+    <div class="tags-container">
+      <button class="btn-tag tag-all active" onclick="setUnitFilter('All', this)">Melancholy Love <i class="fas fa-heart"></i></button>
+      <button class="btn-tag tag-melancholy" onclick="setUnitFilter('Melancholy', this)">Melancholy <i class="fas fa-skull"></i></button>
+      <button class="btn-tag tag-love" onclick="setUnitFilter('Love', this)">Love <i class="fas fa-heart"></i></button>
     </div>
-    <div style="display:flex; gap:10px; margin-bottom:15px;">
-      <button class="btn-filter active" onclick="setMemberFilter('gen', this)">Geração</button>
-      <button class="btn-filter" onclick="setMemberFilter('team', this)">Time</button>
-    </div>
-    <div id="scroll-buttons" class="scroll-filters"></div>
     <div id="members-container"></div>
   </div>
 
   <div id="view-stages" class="view-section container">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3 class="section-title" style="margin:0;">Stages</h3>
-        <button onclick="openAdminEditor('Stages', null)" style="background:var(--admin-color); color:#fff; border:1px solid #000; padding:5px 10px; font-weight:bold; border-radius:4px; cursor:pointer;">+ Novo</button>
-    </div>
+    <h3 class="section-title">Shows <i class="fas fa-guitar"></i></h3>
+    <button class="admin-add-btn admin-only" onclick="openAdminModal('stage', -1)"><i class="fas fa-plus"></i> Adicionar Show</button>
     <div id="stages-list"></div>
   </div>
 
-  <div id="member-modal" class="modal-overlay" onclick="if(event.target==this)closeModal('member-modal')">
-    <div class="modal-content">
-      <button class="btn-edit-inline" id="btn-edit-member" title="Editar Membro"><i class="fas fa-pencil-alt"></i></button>
-      <button class="close-btn" onclick="closeModal('member-modal')">×</button>
-      <div style="height:120px; background:#000;"></div>
-      <img id="m-cover" style="width:120px; height:120px; border-radius:50%; border:4px solid var(--primary); object-fit:cover; margin:-60px auto 10px; display:block; background:#000;" src="">
-      <h2 id="m-name" style="text-align:center;"></h2>
-      <p id="m-team" style="text-align:center; font-weight:900; font-size:0.7rem; color:#666; margin-bottom:15px; text-transform: uppercase;"></p>
-      <div class="tabs">
-        <button class="tab-btn active" onclick="switchTabModal('perfil', this)">Perfil</button>
-        <button class="tab-btn" onclick="switchTabModal('part', this)">Músicas</button>
-      </div>
-      <div id="tab-perfil" class="tab-pane active">
-          <p id="m-bio" style="font-size:0.9rem; line-height:1.6; color:#333; white-space: pre-wrap; margin-bottom:15px;"></p>
-          <div style="background:#fff; border:var(--border); padding:15px; border-radius:12px; box-shadow:var(--shadow-sm);">
-              <h4 style="font-size:0.8rem; text-transform:uppercase; margin-bottom:10px;"><i class="fas fa-history"></i> Histórico de Times</h4>
-              <div id="m-history-timeline" class="team-history-timeline"></div>
-          </div>
-      </div>
-      <div id="tab-part" class="tab-pane"><div id="m-part"></div></div>
+  <div id="admin-modal" class="modal-overlay" onclick="if(event.target==this)closeModal('admin-modal')">
+    <div class="modal-content" style="background: #fff;">
+      <button class="close-btn" onclick="closeModal('admin-modal')"><i class="fas fa-times"></i></button>
+      <div id="admin-form-container" class="admin-form"></div>
     </div>
-  </div>
-
-  <div id="disco-modal" class="modal-overlay" onclick="if(event.target==this)closeModal('disco-modal')">
-    <div class="modal-content">
-      <button class="btn-edit-inline" id="btn-edit-disco" title="Editar Disco"><i class="fas fa-pencil-alt"></i></button>
-      <button class="close-btn" onclick="closeModal('disco-modal')">×</button>
-      <div style="padding: 30px 20px 10px; text-align: center;">
-        <img id="dm-cover" src="" style="width:140px; height:140px; border-radius:12px; border:var(--border); object-fit:cover; box-shadow: var(--shadow-sm);">
-        <h2 id="dm-title" class="font-head" style="margin-top:15px; font-size:1.4rem;"></h2>
-        <p id="dm-sub" style="color:var(--primary); font-weight:900; text-transform:uppercase; font-size:0.8rem; -webkit-text-stroke: 0.5px black;"></p>
-      </div>
-      <div id="dm-content" style="padding: 0;"></div>
-    </div>
-  </div>
-
-  <div id="stage-modal" class="modal-overlay" onclick="if(event.target==this)closeModal('stage-modal')">
-    <div class="modal-content">
-      <button class="btn-edit-inline" id="btn-edit-stage" title="Editar Stage"><i class="fas fa-pencil-alt"></i></button>
-      <button class="close-btn" onclick="closeModal('stage-modal')">×</button>
-      <div style="padding: 30px 20px 10px; text-align: center;">
-        <img id="sm-cover" src="" style="width:140px; height:140px; border-radius:12px; border:var(--border); object-fit:cover; box-shadow: var(--shadow-sm);">
-        <h2 id="sm-title" class="font-head" style="margin-top:15px; font-size:1.2rem;"></h2>
-        <p id="sm-sub" style="color:var(--primary); font-weight:900; text-transform:uppercase; font-size:0.7rem; -webkit-text-stroke: 0.5px black;"></p>
-      </div>
-      <div id="sm-content" style="padding: 0;"></div>
-    </div>
-  </div>
-
-  <div id="admin-editor-overlay" class="modal-overlay" onclick="if(event.target==this)closeModal('admin-editor-overlay')">
-      <div class="modal-content">
-          <button class="close-btn" onclick="closeModal('admin-editor-overlay')">×</button>
-          <div style="padding:25px 20px;">
-              <h2 id="admin-title" style="color:var(--admin-color); margin-bottom:15px;">Editor</h2>
-              <input type="hidden" id="admin-id">
-              <input type="hidden" id="admin-table">
-              <div id="admin-form-fields"></div>
-              
-              <div id="admin-member-parts-section" style="display:none; margin-top:20px; padding-top:20px; border-top:2px dashed var(--admin-color);">
-                  <h3 style="color:var(--admin-color); font-size:1rem; margin-bottom:10px;">Histórico de Times</h3>
-                  <div id="admin-team-history-list" style="background: #fafafa; border: 2px dashed #ccc; padding: 10px; border-radius: 8px; max-height: 150px; overflow-y: auto; margin-bottom: 10px;"></div>
-                  <div style="display:flex; gap:5px; margin-bottom:15px;">
-                      <input id="th-date" type="month" class="admin-input" style="flex:1;">
-                      <select id="th-team" class="admin-input" style="flex:2;"></select>
-                      <button class="btn-main" style="background:#333; color:#fff; padding:10px; width:auto; margin:0;" onclick="addTeamHistoryManual()">+</button>
-                  </div>
-
-                  <h3 style="color:var(--admin-color); font-size:1rem; margin-bottom:10px;">Participações (Músicas)</h3>
-                  <div id="admin-member-parts-list" style="background: #fafafa; border: 2px dashed #ccc; padding: 10px; border-radius: 8px; max-height: 150px; overflow-y: auto; margin-bottom: 10px;"></div>
-                  <div style="background:#f9f9f9; padding:10px; border:2px solid #ddd; border-radius:8px; margin-top:10px;">
-                      <input id="mp-single" class="admin-input" placeholder="Single/Álbum" style="margin-bottom:5px;">
-                      <input id="mp-track" class="admin-input" placeholder="Nome da Música" style="margin-bottom:5px;">
-                      <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
-                          <select id="mp-kind" class="admin-input" style="flex:2; margin:0;"><option value="A-side">A-side</option><option value="B-side">B-side</option><option value="Unit">Unit</option></select>
-                          <label style="flex:1; display:flex; align-items:center; gap:5px; font-size:0.8rem; margin:0;"><input type="checkbox" id="mp-iscenter"> Center</label>
-                      </div>
-                      <button class="btn-main" style="background:#333; color:#fff; padding:8px; margin:0;" onclick="addMemberPart()">Adicionar Música</button>
-                  </div>
-              </div>
-
-              <div id="admin-tracks-section" style="display:none; margin-top:20px; padding-top:20px; border-top:2px dashed var(--admin-color);">
-                  <h3 style="color:var(--admin-color); font-size:1rem; margin-bottom:10px;">Músicas e Formações</h3>
-                  <div id="admin-tracks-list"></div>
-                  <button class="btn-main" style="background:#fff; color:var(--admin-color); border-color:var(--admin-color);" onclick="openTrackBuilder(-1)">+ Montar Nova Faixa</button>
-              </div>
-
-              <div style="margin-top: 25px;">
-                  <button class="admin-save-btn" onclick="saveAdminData()"><i class="fas fa-save"></i> SALVAR NO BANCO</button>
-                  <button id="admin-btn-delete" class="admin-delete-btn" onclick="deleteSingleItem()" style="display:none;"><i class="fas fa-trash"></i> EXCLUIR ITEM</button>
-              </div>
-          </div>
-      </div>
-  </div>
-
-  <div id="manage-teams-modal" class="modal-overlay" onclick="if(event.target==this)closeModal('manage-teams-modal')">
-      <div class="modal-content">
-          <button class="close-btn" onclick="closeModal('manage-teams-modal')">×</button>
-          <div style="padding:25px 20px;">
-              <h2 style="color:var(--admin-color); margin-bottom:5px;"><i class="fas fa-users-cog"></i> Configurar</h2>
-              <p style="font-size:0.75rem; color:#666; margin-bottom:15px; font-weight:700;">Corrija nomes errados ou exclua categorias em massa.</p>
-              
-              <h3 style="font-size:1rem; border-bottom:2px solid #eee; padding-bottom:5px;">Times Ativos</h3>
-              <div id="mt-teams-list" style="margin-bottom:20px;"></div>
-
-              <h3 style="font-size:1rem; border-bottom:2px solid #eee; padding-bottom:5px;">Gerações Ativas</h3>
-              <div id="mt-gens-list"></div>
-          </div>
-      </div>
-  </div>
-
-  <div id="shuffle-modal" class="modal-overlay" onclick="if(event.target==this)closeModal('shuffle-modal')">
-      <div class="modal-content">
-          <button class="close-btn" onclick="closeModal('shuffle-modal')">×</button>
-          <div style="padding:25px 20px;">
-              <h2 style="color:var(--admin-color); margin-bottom:5px;"><i class="fas fa-random"></i> Shuffle</h2>
-              <div class="admin-form-group"><label>Data</label><input type="month" id="sh-date" class="admin-input"></div>
-              <div class="admin-form-group"><label>Destino</label><select id="sh-team" class="admin-input" onchange="handleNewOption(this)"></select></div>
-              
-              <h4 style="color:#333; font-size:0.8rem; margin-top:20px; margin-bottom:10px;">SELECIONE OS MEMBROS</h4>
-              <div class="filter-row">
-                  <select id="sh-filter-team" class="admin-input" onchange="renderShuffleList()" style="margin:0;"></select>
-              </div>
-              <input type="text" id="sh-search" class="admin-input" placeholder="Buscar membro..." oninput="renderShuffleList()" style="margin-bottom:10px;">
-              
-              <div id="sh-list" class="member-grid" style="max-height: 250px; overflow-y:auto; padding:10px 5px; border:2px dashed #ddd; border-radius:8px;"></div>
-              
-              <button class="admin-save-btn" onclick="executeShuffle()"><i class="fas fa-check"></i> EXECUTAR SHUFFLE</button>
-          </div>
-      </div>
-  </div>
-
-  <div id="multi-delete-modal" class="modal-overlay" onclick="if(event.target==this)closeModal('multi-delete-modal')">
-      <div class="modal-content">
-          <button class="close-btn" onclick="closeModal('multi-delete-modal')">×</button>
-          <div style="padding:25px 20px;">
-              <h2 style="color:#ff4757; margin-bottom:15px;"><i class="fas fa-trash-alt"></i> Gerenciar (Excluir)</h2>
-              <select id="md-table" class="admin-input" onchange="loadMultiDeleteList()" style="margin-bottom:15px; border-color:#000;">
-                  <option value="Noticias">Notícias</option><option value="Discografia">Discos</option><option value="Membros">Membros</option><option value="Stages">Stages</option><option value="Banners">Banners (Hero)</option>
-              </select>
-
-              <div id="md-filters" style="display:none; flex-direction:column; gap:8px; margin-bottom:10px;">
-                  <select id="md-filter-team" class="admin-input" onchange="loadMultiDeleteList()" style="margin:0;"></select>
-                  <input type="text" id="md-search" class="admin-input" placeholder="Buscar membro..." oninput="loadMultiDeleteList()" style="margin:0;">
-              </div>
-
-              <div id="md-list" style="border: 2px solid #ddd; border-radius:8px; max-height: 350px; overflow-y:auto; background:#fafafa;"></div>
-              <button class="admin-delete-btn" onclick="executeMultiDelete()"><i class="fas fa-exclamation-triangle"></i> EXCLUIR SELECIONADOS</button>
-          </div>
-      </div>
-  </div>
-
-  <div id="admin-track-modal" class="modal-overlay" style="z-index: 10000;">
-      <div class="modal-content">
-          <button class="close-btn" onclick="closeModal('admin-track-modal')">×</button>
-          <div style="padding:25px 20px;">
-              <h2 style="color:var(--admin-color); margin-bottom:15px;">Montar Faixa</h2>
-              <div class="admin-form-group"><label>Nome da Música</label><input id="tb-name" class="admin-input" placeholder="Ex: Aitakatta"></div>
-              <div class="admin-form-group"><label>Tipo</label><select id="tb-kind" class="admin-input"><option value="A-side">A-side</option><option value="B-side">B-side</option><option value="Unit">Unit</option></select></div>
-              <div style="margin-top:20px; background:#fff; border:2px dashed var(--admin-color); padding:15px; border-radius:12px;">
-                  <h4 style="color:var(--admin-color); font-size:0.8rem; margin-bottom:10px;">SELECIONADOS (Toque para Center)</h4>
-                  <div id="tb-selected-grid" class="member-grid"></div>
-              </div>
-              <div style="margin-top:20px;">
-                  <h4 style="color:#333; font-size:0.8rem; margin-bottom:10px;">ADICIONAR MEMBROS</h4>
-                  <input id="tb-search" class="admin-input" placeholder="Buscar pelo nome..." oninput="renderTrackBuilder()" style="margin-bottom:15px;">
-                  <div id="tb-available-grid" class="member-grid" style="max-height: 250px; overflow-y:auto; padding-bottom:20px;"></div>
-              </div>
-              <button class="admin-save-btn" onclick="saveTrackToBuffer()">Confirmar Faixa</button>
-          </div>
-      </div>
   </div>
 
   <div class="bottom-nav">
-    <button class="nav-item active" onclick="switchView('view-home', this)"><i class="fas fa-home"></i>Início</button>
+    <button class="nav-item active black-text" onclick="switchView('view-home', this)"><i class="fas fa-skull"></i>Início</button>
     <button class="nav-item" onclick="switchView('view-disco', this)"><i class="fas fa-compact-disc"></i>Discos</button>
     <button class="nav-item" onclick="switchView('view-members', this)"><i class="fas fa-users"></i>Membros</button>
-    <button class="nav-item" onclick="switchView('view-stages', this)"><i class="fas fa-theater-masks"></i>Stage</button>
+    <button class="nav-item" onclick="switchView('view-stages', this)"><i class="fas fa-microphone-alt"></i>Shows</button>
   </div>
 
   <script>
-    /* COMPATIBILIDADE GARANTIDA DA FUNÇÃO DE IMAGENS E MODAIS */
-    function resolveImage(f) { if(!f) return "https://placehold.co/300?text=?"; return (typeof f === "string" ? f : f.publicUrl).replace(/[\[\]"]/g, ""); }
-    function switchTabModal(t, el) { const p = el.parentElement; p.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active")); el.classList.add("active"); const content = p.nextElementSibling.parentElement; content.querySelectorAll(".tab-pane").forEach(tp => tp.classList.remove("active")); content.querySelector("#tab-"+t).classList.add("active"); }
+    // --- SUPABASE SETUP ---
+    var supaUrl = 'https://cotzdfxjazojpwpmkoss.supabase.co';
+    var supaKey = 'sb_publishable_vF3JVZw3vDrfLM5M6xtw_w_0VJh7uwm';
+    var db = window.supabase.createClient(supaUrl, supaKey);
 
-    const SUPABASE_URL = "https://iooyygtaosshxygnhlco.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlvb3l5Z3Rhb3NzaHh5Z25obGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkwMDEyNTUsImV4cCI6MjA4NDU3NzI1NX0.gfcVtNgn3g1gnFVrtaIqzkWxajYiV_KbtycYsE9OZ0Y";
-    const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // --- GLOBALS & MOCK DATA (FALLBACK) ---
+    var pImg = (name, unit) => {
+        let hexCol = 'FF69B4'; 
+        if (unit === 'Melancholy') hexCol = '8A2BE2'; 
+        else if (unit === 'Love') hexCol = 'E60000'; 
+        let cleanName = name.replace(/<[^>]*>?/gm, '').trim().substring(0,3).toUpperCase();
+        return `https://ui-avatars.com/api/?name=${encodeURIComponent(cleanName)}&background=${hexCol}&color=111&size=200&font-size=0.33&bold=true`;
+    };
 
-    let loadedMembers = [], loadedDiscos = [], loadedStages = [], loadedNews = [], loadedBanner = null;
-    let currentFilter = "gen";
+    var loadedMembers = [{ id:1, Nome: "Yua", Geracao: "1ª Geração", Foto: pImg("YUA", "Love"), SubUnit: "Love", Status: "Ativa", Perfil: "Mock Member", Historico_Times: "[]", Participacoes: "[]" }];
+    var loadedDiscos = [ { id:1, Titulo: "Bleeding Love", Tipo: "1st Single", Capa: pImg("BLD", "All"), Tracklist: "[]" } ];
+    var loadedStages = [];
+    var loadedNews = [ { id:1, Data: "2024-10-31", Categoria: "SISTEMA", Titulo: "Aguardando Banco de Dados" } ];
+    var loadedBanner = { url_midia: 'https://i.ibb.co/bM4DYRtR/Chat-GPT-Image-8-de-abr-de-2026-16-50-31.png', titulo: 'BEM-VINDO ADMIN', subtitulo: 'Configure seu banco', tag: 'ADMIN' };
+    
+    var currentUnitFilter = 'All';
+    var isAdminMode = false;
+    var editType = '';
+    var editIndex = -1;
+    var tempHist = [], tempPart = [], tempTrack = [];
 
-    // ESTADOS DO ADMIN
-    let adminTracksBuffer = [], tbSelectedMembers = [], tbCenterId = null, editTrackIndex = -1;
-    let memberPartsBuffer = [], memberTeamsHistoryBuffer = [];
-    let shuffleSelectedIds = new Set(), deleteSelectedIds = new Set();
-
-    function showLoading(show, text = "Processando...") { 
-        document.getElementById("loading-text").innerText = text;
-        document.getElementById("loading-overlay").style.display = show ? "flex" : "none"; 
-    }
-    function closeModal(id) { document.getElementById(id).classList.remove("active"); }
-    function val(id) { return document.getElementById(id).value; }
-
+    // --- INIT ---
     async function init() {
-      showLoading(true, "Carregando Dados...");
-      try {
-        const { data: news } = await _sb.from('Noticias').select('*').order('Data', { ascending: false });
-        const { data: discos } = await _sb.from('Discografia').select('*');
-        const { data: members } = await _sb.from('Membros').select('*').order('Nome', { ascending: true });
-        try { const { data: banners } = await _sb.from('Banners').select('*').limit(1); if(banners && banners.length > 0) loadedBanner = banners[0]; } catch(e) {}
-
-        loadedMembers = members || [];
-        loadedDiscos = (discos || []).sort((a,b) => (b.id || 0) - (a.id || 0));
-        loadedNews = news || [];
-        
-        await loadStages(); 
-        renderDynamicHero(); renderNews(loadedNews); renderDisco(loadedDiscos); renderMembers();
-      } catch (e) { console.error(e); alert("Erro ao carregar dados!"); }
-      showLoading(false);
-    }
-
-    async function loadStages() {
-        try { const { data, error } = await _sb.from("Stages").select('*').order('id', {ascending: false}); if(error) throw error; loadedStages = data || []; renderStagesList(); } catch(e) { console.error(e); }
-    }
-
-    function switchView(id, el) { document.querySelectorAll(".view-section").forEach(v => v.classList.remove("active")); document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active")); document.getElementById(id).classList.add("active"); el.classList.add("active"); window.scrollTo(0,0); }
-
-    /* --- RENDERIZAÇÃO DO HERO E VIEWS --- */
-    function renderDynamicHero() {
-        const wrapper = document.getElementById("hero-media-wrapper"), container = document.getElementById("hero-container");
-        let b = loadedBanner; if(!b && loadedDiscos.length > 0) b = { tipo: 'imagem', url_midia: loadedDiscos[0].Capa, titulo: loadedDiscos[0].Titulo, subtitulo: 'ÚLTIMO LANÇAMENTO', link_destino: '' };
-        if(!b) return;
-        document.getElementById("hero-title").innerText = b.titulo || '';
-        if(b.tipo === 'video' || (b.url_midia && b.url_midia.toLowerCase().endsWith('.mp4'))) { wrapper.innerHTML = `<video class="hero-media" src="${b.url_midia}" autoplay loop muted playsinline></video>`; } 
-        else { wrapper.innerHTML = `<img class="hero-media" src="${b.url_midia}" onerror="this.style.display='none'">`; }
-        container.onclick = (e) => { if(e.target.closest('.btn-edit-inline')) return; if(b.link_destino) window.open(b.link_destino, '_blank'); };
-    }
-
-    function renderNews(list) { document.getElementById("news-list").innerHTML = list.slice(0,10).map(n => { const d = n.Data.split("-"); return `<div class="card" style="display:flex; align-items:center; gap:15px; position:relative;"><button class="btn-edit-news" onclick="openAdminEditor('Noticias', ${n.id}, ${JSON.stringify(n).replace(/"/g, '&quot;')})">EDITAR</button><div style="text-align:center; min-width:50px; border-right:2px solid #eee; padding-right:15px;"><b style="font-size:1.5rem; color:var(--primary); -webkit-text-stroke:1px #000;">${d[2]}</b><br><span style="font-size:0.7rem; font-weight:900;">${d[1]}/${d[0]}</span></div><div style="padding-right: 40px;"><span class="tag" style="font-size:0.5rem; padding:2px 5px;">${n.Categoria}</span><h4 style="font-size:0.9rem;">${n.Titulo}</h4></div></div>`; }).join(''); }
-    function renderDisco(list) { document.getElementById("disco-grid").innerHTML = list.map((d, idx) => `<div class="item-card" onclick="openDiscoModal(${idx})"><img src="${resolveImage(d.Capa)}"><div class="item-name">${d.Titulo}</div></div>`).join(''); }
-
-    function openDiscoModal(idx) {
-      const d = loadedDiscos[idx]; document.getElementById("dm-cover").src = resolveImage(d.Capa); document.getElementById("dm-title").innerText = d.Titulo;
-      document.getElementById("btn-edit-disco").onclick = () => { closeModal('disco-modal'); openAdminEditor('Discografia', d.id, d); };
-      const box = document.getElementById("dm-content"); box.innerHTML = ""; const temp = document.createElement("div"); temp.innerHTML = d.Tracklist || ""; const jsonEl = temp.querySelector("#ctl48-formation-data"); let fJSON = null; if (jsonEl) { try { fJSON = JSON.parse(jsonEl.textContent.trim()); } catch(e){} }
-      if (Array.isArray(fJSON)) { box.innerHTML = `<div class="tabs"><button class="tab-btn active" data-target="t">Tracklist</button><button class="tab-btn" data-target="f">Formação</button></div><div id="pane-t" class="modal-section active" style="padding: 0 20px 40px;">${renderTracklistFromJSON(fJSON)}</div><div id="pane-f" class="modal-section" style="padding: 0 20px 40px;">${renderFormationFromJSON(fJSON)}</div>`; } 
-      else { temp.querySelectorAll(".modal-nav, .tabs, .tab-btn").forEach(e => e.remove()); const tracklistEl = temp.querySelector(".tracklist"); const tHTML = tracklistEl ? tracklistEl.outerHTML : "<p style='text-align:center;padding:20px;color:#999'>Sem tracklist.</p>"; if(tracklistEl) tracklistEl.remove(); const fHTML = temp.innerHTML.trim() || "<p style='text-align:center;padding:20px;color:#999'>Sem formação.</p>"; box.innerHTML = `<div class="tabs"><button class="tab-btn active" data-target="t">Tracklist</button><button class="tab-btn" data-target="f">Formação</button></div><div id="pane-t" class="modal-section active" style="padding: 0 20px 40px;">${tHTML}</div><div id="pane-f" class="modal-section" style="padding: 0 20px 40px;">${fHTML}</div>`; }
-      initTabsAndAccordion(box); document.getElementById("disco-modal").classList.add("active");
-    }
-
-    function initTabsAndAccordion(box) {
-      box.querySelectorAll(".tab-btn").forEach(btn => { btn.onclick = () => { box.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active")); box.querySelectorAll(".modal-section").forEach(s => s.classList.remove("active")); btn.classList.add("active"); box.querySelector(`#pane-${btn.dataset.target}`).classList.add("active"); }; });
-      box.querySelectorAll(".formation-group").forEach(group => { let header = group.querySelector(".formation-header"); if(!header) { const title = group.querySelector(".formation-title"); if(title) { const txt = title.innerText; header = document.createElement("div"); header.className="formation-header"; header.innerHTML = `<div class="formation-title"><span class="formation-idol-icon"><i class="fas fa-music"></i></span>${txt}</div><i class="fas fa-chevron-down formation-arrow"></i>`; group.insertBefore(header, group.firstChild); title.remove(); } } if(header) header.onclick = () => group.classList.toggle("open"); });
-    }
-
-    function renderTracklistFromJSON(list) { if(!list || !list.length) return "<p>Vazio.</p>"; return `<ul class="tracklist">${list.map(item => { let cls='is-bside'; const k = (item.kind||"").toLowerCase(); if(k.includes('a-side')||k.includes('aside')) cls='is-aside'; else if(k.includes('unit')) cls='is-unit'; return `<li><span>${item.name}</span><span class="label-brat ${cls}">${item.kind}</span></li>`; }).join('')}</ul>`; }
-    function renderFormationFromJSON(list) { if(!list || !list.length) return "<p>Vazio.</p>"; return list.map(g => `<div class="formation-group"><div class="formation-header"><div class="formation-title"><span class="formation-idol-icon"><i class="fas fa-music"></i></span>${g.name}</div><i class="fas fa-chevron-down formation-arrow"></i></div><div class="formation-content"><div class="member-grid">${(g.members||[]).map(m => { const real = loadedMembers.find(x => x.Nome === m.name); const url = real ? resolveImage(real.Foto) : `https://placehold.co/80x80/eee/333?text=${m.name.charAt(0)}`; return `<div class="member-card-static ${m.isCenter?'is-center':''}"><img src="${url}"><div class="member-info"><h3>${m.name}</h3></div></div>`; }).join('')}</div></div></div>`).join(''); }
-
-    function renderStagesList() { const div = document.getElementById('stages-list'); if(!loadedStages.length) { div.innerHTML = '<div style="text-align:center; padding:20px; color:#999;">Nenhum stage cadastrado.</div>'; return; } div.innerHTML = loadedStages.map(s => `<div class="stage-card" onclick="openStageModal(${s.id})"><img src="${resolveImage(s.Capa)}" class="stage-cover" onerror="this.src='https://placehold.co/80'"><div class="stage-info"><div class="stage-title">${s.Titulo}</div><div class="stage-sub">${s.Subtitulo || ''}</div><span class="stage-badge">${s.Status || 'Em Cartaz'}</span></div></div>`).join(''); }
-
-    async function openStageModal(stageId) {
-        const stage = loadedStages.find(s => s.id == stageId); if(!stage) return;
-        document.getElementById("sm-title").innerText = stage.Titulo; document.getElementById("sm-sub").innerText = stage.Subtitulo || ''; document.getElementById("sm-cover").src = resolveImage(stage.Capa);
-        document.getElementById("btn-edit-stage").onclick = () => { closeModal('stage-modal'); openAdminEditor('Stages', stage.id, stage); };
-        const content = document.getElementById("sm-content"); content.innerHTML = `<div class="tabs"><button class="tab-btn active" data-target="s-setlist">Setlist</button><button class="tab-btn" data-target="s-cast">Elenco</button></div><div id="pane-s-setlist" class="modal-section active" style="padding:20px;">${renderSetlist(stage.Setlist)}</div><div id="pane-s-cast" class="modal-section" style="padding:20px;"><div style="text-align:center; color:#999;">Carregando elenco...</div></div>`;
-        document.getElementById("stage-modal").classList.add("active");
-        try { const { data: casts, error } = await _sb.from("Stagecasts").select('*').eq('stage_id', stageId); if(!error) renderStageCasts(casts || []); } catch(e) {} initTabsAndAccordion(content); 
-    }
-
-    function renderSetlist(text) { if(!text) return '<p style="color:#999; text-align:center;">Setlist indisponível.</p>'; return '<div class="setlist-wrap">' + text.split('\n').map(line => { const l = line.trim(); if(!l) return ''; if(l.match(/^M\d+/)) return `<div class="sl-row"><span class="sl-music">${l}</span></div>`; if(l.match(/^MC\d+/)) return `<div class="sl-row"><span class="sl-mc">${l}</span></div>`; if(l.toLowerCase().includes('encore')) return `<div class="sl-header">${l}</div>`; return `<div class="sl-row">${l}</div>`; }).join('') + '</div>'; }
-    function renderStageCasts(casts) { const div = document.getElementById('pane-s-cast'); if(!casts.length) { div.innerHTML = '<p style="color:#999; text-align:center;">Nenhum elenco.</p>'; return; } div.innerHTML = casts.map(cast => { let members = cast.Membros; try { if (typeof members === 'string') { members = JSON.parse(members); if (typeof members === 'string') members = JSON.parse(members); } } catch (e) { members = []; } if (!Array.isArray(members)) members = [members]; const grid = members.map(m => { const real = loadedMembers.find(x => x.Nome === m.name); const photo = real ? resolveImage(real.Foto) : `https://placehold.co/80`; return `<div class="member-card-static"><img src="${photo}" style="width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid #ccc;"><div class="member-info"><h3 style="font-size:0.6rem;">${m.name}</h3></div></div>`; }).join(''); return `<div class="formation-group open"><div class="formation-header" style="background:#000; color:#fff;"><div class="formation-title" style="font-size:0.8rem;">${cast.Nome}</div></div><div class="formation-content" style="padding:15px; display:block;"><div class="member-grid" style="grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));">${grid}</div></div></div>`; }).join(''); }
-
-    /* =========================================================
-       GESTOR DE TIMES E GERAÇÕES
-       ========================================================= */
-    function getTeamsOptions(selected) {
-        const order = ["Team Z", "Team AII", "Team P", "Team Kenkyuusei/SEEDs"];
-        const existing = loadedMembers.map(m => m.Time).filter(Boolean);
-        const allTeams = [...new Set([...order, ...existing])];
-        let html = '<option value="">Sem Time...</option>';
-        allTeams.forEach(t => { html += `<option value="${t}" ${t === selected ? 'selected' : ''}>${t}</option>`; });
-        html += `<option value="NEW" style="font-weight:900; color:#e91e63;">+ CRIAR NOVO TIME...</option>`;
-        return html;
-    }
-
-    function getGensOptions(selected) {
-        const existingGens = loadedMembers.map(m => m.Geracao).filter(Boolean);
-        let allGens = [...new Set(existingGens)].sort();
-        if(allGens.length === 0) allGens = ["1ª Geração", "2ª Geração", "3ª Geração", "4ª Geração", "5ª Geração", "6ª Geração", "7ª Geração"];
-        let html = '<option value="">Sem Geração...</option>';
-        allGens.forEach(g => { html += `<option value="${g}" ${g === selected ? 'selected' : ''}>${g}</option>`; });
-        html += `<option value="NEW" style="font-weight:900; color:#e91e63;">+ CRIAR NOVA GERAÇÃO...</option>`;
-        return html;
-    }
-
-    function handleNewOption(sel) {
-        if(sel.value === 'NEW') {
-            const val = prompt("Digite o nome da nova categoria:");
-            if(val && val.trim() !== '') {
-                const opt = document.createElement('option'); opt.value = val.trim(); opt.innerText = val.trim();
-                sel.insertBefore(opt, sel.lastElementChild); sel.value = val.trim();
-            } else { sel.selectedIndex = 0; }
-        }
-    }
-
-    function openManageTeams() { renderManageTeams(); document.getElementById('manage-teams-modal').classList.add('active'); }
-    
-    function renderManageTeams() {
-        const teams = [...new Set(loadedMembers.map(m => m.Time).filter(Boolean))]; 
-        const gens = [...new Set(loadedMembers.map(m => m.Geracao).filter(Boolean))];
-        
-        document.getElementById('mt-teams-list').innerHTML = teams.map(t => {
-            const safeT = t.replace(/'/g, "\\'"); 
-            return `<div class="md-item"><span>${t}</span> <button class="btn-main" style="padding:5px; width:auto; margin:0;" onclick="renameAttribute('Time', '${safeT}')"><i class="fas fa-edit"></i></button> <button class="btn-main" style="padding:5px; width:auto; margin:0; background:#ff4757; border-color:#000;" onclick="deleteAttribute('Time', '${safeT}')"><i class="fas fa-trash"></i></button></div>`;
-        }).join('') || '<div style="color:#999; font-size:0.8rem; padding:10px 0;">Nenhum time ativo.</div>';
-        
-        document.getElementById('mt-gens-list').innerHTML = gens.map(g => {
-            const safeG = g.replace(/'/g, "\\'");
-            return `<div class="md-item"><span>${g}</span> <button class="btn-main" style="padding:5px; width:auto; margin:0;" onclick="renameAttribute('Geracao', '${safeG}')"><i class="fas fa-edit"></i></button> <button class="btn-main" style="padding:5px; width:auto; margin:0; background:#ff4757; border-color:#000;" onclick="deleteAttribute('Geracao', '${safeG}')"><i class="fas fa-trash"></i></button></div>`;
-        }).join('') || '<div style="color:#999; font-size:0.8rem; padding:10px 0;">Nenhuma geração ativa.</div>';
-    }
-
-    async function renameAttribute(type, oldName) {
-        const newName = prompt(`Renomear "${oldName}" para:`, oldName); 
-        if(!newName || newName.trim() === oldName || newName.trim() === "") return;
-        
-        showLoading(true, "Renomeando..."); 
-        try { 
-            const ids = loadedMembers.filter(m => m[type] === oldName).map(m => m.id);
-            if(ids.length > 0) {
-                const updatePromises = ids.map(id => _sb.from('Membros').update({ [type]: newName.trim() }).eq('id', id));
-                await Promise.all(updatePromises);
-            }
-            alert("Renomeado com sucesso!");
-            await init(); 
-            renderManageTeams(); 
-        } catch(e) { alert("Erro ao renomear: " + e.message); } 
-        showLoading(false);
-    }
-
-    async function deleteAttribute(type, name) {
-        if(!confirm(`Excluir "${name}"? Os membros desta categoria ficarão sem registro.`)) return;
-        showLoading(true, "Excluindo categoria..."); 
-        try { 
-            const ids = loadedMembers.filter(m => m[type] === name).map(m => m.id);
-            if(ids.length > 0) {
-                const updatePromises = ids.map(id => _sb.from('Membros').update({ [type]: '' }).eq('id', id));
-                await Promise.all(updatePromises);
-            }
-            alert("Categoria excluída com sucesso!");
-            await init(); 
-            renderManageTeams(); 
-        } catch(e) { alert("Erro ao excluir: " + e.message); } 
-        showLoading(false);
-    }
-
-    /* FILTROS DE MEMBROS E EXIBIÇÃO NA HOME */
-    function setMemberFilter(t, btn) { currentFilter = t; document.querySelectorAll(".btn-filter").forEach(b => b.classList.remove("active")); btn.classList.add("active"); renderMembers(); }
-    
-    function renderMembers() { 
-      const container = document.getElementById("members-container"); const scroll = document.getElementById("scroll-buttons"); container.innerHTML = ""; scroll.innerHTML = ""; const groups = {}; 
-      loadedMembers.forEach(m => { if(['graduada','demitida'].includes(m.Status?.toLowerCase())) return; const key = currentFilter === 'team' ? (m.Time || "Outros") : (m.Geracao || "Outros"); if(!groups[key]) groups[key] = []; groups[key].push(m); }); 
-      
-      const orderMap = {"Team Z": 1, "Team AII": 2, "Team P": 3, "Team Kenkyuusei/SEEDs": 4};
-      const keys = Object.keys(groups).sort((a, b) => { 
-          if (currentFilter === 'team') { const wA = orderMap[a] || 99; const wB = orderMap[b] || 99; if (wA !== wB) return wA - wB; } 
-          return a.localeCompare(b); 
-      });
-
-      keys.forEach((key, idx) => { const id = `g-${idx}`; scroll.innerHTML += `<button class="btn-pill" onclick="document.getElementById('${id}').scrollIntoView({behavior:'smooth', block:'center'})">${key}</button>`; container.innerHTML += `<div id="${id}"><h4 class="section-title" style="margin-top:20px;">${key}</h4><div class="grid-3">${groups[key].map(m => `<div class="item-card" onclick='openMemberModal(${JSON.stringify(m).replace(/'/g, "&apos;")})'><img src="${resolveImage(m.Foto)}"><div class="item-name">${m.Nome}</div></div>`).join('')}</div></div>`; }); 
-    }
-
-    function openMemberModal(m) {
-      document.getElementById("m-name").innerText = m.Nome; document.getElementById("m-team").innerText = `${m.Time} • ${m.Geracao}`; document.getElementById("m-cover").src = resolveImage(m.Foto); document.getElementById("m-bio").innerText = m.Perfil || "Sem bio.";
-      document.getElementById("btn-edit-member").onclick = () => { closeModal('member-modal'); openAdminEditor('Membros', m.id, m); };
-
-      let th = []; try { th = JSON.parse(m.Historico_Times || "[]"); } catch(e){}
-      const histEl = document.getElementById("m-history-timeline");
-      if(th.length === 0) histEl.innerHTML = `<div style="color:#999; font-size:0.7rem;">Nenhum registro de transferência.</div>`;
-      else histEl.innerHTML = th.map(h => `<div class="team-history-item"><span class="team-history-date">${h.data}</span><br>${h.para}</div>`).join('');
-
-      let parts = typeof m.Participacoes === "string" ? JSON.parse(m.Participacoes || "[]") : m.Participacoes; if (!Array.isArray(parts)) parts = []; const discoMap = {}; loadedDiscos.forEach(d => { discoMap[d.Titulo] = d.id || 0; }); parts.sort((a, b) => { const titleA = typeof a === 'string' ? a.split(':')[0] : (a.single || ''); const titleB = typeof b === 'string' ? b.split(':')[0] : (b.single || ''); return (discoMap[titleA] || 99999) - (discoMap[titleB] || 99999); });
-      const partsHTML = parts.map(p => { if (typeof p === 'string') return `<div class="part-card"><div class="part-row" style="font-weight:700;">${p}</div></div>`; const rawTracks = p.tracks || []; const tracks = Array.isArray(rawTracks) ? rawTracks : [rawTracks]; const rows = tracks.map(t => { if (!t) return ""; const labels = t.labels || []; const badges = Array.isArray(labels) ? labels.map(l => { const slug = String(l).toLowerCase(); let cls = ''; let icon = 'fa-tag'; if(slug.includes('a-side') || slug==='aside') { cls='is-aside'; icon='fa-star'; } else if(slug.includes('b-side') || slug==='bside') { cls='is-bside'; icon='fa-compact-disc'; } else if(slug.includes('center')) { cls='is-center'; icon='fa-crown'; } else if(slug.includes('unit')) { cls='is-unit'; icon='fa-users'; } return `<span class="label-brat ${cls}"><i class="fas ${icon}"></i> ${l}</span>`; }).join('') : ''; return `<div class="part-row"><span>${t.title || 'Música'}</span><div>${badges}</div></div>`; }).join(''); return `<div class="part-card"><div class="part-header">${p.single || 'Single'}</div>${rows}</div>`; }).join('');
-      document.getElementById("m-part").innerHTML = partsHTML || '<p style="text-align:center; color:#999; padding:20px;">Nenhuma música registrada.</p>'; switchTabModal('perfil', document.querySelector('#member-modal .tab-btn')); document.getElementById("member-modal").classList.add("active");
-    }
-
-    /* =========================================================
-       SISTEMA DE ADMIN: EDIÇÃO E CRIAÇÃO
-       ========================================================= */
-    function openAdminEditor(table, id, dataObj) {
-        document.getElementById("admin-table").value = table; document.getElementById("admin-id").value = id || ''; document.getElementById("admin-title").innerText = id ? `Editar ${table}` : `Novo ${table}`;
-        document.getElementById("admin-tracks-section").style.display = "none"; document.getElementById("admin-member-parts-section").style.display = "none"; document.getElementById("admin-btn-delete").style.display = id ? "block" : "none";
-        adminTracksBuffer = []; memberPartsBuffer = []; memberTeamsHistoryBuffer = [];
-        const box = document.getElementById("admin-form-fields"); box.innerHTML = '';
-
-        if(table === 'Banners') {
-            const d = dataObj || {titulo:'', subtitulo:'', tipo:'imagem', url_midia:'', link_destino:''};
-            box.innerHTML = `<div class="admin-form-group"><label>Título</label><input id="a-titulo" class="admin-input" value="${d.titulo||''}"></div><div class="admin-form-group"><label>Subtítulo</label><input id="a-sub" class="admin-input" value="${d.subtitulo||''}"></div><div class="admin-form-group"><label>Tipo</label><select id="a-tipo" class="admin-input"><option value="imagem" ${d.tipo === 'imagem' ? 'selected' : ''}>Imagem (JPG, PNG)</option><option value="video" ${d.tipo === 'video' ? 'selected' : ''}>Vídeo (MP4)</option></select></div><div class="admin-form-group"><label>URL da Mídia</label><input id="a-url" class="admin-input" value="${d.url_midia||''}"></div><div class="admin-form-group"><label>Link de Destino</label><input id="a-link" class="admin-input" placeholder="https://..." value="${d.link_destino||''}"></div>`;
-        }
-        else if(table === 'Noticias') {
-            const d = dataObj || {Titulo:'', Data:'', Categoria:'Release', Texto:''};
-            box.innerHTML = `<div class="admin-form-group"><label>Título</label><input id="a-titulo" class="admin-input" value="${d.Titulo}"></div><div class="admin-form-group"><label>Categoria</label><input id="a-cat" class="admin-input" value="${d.Categoria}"></div><div class="admin-form-group"><label>Data</label><input id="a-data" type="date" class="admin-input" value="${d.Data}"></div><div class="admin-form-group"><label>Texto</label><textarea id="a-texto" class="admin-input" rows="4">${d.Texto||''}</textarea></div>`;
-        } else if(table === 'Membros') {
-            const d = dataObj || {Nome:'', Time:'', Geracao:'', Status:'Ativa', Foto:'', Perfil:'', Participacoes:'', Historico_Times:''};
-            box.innerHTML = `
-                <div class="admin-form-group"><label>Nome</label><input id="a-nome" class="admin-input" value="${d.Nome}"></div>
-                <div class="admin-form-group"><label>Time</label><select id="a-time" class="admin-input" onchange="handleNewOption(this)">${getTeamsOptions(d.Time)}</select></div>
-                <div class="admin-form-group"><label>Geração</label><select id="a-geracao" class="admin-input" onchange="handleNewOption(this)">${getGensOptions(d.Geracao)}</select></div>
-                <div class="admin-form-group"><label>Status</label><select id="a-status" class="admin-input"><option value="Ativa" ${d.Status==='Ativa'?'selected':''}>Ativa</option><option value="Graduada" ${d.Status==='Graduada'?'selected':''}>Graduada</option><option value="Demitida" ${d.Status==='Demitida'?'selected':''}>Demitida</option></select></div><div class="admin-form-group"><label>URL Foto</label><input id="a-foto" class="admin-input" value="${d.Foto||''}"></div><div class="admin-form-group"><label>Bio</label><textarea id="a-perfil" class="admin-input" rows="4">${d.Perfil||''}</textarea></div>`;
-            document.getElementById("admin-member-parts-section").style.display = "block";
-            try { memberPartsBuffer = typeof d.Participacoes === 'string' ? JSON.parse(d.Participacoes || "[]") : (d.Participacoes || []); } catch(e) { memberPartsBuffer = []; } if(!Array.isArray(memberPartsBuffer)) memberPartsBuffer = [];
-            try { memberTeamsHistoryBuffer = typeof d.Historico_Times === 'string' ? JSON.parse(d.Historico_Times || "[]") : (d.Historico_Times || []); } catch(e) { memberTeamsHistoryBuffer = []; } if(!Array.isArray(memberTeamsHistoryBuffer)) memberTeamsHistoryBuffer = [];
-            document.getElementById('th-team').innerHTML = getTeamsOptions().replace('<option value="NEW" style="font-weight:900; color:#e91e63;">+ CRIAR NOVO TIME...</option>', '');
-            renderMemberPartsAdmin(); renderTeamHistoryAdmin();
-        } else if(table === 'Discografia') {
-            const d = dataObj || {Titulo:'', Tipo:'Single', Data:'', Center:'', Capa:''};
-            box.innerHTML = `<div class="admin-form-group"><label>Título</label><input id="a-titulo" class="admin-input" value="${d.Titulo}"></div><div class="admin-form-group"><label>Tipo</label><input id="a-tipo" class="admin-input" value="${d.Tipo||''}"></div><div class="admin-form-group"><label>Data</label><input id="a-data" type="date" class="admin-input" value="${d.Data||''}"></div><div class="admin-form-group"><label>URL da Capa</label><input id="a-capa" class="admin-input" value="${d.Capa||''}"></div>`;
-            document.getElementById("admin-tracks-section").style.display = "block";
-            if(d.Tracklist) { const temp = document.createElement("div"); temp.innerHTML = d.Tracklist; const jsonEl = temp.querySelector("#ctl48-formation-data"); if(jsonEl) adminTracksBuffer = JSON.parse(jsonEl.textContent.trim()); }
-            renderAdminTracksList();
-        } else if(table === 'Stages') {
-            const d = dataObj || {Titulo:'', Subtitulo:'', Estreia:'', Status:'Em Cartaz', Capa:'', Setlist:''};
-            box.innerHTML = `<div class="admin-form-group"><label>Título</label><input id="a-titulo" class="admin-input" value="${d.Titulo}"></div><div class="admin-form-group"><label>Subtítulo</label><input id="a-sub" class="admin-input" value="${d.Subtitulo||''}"></div><div class="admin-form-group"><label>Status</label><input id="a-status" class="admin-input" value="${d.Status||'Em Cartaz'}"></div><div class="admin-form-group"><label>URL da Capa</label><input id="a-capa" class="admin-input" value="${d.Capa||''}"></div><div class="admin-form-group"><label>Setlist</label><textarea id="a-setlist" class="admin-input" rows="6">${d.Setlist||''}</textarea></div>`;
-        }
-        document.getElementById('admin-editor-overlay').classList.add('active');
-    }
-
-    async function saveAdminData() {
-        showLoading(true, "Salvando dados...");
-        const table = document.getElementById("admin-table").value; const id = document.getElementById("admin-id").value; let payload = {};
-        if(table === 'Banners') { payload = { titulo: val('a-titulo'), subtitulo: val('a-sub'), tipo: val('a-tipo'), url_midia: val('a-url'), link_destino: val('a-link') }; }
-        else if(table === 'Noticias') { payload = { Titulo: val('a-titulo'), Categoria: val('a-cat'), Data: val('a-data'), Texto: val('a-texto') }; }
-        else if(table === 'Membros') { payload = { Nome: val('a-nome'), Time: val('a-time'), Geracao: val('a-geracao'), Status: val('a-status'), Foto: val('a-foto'), Perfil: val('a-perfil'), Participacoes: JSON.stringify(memberPartsBuffer), Historico_Times: JSON.stringify(memberTeamsHistoryBuffer) }; }
-        else if(table === 'Discografia') { const fC = (adminTracksBuffer[0] && adminTracksBuffer[0].members) ? adminTracksBuffer[0].members.find(m => m.isCenter) : null; payload = { Titulo: val('a-titulo'), Tipo: val('a-tipo'), Data: val('a-data'), Center: fC ? fC.name : '', Capa: val('a-capa'), Tracklist: buildDiscoHTML() }; }
-        else if(table === 'Stages') { payload = { Titulo: val('a-titulo'), Subtitulo: val('a-sub'), Status: val('a-status'), Capa: val('a-capa'), Setlist: val('a-setlist') }; }
-        try { if(id) { await _sb.from(table).update(payload).eq('id', id); } else { await _sb.from(table).insert([payload]); } closeModal('admin-editor-overlay'); await init(); alert("Salvo com sucesso!"); } catch(e) { alert("Erro ao salvar: " + e.message); }
-        showLoading(false);
-    }
-
-    async function deleteSingleItem() {
-        const table = document.getElementById("admin-table").value; const id = document.getElementById("admin-id").value;
-        if(!id || !confirm(`Tem certeza que deseja excluir permanentemente este item de ${table}?`)) return;
-        showLoading(true, "Excluindo item..."); try { await _sb.from(table).delete().eq('id', id); closeModal('admin-editor-overlay'); await init(); } catch(e) { alert("Erro ao deletar."); } showLoading(false);
-    }
-
-    function renderTeamHistoryAdmin() {
-        const list = document.getElementById("admin-team-history-list");
-        if(memberTeamsHistoryBuffer.length === 0) { list.innerHTML = "<p style='font-size:0.75rem; color:#999;'>Sem histórico.</p>"; return; }
-        list.innerHTML = memberTeamsHistoryBuffer.map((h, i) => `<div class="part-admin-item" style="border-left:4px solid var(--admin-color)"><div class="info"><span>${h.data}</span><span style="color:var(--black)">${h.para}</span></div><button style="color:red; background:none; border:none; padding:5px; font-weight:bold;" onclick="removeTeamHistory(${i})">X</button></div>`).join('');
-    }
-    function addTeamHistoryManual() {
-        const d = val('th-date'), t = val('th-team');
-        if(!d || !t || t === "NEW") return alert("Preencha data e time.");
-        memberTeamsHistoryBuffer.push({ data: d, para: t }); renderTeamHistoryAdmin();
-    }
-    function removeTeamHistory(i) { memberTeamsHistoryBuffer.splice(i, 1); renderTeamHistoryAdmin(); }
-
-    function renderMemberPartsAdmin() {
-        const list = document.getElementById("admin-member-parts-list");
-        if(memberPartsBuffer.length === 0) { list.innerHTML = "<p style='font-size:0.75rem; color:#999;'>Sem histórico.</p>"; return; }
-        list.innerHTML = memberPartsBuffer.map((p, pIndex) => {
-            if(typeof p === 'string') return `<div class="part-admin-item"><span class="info">${p}</span> <button style="color:red; background:none; border:none; padding:5px; font-weight:bold;" onclick="removeMemberPart(${pIndex}, null)">X</button></div>`;
-            return (p.tracks || []).map((t, tIndex) => {
-                const labels = (t.labels || []).map(l => `<span class="badge">${l}</span>`).join(' ');
-                return `<div class="part-admin-item"><div class="info"><span style="color:var(--admin-color)">${p.single}</span><span>${t.title}</span><div style="display:flex;gap:4px;">${labels}</div></div><button style="color:red; background:none; border:none; padding:5px; font-weight:bold;" onclick="removeMemberPart(${pIndex}, ${tIndex})">X</button></div>`;
-            }).join('');
-        }).join('');
-    }
-    function addMemberPart() {
-        const s = val('mp-single').trim(), t = val('mp-track').trim(), k = val('mp-kind'), isC = document.getElementById('mp-iscenter').checked;
-        if(!s || !t) return alert("Preencha Single e Música!");
-        const l = [k]; if(isC) l.push("Center"); let ex = memberPartsBuffer.find(p => typeof p !== 'string' && p.single === s);
-        if(ex) { ex.tracks.push({ title: t, labels: l }); } else { memberPartsBuffer.push({ single: s, tracks: [{ title: t, labels: l }] }); }
-        document.getElementById('mp-track').value = ''; document.getElementById('mp-iscenter').checked = false; renderMemberPartsAdmin();
-    }
-    function removeMemberPart(pI, tI) { if(tI === null) { memberPartsBuffer.splice(pI, 1); } else { memberPartsBuffer[pI].tracks.splice(tI, 1); if(memberPartsBuffer[pI].tracks.length === 0) memberPartsBuffer.splice(pI, 1); } renderMemberPartsAdmin(); }
-
-    /* =========================================================
-       SISTEMA DE SHUFFLE (GRID VISUAL)
-       ========================================================= */
-    function openShuffleModal() {
-        shuffleSelectedIds.clear();
-        document.getElementById("sh-team").innerHTML = getTeamsOptions(); 
-        document.getElementById("sh-filter-team").innerHTML = '<option value="">Todos os Times</option>' + getTeamsOptions().replace('<option value="NEW" style="font-weight:900; color:#e91e63;">+ CRIAR NOVO TIME...</option>', '');
-        document.getElementById("sh-date").value = new Date().toISOString().slice(0, 7); 
-        document.getElementById('sh-search').value = '';
-        document.getElementById('shuffle-modal').classList.add('active');
-        renderShuffleList();
-    }
-
-    function toggleShuffleMember(id) {
-        if(shuffleSelectedIds.has(id)) shuffleSelectedIds.delete(id); else shuffleSelectedIds.add(id);
-        renderShuffleList();
-    }
-
-    function renderShuffleList() {
-        const q = document.getElementById("sh-search").value.toLowerCase();
-        const t = document.getElementById("sh-filter-team").value;
-        const list = document.getElementById('sh-list');
-        
-        const avail = loadedMembers.filter(m => m.Status === 'Ativa' && m.Nome.toLowerCase().includes(q) && (t === '' || m.Time === t));
-        if(avail.length === 0) { list.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999; font-size:0.8rem; padding:10px;">Nenhum membro encontrado.</div>'; return; }
-        
-        list.innerHTML = avail.map(m => `
-            <div class="member-card-static ${shuffleSelectedIds.has(m.id) ? 'is-selected' : ''}" onclick="toggleShuffleMember(${m.id})">
-                <img src="${resolveImage(m.Foto)}">
-                <div class="member-info"><h3>${m.Nome}</h3><p style="font-size:0.55rem; color:#666; margin:0;">${m.Time || 'S/ Time'}</p></div>
-            </div>
-        `).join('');
-    }
-
-    async function executeShuffle() {
-        const targetTeam = val('sh-team'); const shuffleDate = val('sh-date');
-        const ids = Array.from(shuffleSelectedIds);
-
-        if(ids.length === 0) return alert("Selecione pelo menos um membro!");
-        if(!targetTeam || targetTeam === "NEW") return alert("Selecione um Time de destino válido.");
-        if(!shuffleDate) return alert("Selecione a data.");
-
-        showLoading(true, "Executando Shuffle...");
         try {
-            const updatePromises = ids.map(async (id) => {
-                const member = loadedMembers.find(m => m.id === id);
-                let history = []; try { history = JSON.parse(member.Historico_Times || "[]"); } catch(e) {} if(!Array.isArray(history)) history = [];
-                history.push({ data: shuffleDate, para: targetTeam });
-                
-                const { error } = await _sb.from('Membros').update({ Time: targetTeam, Historico_Times: JSON.stringify(history) }).eq('id', id);
-                if(error) throw error;
-            });
-            await Promise.all(updatePromises);
-            alert("Shuffle executado com sucesso!"); closeModal('shuffle-modal'); await init();
-        } catch (e) { alert("Erro ao executar shuffle: " + e.message); }
-        showLoading(false);
+            const [memRes, discRes, newsRes, stageRes, banRes] = await Promise.all([
+                db.from('members').select('*').order('created_at', { ascending: true }),
+                db.from('discos').select('*').order('created_at', { ascending: false }),
+                db.from('news').select('*').order('data', { ascending: false }),
+                db.from('stages').select('*').order('created_at', { ascending: false }),
+                db.from('banner').select('*').eq('id', 1).single()
+            ]);
+
+            if(memRes.data) loadedMembers = memRes.data.map(m => ({ id: m.id, Nome: m.nome, Geracao: m.geracao, Foto: m.foto, SubUnit: m.subunit, Status: m.status, Perfil: m.perfil, Historico_Times: typeof m.historico_times === 'string' ? m.historico_times : JSON.stringify(m.historico_times || []), Participacoes: typeof m.participacoes === 'string' ? m.participacoes : JSON.stringify(m.participacoes || []) }));
+            if(discRes.data) loadedDiscos = discRes.data.map(d => ({ id: d.id, Titulo: d.titulo, Tipo: d.tipo, Capa: d.capa, Tracklist: typeof d.tracklist === 'string' ? d.tracklist : JSON.stringify(d.tracklist || []) }));
+            if(newsRes.data) loadedNews = newsRes.data.map(n => ({ id: n.id, Data: n.data, Categoria: n.categoria, Titulo: n.titulo }));
+            if(stageRes.data) loadedStages = stageRes.data.map(s => ({ id: s.id, Titulo: s.titulo, Subtitulo: s.subtitulo, Status: s.status, Capa: s.capa, Setlist: s.setlist }));
+            if(banRes.data) loadedBanner = banRes.data;
+
+        } catch(e) { console.warn("Falha no DB (Tabelas faltantes ou RLS). Usando Mocks.", e); } finally { renderAll(); }
     }
 
-    /* =========================================================
-       SISTEMA DE MULTI-DELETE INTELIGENTE (GRID VISUAL PARA MEMBROS)
-       ========================================================= */
-    function openMultiDelete() { 
-        const activeSection = document.querySelector('.view-section.active').id;
-        const map = { 'view-home': 'Noticias', 'view-disco': 'Discografia', 'view-members': 'Membros', 'view-stages': 'Stages' };
-        document.getElementById('md-table').value = map[activeSection] || 'Noticias';
-        deleteSelectedIds.clear();
-        document.getElementById("md-filter-team").innerHTML = '<option value="">Todos os Times</option>' + getTeamsOptions().replace('<option value="NEW" style="font-weight:900; color:#e91e63;">+ CRIAR NOVO TIME...</option>', '');
-        loadMultiDeleteList(); document.getElementById('multi-delete-modal').classList.add('active'); 
+    function renderAll() { renderDynamicHero(); renderNews(); renderDisco(); renderMembers(); renderStagesList(); }
+    function toggleAdminMode() { isAdminMode = !isAdminMode; document.body.classList.toggle('admin-mode', isAdminMode); }
+
+    function switchView(id, el) { 
+      document.querySelectorAll(".view-section").forEach(v => v.classList.remove("active")); 
+      document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active")); 
+      document.getElementById(id).classList.add("active"); el.classList.add("active"); window.scrollTo(0,0); 
     }
 
-    function toggleDeleteMember(id) {
-        if(deleteSelectedIds.has(id)) deleteSelectedIds.delete(id); else deleteSelectedIds.add(id);
-        loadMultiDeleteList();
+    function renderDynamicHero() { 
+        if(!loadedBanner) return; 
+        document.getElementById("hero-title").innerHTML = loadedBanner.titulo; document.getElementById("hero-sub").innerHTML = loadedBanner.subtitulo; 
+        document.getElementById("hero-tag").innerHTML = loadedBanner.tag; document.getElementById("hero-media-wrapper").innerHTML = `<img class="hero-media" src="${loadedBanner.url_midia}">`; 
     }
 
-    function loadMultiDeleteList() { 
-        const table = val('md-table'); const list = document.getElementById('md-list'); const filters = document.getElementById('md-filters');
-        list.innerHTML = ''; 
+    function renderNews() { 
+        document.getElementById("news-list").innerHTML = loadedNews.map((n, i) => { 
+            const d = (n.Data || "0000-00-00").split("-"); 
+            return `<div class="card" style="display:flex; align-items:center; gap:15px;">
+                <button class="admin-edit-btn admin-only" onclick="openAdminModal('news', ${i})"><i class="fas fa-pen"></i></button>
+                <div style="text-align:center; min-width:50px; border-right:3px dashed #000; padding-right:15px;"><b style="font-size:1.5rem; color:var(--primary); -webkit-text-stroke:1px #000;">${d[2]||'00'}</b><br><span style="font-size:0.7rem; font-weight:900;">${d[1]||'00'}/${d[0]||'00'}</span></div>
+                <div><span class="tag" style="font-size:0.6rem; padding:2px 5px;">${n.Categoria}</span><h4 style="font-size:0.9rem; text-transform:uppercase;">${n.Titulo}</h4></div>
+            </div>`; 
+        }).join(''); 
+    }
+
+    function getCenterUnitColor(d) {
+        let themeColor = 'var(--black)';
+        if (!d || !d.Tracklist) return themeColor;
+        let fJSON = null;
+        if (typeof d.Tracklist === 'string') {
+            if (d.Tracklist.includes('ctl48-formation-data')) {
+                const temp = document.createElement("div"); temp.innerHTML = d.Tracklist; 
+                const jsonEl = temp.querySelector("#ctl48-formation-data"); 
+                if(jsonEl) { try { fJSON = JSON.parse(jsonEl.textContent.trim()); } catch(e){} }
+            } else { try { fJSON = JSON.parse(d.Tracklist); } catch(e){} }
+        } else fJSON = d.Tracklist;
+
+        if (fJSON && Array.isArray(fJSON)) {
+            const aSide = fJSON.find(t => t.kind && (t.kind.includes('A-Side') || t.kind.includes('aside')));
+            if (aSide && aSide.members) {
+              const centerMember = aSide.members.find(m => m.isCenter);
+              if (centerMember) {
+                const cleanCenter = centerMember.name.replace(/<[^>]*>?/gm, '').trim();
+                const realMember = loadedMembers.find(x => x.Nome.replace(/<[^>]*>?/gm, '').trim() === cleanCenter);
+                if (realMember) {
+                  if (realMember.SubUnit === 'Melancholy') themeColor = 'var(--color-melancholy)';
+                  else if (realMember.SubUnit === 'Love') themeColor = 'var(--color-love)';
+                  else themeColor = 'var(--color-melancholy-love)';
+                }
+              }
+            }
+        }
+        return themeColor;
+    }
+
+    function renderDisco() { 
+      document.getElementById("disco-grid").innerHTML = loadedDiscos.map((d, i) => {
+        let themeColor = getCenterUnitColor(d);
+        if (themeColor === 'var(--black)') themeColor = 'transparent';
+        return `<div class="item-card" onclick="if(!isAdminMode) alert('Ative o modo Admin no botão acima para editar!')">
+          <button class="admin-edit-btn admin-only" onclick="openAdminModal('disco', ${i}, event)"><i class="fas fa-pen"></i></button>
+          <img src="${d.Capa || pImg(d.Titulo, 'All')}" style="border-color: ${themeColor}; border-style: ${themeColor !== 'transparent' ? 'solid' : 'dashed'}; border-width: 3px;">
+          <div class="item-name">${d.Titulo}</div>
+        </div>`;
+      }).join(''); 
+    }
+
+    function setUnitFilter(unit, btn) {
+      currentUnitFilter = unit; document.querySelectorAll(".btn-tag").forEach(b => b.classList.remove("active"));
+      if(btn) btn.classList.add("active"); 
+      
+      const root = document.documentElement;
+      if(unit === 'Melancholy') {
+          root.style.setProperty('--primary', 'var(--color-melancholy)'); root.style.setProperty('--primary-light', '#D8BFD8'); 
+          document.body.classList.remove('fx-flash-love', 'fx-flash-melancholy', 'fx-flash-all'); void document.body.offsetWidth; 
+          document.body.classList.add('fx-flash-melancholy');
+      } else if (unit === 'Love') {
+          root.style.setProperty('--primary', 'var(--color-love)'); root.style.setProperty('--primary-light', '#FFCCCC'); 
+          document.body.classList.remove('fx-flash-love', 'fx-flash-melancholy', 'fx-flash-all'); void document.body.offsetWidth;
+          document.body.classList.add('fx-flash-love');
+      } else {
+          root.style.setProperty('--primary', 'var(--color-melancholy-love)'); root.style.setProperty('--primary-light', '#FFB6C1'); 
+          document.body.classList.remove('fx-flash-love', 'fx-flash-melancholy', 'fx-flash-all'); void document.body.offsetWidth;
+          document.body.classList.add('fx-flash-all');
+      }
+      
+      document.querySelectorAll(".nav-item").forEach(n => unit==='All' ? n.classList.add("black-text") : n.classList.remove("black-text"));
+      renderMembers();
+    }
+
+    function renderMembers() { 
+      const container = document.getElementById("members-container"); container.innerHTML = ""; 
+      const groups = {}; 
+      loadedMembers.forEach((m, index) => { 
+        m._originalIndex = index; const key = currentUnitFilter === 'All' ? (m.Geracao || "1ª Geração") : (m.SubUnit || "Outros"); 
+        if(currentUnitFilter !== 'All' && key !== currentUnitFilter) return;
+        if(!groups[key]) groups[key] = []; groups[key].push(m); 
+      }); 
+      
+      const orderMap = {"1ª Geração": 0, "2ª Geração": 1, "Love": 2, "Melancholy": 3};
+      Object.keys(groups).sort((a, b) => (orderMap[a] || 99) - (orderMap[b] || 99)).forEach(key => { 
+        let themeColor = key === 'Melancholy' ? 'var(--color-melancholy)' : (key === 'Love' ? 'var(--color-love)' : (currentUnitFilter==='All' ? 'var(--black)' : 'var(--primary)'));
+        let textColor = currentUnitFilter==='All' ? 'var(--color-melancholy-love)' : '#fff';
+        let sectionTitle = `<i class="fas fa-star"></i> ${key}`;
+        if (key === 'Melancholy' || key === 'Love') sectionTitle = `SUB UNIT: ${key}`;
         
-        if(table === 'Membros') {
-            filters.style.display = 'flex';
-            list.className = 'member-grid'; list.style.padding = '10px 5px';
-            const q = document.getElementById("md-search").value.toLowerCase(); const t = document.getElementById("md-filter-team").value;
-            const avail = loadedMembers.filter(m => m.Nome.toLowerCase().includes(q) && (t === '' || m.Time === t));
-            
-            if(avail.length === 0) { list.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#999; font-size:0.8rem; padding:10px;">Nada encontrado.</div>'; return; }
-            list.innerHTML = avail.map(m => `
-                <div class="member-card-static ${deleteSelectedIds.has(m.id) ? 'is-selected' : ''}" onclick="toggleDeleteMember(${m.id})">
-                    <img src="${resolveImage(m.Foto)}">
-                    <div class="member-info"><h3>${m.Nome}</h3></div>
+        container.innerHTML += `<div>
+          <h4 class="section-title" style="margin-top:20px; background:${themeColor}; color:${textColor};">${sectionTitle}</h4>
+          <div class="grid-3">
+            ${groups[key].map(m => `<div class="item-card" onclick="if(!isAdminMode) alert('Ative o modo Admin no botão acima para editar!')">
+              <button class="admin-edit-btn admin-only" onclick="openAdminModal('member', ${m._originalIndex}, event)"><i class="fas fa-pen"></i></button>
+              <img src="${m.Foto || pImg(m.Nome, m.SubUnit)}" style="border-color:${themeColor}">
+              <div class="item-name">${m.Nome}</div>
+            </div>`).join('')}
+          </div>
+        </div>`; 
+      }); 
+    }
+
+    function renderStagesList() { 
+        document.getElementById('stages-list').innerHTML = loadedStages.map((s, i) => `<div class="stage-card" onclick="if(!isAdminMode) alert('Ative o modo Admin no botão acima para editar!')">
+            <button class="admin-edit-btn admin-only" onclick="openAdminModal('stage', ${i}, event)"><i class="fas fa-pen"></i></button>
+            <img src="${s.Capa || pImg('STG','All')}" class="stage-cover">
+            <div class="stage-info"><div class="stage-title">${s.Titulo}</div><div class="stage-sub">${s.Subtitulo || ''}</div><span class="stage-badge">${s.Status || 'Confirmado'}</span></div>
+        </div>`).join(''); 
+    }
+
+    function closeModal(id) { document.getElementById(id).classList.remove("active"); }
+
+    // --- BUILDER HISTÓRICO ATUALIZADO (Mês dropdown, Ano input, Acontecimento Misto) ---
+    function updHist(idx, field, val) { tempHist[idx][field] = val; }
+    function delHist(idx) { tempHist.splice(idx,1); renderHistBuilder(); }
+    function addHist() { tempHist.push({mes:'Jan', ano:'', acao:'', desc:''}); renderHistBuilder(); }
+    
+    function renderHistBuilder() {
+        let html = '';
+        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const acoes = ['Debut', 'Entrou para Unit', 'Foi Transferida', 'Graduou', 'Foi Expulsa', 'Entrou em Hiatus', 'Retornou de Hiatus', 'Outro'];
+
+        tempHist.forEach((h, i) => {
+            // Se for dado legado (data e para), converte pro novo formato
+            if (h.data !== undefined) {
+                let p = h.data.split(' '); h.mes = p[0] || 'Jan'; h.ano = p[1] || ''; h.acao = 'Outro'; h.desc = h.para; delete h.data; delete h.para;
+            }
+
+            let showDesc = h.acao === 'Outro' || h.acao === 'Entrou para Unit' || h.acao === 'Foi Transferida';
+
+            html += `<div class="builder-row" style="flex-direction:column; gap:8px;">
+                <div style="display:flex; gap:5px; width:100%;">
+                    <select onchange="updHist(${i}, 'mes', this.value)" style="flex:0.3;">
+                        ${meses.map(m => `<option value="${m}" ${h.mes === m ? 'selected' : ''}>${m}</option>`).join('')}
+                    </select>
+                    <input type="number" placeholder="Ano (Ex: 2024)" value="${h.ano||''}" oninput="updHist(${i}, 'ano', this.value)" style="flex:0.3;">
+                    <select onchange="updHist(${i}, 'acao', this.value); renderHistBuilder();" style="flex:0.8;">
+                        ${acoes.map(a => `<option value="${a}" ${h.acao === a ? 'selected' : ''}>${a}</option>`).join('')}
+                    </select>
+                    <button class="btn-builder-del" onclick="delHist(${i})"><i class="fas fa-trash"></i></button>
                 </div>
-            `).join('');
-        } else {
-            filters.style.display = 'none'; list.className = ''; list.style.padding = '0';
-            let data = []; 
-            if(table === 'Noticias') data = loadedNews; else if(table === 'Discografia') data = loadedDiscos; else if(table === 'Stages') data = loadedStages; else if(table === 'Banners') data = loadedBanner ? [loadedBanner] : []; 
-            if(data.length === 0) { list.innerHTML = '<div style="padding:15px;text-align:center;font-size:0.8rem;color:#999;">Nada encontrado.</div>'; return; } 
-            list.innerHTML = data.map(item => `<label class="md-item"><input type="checkbox" value="${item.id}" class="md-checkbox"><span>${item.Titulo || item.Nome || item.titulo}</span></label>`).join('');
+                ${showDesc ? `<input type="text" placeholder="Detalhes (Qual unit? Motivo?)" value="${h.desc||''}" oninput="updHist(${i}, 'desc', this.value)" style="width:100%;">` : ''}
+            </div>`;
+        });
+        html += `<button class="btn-builder-add" onclick="addHist()">+ Adicionar Fato Histórico</button>`;
+        document.getElementById('bld-hist').innerHTML = html;
+    }
+
+    function updPart(idx, field, val) { tempPart[idx][field] = val; }
+    function delPart(idx) { tempPart.splice(idx,1); renderPartBuilder(); }
+    function addPart() { tempPart.push({single:'', title:'', labels:''}); renderPartBuilder(); }
+    function renderPartBuilder() {
+        let html = '<div class="help-text" style="margin-bottom:10px;">Elas serão agrupadas pelo nome do Single ao salvar! Etiquetas: separe por vírgula.</div>';
+        tempPart.forEach((p, i) => {
+            html += `<div class="builder-row">
+                <input type="text" placeholder="Single" value="${p.single||''}" oninput="updPart(${i}, 'single', this.value)">
+                <input type="text" placeholder="Música" value="${p.title||''}" oninput="updPart(${i}, 'title', this.value)">
+                <input type="text" placeholder="Tags (A-Side, Center...)" value="${p.labels||''}" oninput="updPart(${i}, 'labels', this.value)" style="flex: 100%;">
+                <button class="btn-builder-del" style="flex: 100%; padding:5px;" onclick="delPart(${i})"><i class="fas fa-trash"></i> Remover</button>
+            </div>`;
+        });
+        html += `<button class="btn-builder-add" onclick="addPart()">+ Adicionar Música</button>`;
+        document.getElementById('bld-part').innerHTML = html;
+    }
+
+    function updTrack(idx, field, val) { tempTrack[idx][field] = val; }
+    function delTrack(idx) { tempTrack.splice(idx,1); renderTrackBuilder(); }
+    function addTrack() { tempTrack.push({kind:'A-Side', name:'', members: []}); renderTrackBuilder(); }
+    function toggleTrackMember(tIdx, memberIndex) {
+        const activeMembers = loadedMembers.filter(m => !['graduada','demitida'].includes(m.Status?.toLowerCase()));
+        let mName = activeMembers[memberIndex].Nome; let track = tempTrack[tIdx]; if (!track.members) track.members = [];
+        let existingIndex = track.members.findIndex(m => m.name === mName);
+        if (existingIndex >= 0) track.members.splice(existingIndex, 1); else track.members.push({ name: mName, isCenter: false });
+        renderTrackBuilder();
+    }
+    function setTrackCenter(tIdx, memberIndex, event) {
+        event.stopPropagation(); const activeMembers = loadedMembers.filter(m => !['graduada','demitida'].includes(m.Status?.toLowerCase()));
+        let mName = activeMembers[memberIndex].Nome; let track = tempTrack[tIdx]; if (!track.members) track.members = [];
+        let member = track.members.find(m => m.name === mName);
+        if (!member) { member = { name: mName, isCenter: true }; track.members.push(member); } else { member.isCenter = !member.isCenter; }
+        renderTrackBuilder();
+    }
+    function renderTrackBuilder() {
+        let html = '<div class="help-text" style="margin-bottom:10px;">Clique no nome para adicionar/remover. Clique na <i class="fas fa-star"></i> para Center.</div>';
+        const activeMembers = loadedMembers.filter(m => !['graduada','demitida'].includes(m.Status?.toLowerCase()));
+        tempTrack.forEach((t, i) => {
+            html += `<div class="builder-row" style="flex-direction: column;">
+                <div style="display:flex; gap:5px; width: 100%;">
+                    <input type="text" placeholder="Tipo" value="${t.kind||''}" oninput="updTrack(${i}, 'kind', this.value)" style="flex:0.5;">
+                    <input type="text" placeholder="Nome da Música" value="${t.name||''}" oninput="updTrack(${i}, 'name', this.value)">
+                    <button class="btn-builder-del" onclick="delTrack(${i})"><i class="fas fa-trash"></i></button>
+                </div>
+                <div class="member-pill-wrap">`;
+            activeMembers.forEach((m, mIdx) => {
+                let cleanName = m.Nome.replace(/<[^>]*>?/gm, '').trim(); let inTrack = (t.members || []).find(tm => tm.name === m.Nome);
+                let isCenter = !!inTrack && inTrack.isCenter;
+                html += `<div class="m-pill ${inTrack ? 'is-active' : ''}">
+                    <div class="m-pill-name" onclick="toggleTrackMember(${i}, ${mIdx})">${cleanName}</div>
+                    <div class="m-pill-center ${isCenter ? 'is-center' : ''}" onclick="setTrackCenter(${i}, ${mIdx}, event)"><i class="fas fa-star"></i></div>
+                </div>`;
+            });
+            html += `</div></div>`;
+        });
+        html += `<button class="btn-builder-add" onclick="addTrack()">+ Adicionar Faixa</button>`;
+        document.getElementById('bld-track').innerHTML = html;
+    }
+
+    function insertSetlist(text) {
+        const el = document.getElementById('fm-setlist');
+        if(el.value && !el.value.endsWith('\n')) el.value += '\n';
+        el.value += text;
+        el.focus();
+    }
+
+    function openAdminModal(type, index, event) {
+        if(event) event.stopPropagation(); editType = type; editIndex = index;
+        const container = document.getElementById('admin-form-container');
+        let html = `<h2 style="margin-bottom:20px;">${index >= 0 ? 'Editar' : 'Adicionar'} ${type.toUpperCase()}</h2>`;
+        
+        if (type === 'banner') {
+            let d = loadedBanner || {url_midia:'', tag:'', titulo:'', subtitulo:''};
+            html += `<div class="form-group"><label>URL da Imagem</label><input type="text" id="fm-url" value="${d.url_midia||''}"></div>
+                     <div class="form-group"><label>Tag Superior</label><input type="text" id="fm-tag" value='${d.tag||''}'></div>
+                     <div class="form-group"><label>Título</label><input type="text" id="fm-title" value='${d.titulo||''}'></div>
+                     <div class="form-group"><label>Subtítulo</label><input type="text" id="fm-sub" value="${d.subtitulo||''}"></div>`;
+        } 
+        else if (type === 'news') {
+            let d = index >= 0 ? loadedNews[index] : {Data: "", Categoria: "", Titulo: ""};
+            html += `<div class="form-group"><label>Data</label><input type="date" id="fm-data" value="${d.Data}"></div>
+                     <div class="form-group"><label>Categoria</label><input type="text" id="fm-cat" value="${d.Categoria}"></div>
+                     <div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo}"></div>`;
+        }
+        else if (type === 'disco') {
+            let d = index >= 0 ? loadedDiscos[index] : {Titulo: "", Tipo: "", Capa: "", Tracklist: "[]"};
+            let rawT = []; 
+            if (typeof d.Tracklist === 'string') {
+                if (d.Tracklist.includes('ctl48-formation-data')) {
+                    const temp = document.createElement("div"); temp.innerHTML = d.Tracklist; 
+                    const jsonEl = temp.querySelector("#ctl48-formation-data"); 
+                    if(jsonEl) { try { rawT = JSON.parse(jsonEl.textContent.trim()); } catch(e){} }
+                } else { try { rawT = JSON.parse(d.Tracklist); } catch(e){} }
+            } else { rawT = d.Tracklist || []; }
+
+            tempTrack = (rawT||[]).map(t => ({ kind: t.kind, name: t.name, members: JSON.parse(JSON.stringify(t.members || [])) }));
+            html += `<div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo}"></div>
+                     <div class="form-group"><label>Tipo</label><input type="text" id="fm-tipo" value="${d.Tipo}"></div>
+                     <div class="form-group"><label>URL da Capa</label><input type="text" id="fm-capa" value="${d.Capa||''}"></div>
+                     <div class="form-group"><label>Faixas & Formação</label><div id="bld-track" class="builder-container"></div></div>`;
+        }
+        else if (type === 'member') {
+            let d = index >= 0 ? loadedMembers[index] : {Nome: "", Geracao: "1ª Geração", Foto: "", SubUnit: "Love", Status: "Ativa", Perfil: "", Historico_Times: "[]", Participacoes: "[]"};
+            try { tempHist = typeof d.Historico_Times === 'string' ? JSON.parse(d.Historico_Times) : d.Historico_Times; } catch(e){ tempHist=[]; }
+            tempPart = []; let rawP = []; try { rawP = typeof d.Participacoes === 'string' ? JSON.parse(d.Participacoes) : d.Participacoes; } catch(e){}
+            (rawP||[]).forEach(p => {
+                if(typeof p === 'string') tempPart.push({single: p, title:'', labels:''});
+                else (p.tracks||[]).forEach(t => tempPart.push({ single: p.single||'', title: t.title||'', labels: (t.labels||[]).join(', ') }));
+            });
+            html += `<div class="form-group"><label>Nome (Aceita HTML)</label><input type="text" id="fm-nome" value="${d.Nome.replace(/"/g, '&quot;')}"></div>
+                     <div class="form-group"><label>Geração</label><input type="text" id="fm-gen" value="${d.Geracao}"></div>
+                     <div class="form-group"><label>Sub Unit</label><select id="fm-unit"><option value="Love" ${d.SubUnit==='Love'?'selected':''}>Love</option><option value="Melancholy" ${d.SubUnit==='Melancholy'?'selected':''}>Melancholy</option></select></div>
+                     <div class="form-group"><label>Status</label><input type="text" id="fm-status" value="${d.Status}"></div>
+                     <div class="form-group"><label>URL Foto</label><input type="text" id="fm-foto" value="${(d.Foto||'').includes('ui-avatars') ? '' : d.Foto}"></div>
+                     <div class="form-group"><label>Perfil</label><textarea id="fm-perfil">${d.Perfil}</textarea></div>
+                     <div class="form-group"><label>Histórico</label><div id="bld-hist" class="builder-container"></div></div>
+                     <div class="form-group"><label>Músicas</label><div id="bld-part" class="builder-container"></div></div>`;
+        }
+        else if (type === 'stage') {
+            let d = index >= 0 ? loadedStages[index] : {Titulo: "", Subtitulo: "", Status: "", Capa: "", Setlist: ""};
+            html += `<div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo}"></div>
+                     <div class="form-group"><label>Subtítulo</label><input type="text" id="fm-sub" value="${d.Subtitulo}"></div>
+                     <div class="form-group"><label>Status</label><input type="text" id="fm-status" value="${d.Status}"></div>
+                     <div class="form-group"><label>URL da Capa</label><input type="text" id="fm-capa" value="${d.Capa||''}"></div>
+                     <div class="form-group">
+                        <label>Setlist</label>
+                        <div style="display: flex; gap: 5px; margin-bottom: 8px; overflow-x: auto;">
+                           <button type="button" style="background:#000; color:var(--primary); font-weight:900; border:2px solid var(--primary); padding:6px 12px; cursor:pointer;" onclick="insertSetlist('M01. ')">+ M (Música)</button>
+                           <button type="button" style="background:var(--primary); color:#fff; font-weight:900; border:2px solid #000; padding:6px 12px; cursor:pointer;" onclick="insertSetlist('MC1. ')">+ MC</button>
+                           <button type="button" style="background:#fff; color:#000; font-weight:900; border:2px dashed #000; padding:6px 12px; cursor:pointer;" onclick="insertSetlist('ENCORE\\n')">+ ENCORE</button>
+                        </div>
+                        <textarea id="fm-setlist">${d.Setlist||''}</textarea>
+                     </div>`;
+        }
+
+        html += `<button class="btn-save" onclick="saveAdminForm()"><i class="fas fa-save"></i> Salvar na Nuvem</button>`;
+        if (index >= 0 && type !== 'banner') html += `<button class="btn-delete" onclick="deleteAdminItem()"><i class="fas fa-trash"></i> Excluir</button>`;
+        container.innerHTML = html; document.getElementById('admin-modal').classList.add('active');
+        if(document.getElementById('bld-hist')) renderHistBuilder(); if(document.getElementById('bld-part')) renderPartBuilder(); if(document.getElementById('bld-track')) renderTrackBuilder();
+    }
+
+    async function saveAdminForm() {
+        try {
+            document.querySelector('.btn-save').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+            if (editType === 'banner') {
+                const obj = { url_midia: document.getElementById('fm-url').value, tag: document.getElementById('fm-tag').value, titulo: document.getElementById('fm-title').value, subtitulo: document.getElementById('fm-sub').value };
+                await db.from('banner').update(obj).eq('id', 1);
+            } 
+            else if (editType === 'news') {
+                let obj = { data: document.getElementById('fm-data').value, categoria: document.getElementById('fm-cat').value, titulo: document.getElementById('fm-title').value };
+                if (editIndex >= 0) await db.from('news').update(obj).eq('id', loadedNews[editIndex].id); else await db.from('news').insert([obj]);
+            }
+            else if (editType === 'disco') {
+                let obj = { titulo: document.getElementById('fm-title').value, tipo: document.getElementById('fm-tipo').value, capa: document.getElementById('fm-capa').value || pImg(document.getElementById('fm-title').value, "All"), tracklist: tempTrack };
+                if (editIndex >= 0) await db.from('discos').update(obj).eq('id', loadedDiscos[editIndex].id); else await db.from('discos').insert([obj]);
+            }
+            else if (editType === 'member') {
+                let groupedPart = {};
+                tempPart.forEach(p => {
+                    if(!p.single) return; if(!groupedPart[p.single]) groupedPart[p.single] = { single: p.single, tracks: [] };
+                    if(p.title) groupedPart[p.single].tracks.push({ title: p.title, labels: (p.labels||'').split(',').map(s=>s.trim()).filter(s=>s) });
+                });
+                
+                // Formata o histórico antes de salvar
+                let formatHist = tempHist.map(h => {
+                    let text = h.acao;
+                    if (h.desc) text += `: ${h.desc}`;
+                    return { data: `${h.mes} ${h.ano}`.trim(), para: text };
+                }).filter(h => h.para !== 'Outro' && h.data !== '');
+
+                let obj = {
+                    nome: document.getElementById('fm-nome').value, geracao: document.getElementById('fm-gen').value, subunit: document.getElementById('fm-unit').value, 
+                    status: document.getElementById('fm-status').value, foto: document.getElementById('fm-foto').value || pImg(document.getElementById('fm-nome').value, document.getElementById('fm-unit').value), 
+                    perfil: document.getElementById('fm-perfil').value, historico_times: formatHist, participacoes: Object.values(groupedPart)
+                };
+                if (editIndex >= 0) await db.from('members').update(obj).eq('id', loadedMembers[editIndex].id); else await db.from('members').insert([obj]);
+            }
+            else if (editType === 'stage') {
+                let obj = { titulo: document.getElementById('fm-title').value, subtitulo: document.getElementById('fm-sub').value, status: document.getElementById('fm-status').value, capa: document.getElementById('fm-capa').value || pImg("STG", "All"), setlist: document.getElementById('fm-setlist').value };
+                if (editIndex >= 0) await db.from('stages').update(obj).eq('id', loadedStages[editIndex].id); else await db.from('stages').insert([obj]);
+            }
+            closeModal('admin-modal'); await init(); 
+        } catch (e) {
+            alert("Erro ao salvar! Veja no console (F12) se tem erro de permissão (RLS) no Supabase. Erro: " + e.message);
+            document.querySelector('.btn-save').innerHTML = 'Tentar Novamente';
         }
     }
 
-    async function executeMultiDelete() { 
-        const table = val('md-table'); let ids = [];
-        if(table === 'Membros') { ids = Array.from(deleteSelectedIds); } 
-        else { const checkboxes = document.querySelectorAll('.md-checkbox:checked'); ids = Array.from(checkboxes).map(cb => parseInt(cb.value)); }
-
-        if(ids.length === 0) return alert("Selecione algum item!"); 
-        if(!confirm(`Excluir permanentemente os ${ids.length} itens selecionados?`)) return; 
-        
-        showLoading(true, "Excluindo em massa..."); 
-        try { const { error } = await _sb.from(table).delete().in('id', ids); if(error) throw error; alert("Exclusão concluída!"); closeModal('multi-delete-modal'); await init(); } catch(e) { alert("Erro ao excluir: " + e.message); } 
-        showLoading(false); 
+    async function deleteAdminItem() {
+        if(!confirm("Tem certeza que deseja excluir? Isso não pode ser desfeito.")) return;
+        try {
+            if (editType === 'news') await db.from('news').delete().eq('id', loadedNews[editIndex].id);
+            else if (editType === 'disco') await db.from('discos').delete().eq('id', loadedDiscos[editIndex].id);
+            else if (editType === 'member') await db.from('members').delete().eq('id', loadedMembers[editIndex].id);
+            else if (editType === 'stage') await db.from('stages').delete().eq('id', loadedStages[editIndex].id);
+            closeModal('admin-modal'); await init();
+        } catch (e) { alert("Erro ao excluir! " + e.message); }
     }
-
-    /* TRACK BUILDER MOBILE (DISCOS) */
-    function renderAdminTracksList() { const list = document.getElementById("admin-tracks-list"); if(adminTracksBuffer.length === 0) { list.innerHTML = "<p style='font-size:0.8rem; color:#999; margin-bottom:10px;'>Nenhuma música cadastrada ainda.</p>"; return; } list.innerHTML = adminTracksBuffer.map((t, i) => `<div class="track-admin-item"><div><b>${t.name}</b> <span style="font-size:0.6rem; background:#eee; padding:2px 4px; border-radius:4px;">${t.kind}</span></div><div><button class="btn-main" style="padding:5px; width:auto; margin:0; display:inline-block;" onclick="openTrackBuilder(${i})"><i class="fas fa-edit"></i></button> <button class="btn-main" style="padding:5px; width:auto; margin:0; display:inline-block; background:#ff4757; border-color:#000;" onclick="deleteTrack(${i})"><i class="fas fa-trash"></i></button></div></div>`).join(''); }
-    function deleteTrack(i) { if(confirm("Remover faixa?")) { adminTracksBuffer.splice(i, 1); renderAdminTracksList(); } }
-    function openTrackBuilder(index = -1) { editTrackIndex = index; if(index >= 0) { const t = adminTracksBuffer[index]; document.getElementById('tb-name').value = t.name; document.getElementById('tb-kind').value = t.kind; tbSelectedMembers = [...(t.members || [])]; const center = tbSelectedMembers.find(m => m.isCenter); tbCenterId = center ? center.id : null; } else { document.getElementById('tb-name').value = ''; document.getElementById('tb-kind').value = 'A-side'; tbSelectedMembers = []; tbCenterId = null; } document.getElementById('tb-search').value = ''; document.getElementById('admin-track-modal').classList.add('active'); renderTrackBuilder(); }
-    function renderTrackBuilder() { const selGrid = document.getElementById('tb-selected-grid'); if(tbSelectedMembers.length === 0) selGrid.innerHTML = '<div style="color:#999; font-size:0.7rem; width:100%; text-align:center;">Vazio.</div>'; else selGrid.innerHTML = tbSelectedMembers.map(m => `<div class="member-card-static ${m.id == tbCenterId ? 'is-center' : ''}" onclick="setTbCenter(${m.id})"><button class="btn-remove-tb" onclick="event.stopPropagation(); removeTbMember(${m.id})">X</button><img src="${resolveImage(m.Foto)}"><div class="member-info"><h3>${m.Nome}</h3></div></div>`).join(''); const q = document.getElementById('tb-search').value.toLowerCase(); const availGrid = document.getElementById('tb-available-grid'); const avail = loadedMembers.filter(m => !tbSelectedMembers.some(sm => sm.id == m.id) && m.Nome.toLowerCase().includes(q) && m.Status === 'Ativa'); availGrid.innerHTML = avail.map(m => `<div class="member-card-static" onclick='addTbMember(${JSON.stringify(m).replace(/'/g, "&apos;")})'><img src="${resolveImage(m.Foto)}" style="border: 2px dashed #ccc;"><div class="member-info"><h3>${m.Nome}</h3></div></div>`).join(''); }
-    function addTbMember(m) { tbSelectedMembers.push({ id: m.id, name: m.Nome, Foto: m.Foto, gen: m.Geracao, isCenter: false }); if(tbSelectedMembers.length === 1) tbCenterId = m.id; renderTrackBuilder(); }
-    function removeTbMember(id) { tbSelectedMembers = tbSelectedMembers.filter(m => m.id != id); if(tbCenterId == id) { tbCenterId = tbSelectedMembers.length > 0 ? tbSelectedMembers[0].id : null; } renderTrackBuilder(); }
-    function setTbCenter(id) { tbCenterId = id; renderTrackBuilder(); }
-    function saveTrackToBuffer() { const name = document.getElementById('tb-name').value.trim(); if(!name || tbSelectedMembers.length === 0) return alert("Preencha tudo!"); const finalMembers = tbSelectedMembers.map(m => ({ ...m, isCenter: m.id == tbCenterId })); const trackData = { name: name, kind: document.getElementById('tb-kind').value, members: finalMembers }; if(editTrackIndex >= 0) adminTracksBuffer[editTrackIndex] = trackData; else adminTracksBuffer.push(trackData); renderAdminTracksList(); closeModal('admin-track-modal'); }
-    function buildDiscoHTML() { let h=`<div class="modal-nav"><button class="modal-nav-btn active">Tracklist</button></div><div class="details-content"><ol class="tracklist">`; let f=`<div class="modal-section">`; adminTracksBuffer.forEach(t=>{ h+=`<li><a>${t.name}</a> <span class="label ${t.kind.toLowerCase()}">${t.kind}</span></li>`; f+=`<div class="formation-group"><div class="formation-title">${t.name}</div><div class="member-grid">` + (t.members||[]).map(m=>`<a class="member-card-static ${m.isCenter?'is-center':''}"><img src="${resolveImage(m.Foto)}"><div class="member-info"><h3>${m.name}</h3></div></a>`).join('') + `</div></div><hr>`; }); return h+`</ol></div>`+f+`</div><div id="ctl48-formation-data" style="display:none;">${JSON.stringify(adminTracksBuffer)}</div>`; }
 
     init();
   </script>
