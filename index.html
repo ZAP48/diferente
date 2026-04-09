@@ -86,6 +86,7 @@
     .tags-container::-webkit-scrollbar { display: none; }
     .btn-tag { flex: 1; min-width: max-content; padding: 10px 15px; border: var(--border-dashed); background: #fff; font-weight: 900; font-size: 0.75rem; cursor: pointer; box-shadow: var(--shadow-sm); text-transform: uppercase; transition: 0.2s;}
     
+    /* Cores ativas das tags */
     .btn-tag.tag-all.active { background: var(--color-melancholy-love); color: #000; border: var(--border); }
     .btn-tag.tag-melancholy.active { background: var(--color-melancholy); color: #fff; border: var(--border); }
     .btn-tag.tag-love.active { background: var(--color-love); color: #fff; border: var(--border); }
@@ -98,16 +99,69 @@
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     .close-btn { position: absolute; top: 15px; right: 15px; background: var(--primary); color: #fff; border: var(--border); width: 35px; height: 35px; z-index: 10; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; box-shadow: 2px 2px 0 #000; transition: 0.3s;}
 
+    /* ABAS INTERNAS DOS MODAIS */
+    .tabs { display: flex; border-bottom: var(--border); background: var(--black); position: sticky; top: 0; z-index: 5; }
+    .tab-btn { flex: 1; padding: 15px; border: none; background: none; font-weight: 900; font-size: 0.8rem; color: #888; cursor: pointer; text-transform: uppercase; border-bottom: 5px solid transparent; transition: 0.3s;}
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .tab-pane, .modal-section { display: none; padding: 20px; }
+    .tab-pane.active, .modal-section.active { display: block; }
+
+    /* LISTA DE MÚSICAS NO PERFIL */
+    .part-card { background: #fff; border: var(--border); margin-bottom: 12px; overflow: hidden; box-shadow: var(--shadow-sm); }
+    .part-header { background: var(--primary); color: #fff; padding: 12px 15px; font-weight: 900; font-size: 0.8rem; text-transform: uppercase; border-bottom: var(--border); display: flex; justify-content: space-between; align-items: center; transition: 0.3s;}
+    .part-header::after { content: '\f714'; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 1rem; }
+    .part-row { padding: 12px 15px; border-bottom: 2px dashed #000; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 700; background: #fff;}
+    .part-row:last-child { border-bottom: none; }
+    
+    .label-brat { display: inline-flex; align-items: center; gap: 5px; font-size: 0.6rem; padding: 4px 8px; font-weight: 900; text-transform: uppercase; border: 2px solid #000; margin-left: 5px; box-shadow: 2px 2px 0 #000; white-space: nowrap; }
+    .label-brat.is-aside { background: var(--primary); color: #fff; transition: 0.3s;} 
+    .label-brat.is-bside { background: #000; color: var(--primary); transition: 0.3s;}
+    .label-brat.is-center { background: #fff; color: #000; border-color: #000; } 
+
+    /* TRACKLISTS (DISCOS E SHOWS) */
+    .tracklist { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+    .tracklist li { padding: 15px; border: var(--border); font-size: 0.9rem; font-weight: 900; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; background: #fff; box-shadow: 3px 3px 0 var(--primary); transition: 0.3s;}
+    
+    .setlist-wrap { padding: 10px 0; font-family: 'Roboto', sans-serif; background: #fff; border: var(--border); padding: 15px;}
+    .sl-row { padding: 8px 0; border-bottom: 1px dashed #000; font-size: 0.85rem; font-weight: 700; display: flex; align-items: flex-start; gap: 8px; text-transform: uppercase;}
+    .sl-music { background: var(--black); color: var(--primary); font-weight: 900; padding: 2px 6px; border: 2px solid var(--primary); box-shadow: 2px 2px 0 var(--primary); display: inline-block; transition: 0.3s;}
+    .sl-mc { background: var(--primary); color: #fff; padding: 2px 6px; font-size: 0.7rem; font-weight: 900; border: 1px solid #000; transition: 0.3s;}
+    .sl-header { margin-top: 20px; font-weight: 900; font-size: 1.2rem; text-transform: uppercase; border-bottom: 4px solid var(--black); display: inline-block; padding-bottom: 5px;}
+
+    /* FORMAÇÃO DO DISCO */
+    .formation-group { background: #fff; border: var(--border); margin-bottom: 15px; overflow: hidden; box-shadow: var(--shadow-sm); }
+    .formation-header { padding: 15px; background: #fff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+    .formation-title { font-size: 0.85rem !important; font-weight: 800 !important; display: flex; align-items: center; gap: 10px; margin: 0 !important; text-transform: uppercase; }
+    .formation-arrow { transition: transform 0.3s ease; }
+    .formation-group.open .formation-arrow { transform: rotate(180deg); }
+    .formation-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; background: var(--bg); }
+    .formation-group.open .formation-content { max-height: 2000px; padding: 15px; border-top: var(--border-dashed); }
+    .formation-idol-icon { width: 26px; height: 26px; background: var(--black); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; border: 2px solid var(--primary); transition: 0.3s;}
+    
+    .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 10px; }
+    .member-card-static { text-align: center; position: relative; background: #fff; border: var(--border); padding: 5px; }
+    .member-card-static img { width: 100%; aspect-ratio: 1/1; border: 2px solid #000; object-fit: cover; background: #fff; transition: 0.2s; filter: grayscale(20%); }
+    .member-card-static.is-center { border-color: var(--primary); box-shadow: 3px 3px 0 #000; transform: scale(1.05); transition: 0.3s;}
+    .member-card-static.is-center img { filter: grayscale(0%); border-color: var(--primary);}
+    .member-info h3 { font-size: 0.65rem; font-weight: 900; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-transform: uppercase; }
+
+    /* UI DO HISTÓRICO DE TIMES */
+    .team-history-timeline { border-left: 3px solid #000; padding-left: 15px; margin-top: 10px; }
+    .team-history-item { position: relative; margin-bottom: 15px; font-size: 0.8rem; font-weight: 900; text-transform: uppercase;}
+    .team-history-item::before { content: ''; position: absolute; left: -24px; top: 0px; width: 12px; height: 12px; background: var(--primary); border: 3px solid #000; transition: 0.3s;}
+    .team-history-date { font-size: 0.7rem; color: #fff; font-weight: 900; background: #000; padding: 2px 5px; display: inline-block; margin-bottom: 3px; transition: 0.3s;}
+
     /* MENU INFERIOR */
     .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: var(--white); display: flex; border-top: var(--border); z-index: 1000; }
     .nav-item { flex: 1; border: none; border-right: 2px solid #000; background: none; color: #000; font-size: 0.6rem; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.1s;}
     .nav-item:last-child { border-right: none; }
     .nav-item.active { background: var(--primary); color: #fff; transition: background 0.3s;}
     .nav-item i { font-size: 1.4rem; margin-bottom: 4px; }
+    
     .nav-item.active.black-text { color: #000; }
 
     /* BLINDAGEM DE IMAGEM PARA SHOWS */
-    .stage-card { background: #fff; border: var(--border); padding: 15px; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; box-shadow: var(--shadow); cursor: pointer;}
+    .stage-card { background: #fff; border: var(--border); padding: 15px; margin-bottom: 15px; display: flex; gap: 15px; align-items: center; box-shadow: var(--shadow); cursor: pointer; position: relative;}
     .stage-card:active { transform: translate(3px, 3px); box-shadow: none; }
     .stage-cover { width: 80px; min-width: 80px; height: 80px; border: var(--border-dashed); object-fit: cover; background: var(--black); }
     .stage-info { flex: 1; }
@@ -221,6 +275,41 @@
     </div>
   </div>
 
+  <div id="disco-modal" class="modal-overlay" onclick="if(event.target==this)closeModal('disco-modal')">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal('disco-modal')"><i class="fas fa-times"></i></button>
+      <div style="padding: 30px 20px 20px; text-align: center; background:var(--black); border-bottom:var(--border);">
+        <img id="dm-cover" src="" style="width:160px; height:160px; border:var(--border); border-color: var(--primary); object-fit:cover; box-shadow: 5px 5px 0 var(--primary); transition: 0.3s;">
+        <h2 id="dm-title" class="font-head" style="margin-top:20px; font-size:1.6rem; color:var(--primary);"></h2>
+        
+        <div style="display:flex; justify-content:center; gap:8px; margin-top:10px;">
+            <span id="dm-unit-tag" style="background:var(--primary); color:#fff; font-weight:900; text-transform:uppercase; font-size:0.8rem; padding:4px 12px; border:2px solid #000; transition:0.3s;"></span>
+            <span id="dm-sub" style="background:#000; color:var(--primary); font-weight:900; text-transform:uppercase; font-size:0.8rem; padding:4px 12px; border:2px solid var(--primary); transition:0.3s;"></span>
+        </div>
+      </div>
+      <div id="dm-content" style="padding: 0;"></div>
+    </div>
+  </div>
+
+  <div id="member-modal" class="modal-overlay" onclick="if(event.target==this)closeModal('member-modal')">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal('member-modal')"><i class="fas fa-times"></i></button>
+      <div style="height:120px; background:var(--black); border-bottom:var(--border);"></div>
+      <img id="m-cover" style="width:130px; height:130px; border:var(--border); border-color: var(--primary); object-fit:cover; margin:-65px auto 10px; display:block; background:#000; box-shadow: var(--shadow-sm);" src="">
+      <h2 id="m-name" class="font-head" style="text-align:center; font-size:1.8rem;"></h2>
+      <p id="m-team" style="text-align:center; font-weight:900; font-size:0.8rem; color:#666; margin-bottom:15px; text-transform: uppercase;"></p>
+      <div class="tabs"><button class="tab-btn active" onclick="switchTabModal('perfil', this)">Perfil</button><button class="tab-btn" onclick="switchTabModal('part', this)">Músicas</button></div>
+      <div id="tab-perfil" class="tab-pane active">
+          <p id="m-bio" style="font-size:0.9rem; line-height:1.6; color:#000; font-weight:500; white-space: pre-wrap; margin-bottom:20px; background:#fff; padding:15px; border:var(--border-dashed);"></p>
+          <div style="background:#fff; border:var(--border); padding:15px; box-shadow:var(--shadow-sm);">
+              <h4 style="font-size:1rem; text-transform:uppercase; margin-bottom:10px; background:#000; color:var(--primary); display:inline-block; padding:4px 10px; transition:0.3s;"><i class="fas fa-history"></i> Histórico de Units</h4>
+              <div id="m-history-timeline" class="team-history-timeline"></div>
+          </div>
+      </div>
+      <div id="tab-part" class="tab-pane"><div id="m-part"></div></div>
+    </div>
+  </div>
+
   <div class="bottom-nav">
     <button class="nav-item active black-text" onclick="switchView('view-home', this)"><i class="fas fa-skull"></i>Início</button>
     <button class="nav-item" onclick="switchView('view-disco', this)"><i class="fas fa-compact-disc"></i>Discos</button>
@@ -229,7 +318,6 @@
   </div>
 
   <script>
-    // --- SUPABASE SETUP ---
     var supaUrl = 'https://cotzdfxjazojpwpmkoss.supabase.co';
     var supaKey = 'sb_publishable_vF3JVZw3vDrfLM5M6xtw_w_0VJh7uwm';
     var db = window.supabase.createClient(supaUrl, supaKey);
@@ -249,11 +337,6 @@
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(cleanName)}&background=${hexCol}&color=111&size=200&font-size=0.33&bold=true`;
     };
 
-    const mockMembers = [{ Nome: "Yua <i class='fas fa-skull'></i>", Geracao: "1ª Geração", Foto: pImg("YUA", "Love"), SubUnit: "Love", Status: "Ativa", Perfil: "A center misteriosa.", Historico_Times: '[]', Participacoes: '[]' }];
-    const mockDiscos = [];
-    const mockNews = [];
-    const mockStages = [];
-
     async function init() {
       try {
         const [memRes, discRes, newsRes, stageRes, banRes] = await Promise.all([
@@ -264,90 +347,43 @@
           db.from('banner').select('*').eq('id', 1).single()
         ]);
 
-        if(memRes.data) {
-            loadedMembers = memRes.data.map(m => ({ id: m.id, Nome: m.nome, Geracao: m.geracao, Foto: m.foto, SubUnit: m.subunit, Status: m.status, Perfil: m.perfil, Historico_Times: typeof m.historico_times === 'string' ? m.historico_times : JSON.stringify(m.historico_times || []), Participacoes: typeof m.participacoes === 'string' ? m.participacoes : JSON.stringify(m.participacoes || []) }));
-        } else loadedMembers = mockMembers;
-
-        if(discRes.data) {
-            // ATENÇÃO: Lê a unit do banco!
-            loadedDiscos = discRes.data.map(d => ({ id: d.id, Titulo: d.titulo, Tipo: d.tipo, Capa: d.capa, Unit: d.unit || 'All', Tracklist: typeof d.tracklist === 'string' ? d.tracklist : JSON.stringify(d.tracklist || []) }));
-        } else loadedDiscos = mockDiscos;
-
+        if(memRes.data) loadedMembers = memRes.data;
+        if(discRes.data) loadedDiscos = discRes.data.map(d => ({ ...d, Unit: d.unit || 'All', Tracklist: typeof d.tracklist === 'string' ? d.tracklist : JSON.stringify(d.tracklist || []) }));
         if(newsRes.data) loadedNews = newsRes.data.map(n => ({ id: n.id, Data: n.data, Categoria: n.categoria, Titulo: n.titulo }));
-        else loadedNews = mockNews;
-
         if(stageRes.data) loadedStages = stageRes.data.map(s => ({ id: s.id, Titulo: s.titulo, Subtitulo: s.subtitulo, Status: s.status, Capa: s.capa, Setlist: s.setlist }));
-        else loadedStages = mockStages;
-
         if(banRes.data) loadedBanner = banRes.data;
-        else loadedBanner = { tipo: 'imagem', url_midia: 'https://i.ibb.co/bM4DYRtR/Chat-GPT-Image-8-de-abr-de-2026-16-50-31.png', titulo: 'BEM VINDO', subtitulo: '', tag: 'SISTEMA' };
 
       } catch (e) {
-        console.warn("Falha no Supabase.", e);
-        loadedMembers = mockMembers; loadedDiscos = mockDiscos; loadedStages = mockStages; loadedNews = mockNews;
+        console.warn("Falha no DB.");
       } finally {
-        renderAll();
+        renderDynamicHero(); renderNews();
+        setUnitFilter('All'); renderStagesList();
       }
     }
 
-    function renderAll() {
-        renderDynamicHero();
-        renderNews();
-        setUnitFilter(currentUnitFilter); 
-        renderStagesList();
-    }
-
     function toggleAdminMode() { isAdminMode = !isAdminMode; document.body.classList.toggle('admin-mode', isAdminMode); renderAll(); }
-
-    function switchView(id, el) { 
-      document.querySelectorAll(".view-section").forEach(v => v.classList.remove("active")); 
-      document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active")); 
-      document.getElementById(id).classList.add("active"); 
-      el.classList.add("active"); 
-      window.scrollTo(0,0); 
-    }
-
+    function switchView(id, el) { document.querySelectorAll(".view-section").forEach(v => v.classList.remove("active")); document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active")); document.getElementById(id).classList.add("active"); el.classList.add("active"); window.scrollTo(0,0); }
     function renderDynamicHero() { const wrapper = document.getElementById("hero-media-wrapper"); let b = loadedBanner; if(!b) return; document.getElementById("hero-title").innerHTML = b.titulo; document.getElementById("hero-sub").innerHTML = b.subtitulo; if(b.tag) document.getElementById("hero-tag").innerHTML = b.tag; wrapper.innerHTML = `<img class="hero-media" src="${b.url_midia}">`; }
     function renderNews() { document.getElementById("news-list").innerHTML = loadedNews.map((n, i) => { const d = (n.Data||"").split("-"); return `<div class="card" style="display:flex; align-items:center; gap:15px;"><button class="admin-edit-btn admin-only" onclick="openAdminModal('news', ${i})"><i class="fas fa-pen"></i></button><div style="text-align:center; min-width:50px; border-right:3px dashed #000; padding-right:15px;"><b style="font-size:1.5rem; color:var(--primary); -webkit-text-stroke:1px #000;">${d[2]||'00'}</b><br><span style="font-size:0.7rem; font-weight:900;">${d[1]||'00'}/${d[0]||'00'}</span></div><div><span class="tag" style="font-size:0.6rem; padding:2px 5px;">${n.Categoria}</span><h4 style="font-size:0.9rem; text-transform:uppercase;">${n.Titulo}</h4></div></div>`; }).join(''); }
     
     function setUnitFilter(unit) {
       currentUnitFilter = unit;
-      
       let tagClass = unit === 'All' ? 'tag-all' : 'tag-' + unit.toLowerCase();
-      document.querySelectorAll(".btn-tag").forEach(b => {
-          b.classList.remove("active");
-          if (b.classList.contains(tagClass)) b.classList.add("active");
-      });
+      document.querySelectorAll(".btn-tag").forEach(b => { b.classList.remove("active"); if (b.classList.contains(tagClass)) b.classList.add("active"); });
 
       const root = document.documentElement;
-
-      if(unit === 'Melancholy') {
-          root.style.setProperty('--primary', 'var(--color-melancholy)'); root.style.setProperty('--primary-light', '#D8BFD8'); 
-          document.body.classList.remove('fx-flash-love', 'fx-flash-melancholy', 'fx-flash-all'); void document.body.offsetWidth; 
-          document.body.classList.add('fx-flash-melancholy');
-      } else if (unit === 'Love') {
-          root.style.setProperty('--primary', 'var(--color-love)'); root.style.setProperty('--primary-light', '#FFCCCC'); 
-          document.body.classList.remove('fx-flash-love', 'fx-flash-melancholy', 'fx-flash-all'); void document.body.offsetWidth;
-          document.body.classList.add('fx-flash-love');
-      } else {
-          root.style.setProperty('--primary', 'var(--color-melancholy-love)'); root.style.setProperty('--primary-light', '#FFB6C1'); 
-          document.body.classList.remove('fx-flash-love', 'fx-flash-melancholy', 'fx-flash-all'); void document.body.offsetWidth;
-          document.body.classList.add('fx-flash-all');
-      }
+      if(unit === 'Melancholy') { root.style.setProperty('--primary', 'var(--color-melancholy)'); root.style.setProperty('--primary-light', '#D8BFD8'); document.body.classList.remove('fx-flash-love', 'fx-flash-melancholy', 'fx-flash-all'); void document.body.offsetWidth; document.body.classList.add('fx-flash-melancholy'); } 
+      else if (unit === 'Love') { root.style.setProperty('--primary', 'var(--color-love)'); root.style.setProperty('--primary-light', '#FFCCCC'); document.body.classList.remove('fx-flash-love', 'fx-flash-melancholy', 'fx-flash-all'); void document.body.offsetWidth; document.body.classList.add('fx-flash-love'); } 
+      else { root.style.setProperty('--primary', 'var(--color-melancholy-love)'); root.style.setProperty('--primary-light', '#FFB6C1'); document.body.classList.remove('fx-flash-love', 'fx-flash-melancholy', 'fx-flash-all'); void document.body.offsetWidth; document.body.classList.add('fx-flash-all'); }
       
       document.querySelectorAll(".nav-item").forEach(n => unit==='All' ? n.classList.add("black-text") : n.classList.remove("black-text"));
-      renderMembers();
-      renderDisco();
+      renderMembers(); renderDisco();
     }
 
     function renderDisco() { 
-      const grid = document.getElementById("disco-grid");
-      grid.innerHTML = "";
-      
-      let count = 0;
+      const grid = document.getElementById("disco-grid"); grid.innerHTML = ""; let count = 0;
       loadedDiscos.forEach((d, idx) => {
         let unitOfDisco = d.Unit || 'All';
-        
         if (currentUnitFilter !== 'All' && unitOfDisco !== currentUnitFilter) return;
 
         let displayColor = 'var(--color-melancholy-love)'; 
@@ -355,312 +391,199 @@
         else if (unitOfDisco === 'Melancholy') displayColor = 'var(--color-melancholy)';
         
         count++;
-        grid.innerHTML += `<div class="item-card" onclick="if(!isAdminMode) alert('Ative o modo Admin no botão acima para editar!')">
+        grid.innerHTML += `<div class="item-card" onclick="openDiscoModal(${idx})">
           <button class="admin-edit-btn admin-only" onclick="openAdminModal('disco', ${idx}, event)"><i class="fas fa-pen"></i></button>
-          <img src="${resolveImage(d.Capa)}" style="border-color: ${displayColor}; border-style: solid; border-width: 3px;">
-          <div class="item-name">${d.Titulo}</div>
+          <img src="${resolveImage(d.Capa || d.capa)}" style="border-color: ${displayColor}; border-style: solid; border-width: 3px;">
+          <div class="item-name">${d.Titulo || d.titulo}</div>
         </div>`;
       }); 
-
-      if(count === 0) {
-        grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 20px; font-weight: 900; color: #666;">Nenhum lançamento encontrado.</div>`;
-      }
+      if(count === 0) grid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; padding: 20px; font-weight: 900; color: #666;">Nenhum lançamento encontrado.</div>`;
     }
 
     function renderMembers() { 
-      const container = document.getElementById("members-container"); 
-      container.innerHTML = ""; 
-      
-      const groups = {}; 
+      const container = document.getElementById("members-container"); container.innerHTML = ""; const groups = {}; 
       loadedMembers.forEach((m, idx) => { 
-        if(['graduada','demitida'].includes(m.Status?.toLowerCase())) return; 
-        const key = currentUnitFilter === 'All' ? (m.Geracao || "1ª Geração") : (m.SubUnit || "Outros"); 
-        
+        if(['graduada','demitida'].includes((m.Status||m.status)?.toLowerCase())) return; 
+        const key = currentUnitFilter === 'All' ? (m.Geracao || m.geracao || "1ª Geração") : (m.SubUnit || m.subunit || "Outros"); 
         if(currentUnitFilter !== 'All' && key !== currentUnitFilter) return;
-        
-        if(!groups[key]) groups[key] = []; 
-        m._idx = idx; 
-        groups[key].push(m); 
+        if(!groups[key]) groups[key] = []; m._idx = idx; groups[key].push(m); 
       }); 
-      
       const orderMap = {"1ª Geração": 0, "2ª Geração": 1, "Love": 2, "Melancholy": 3};
-      const keys = Object.keys(groups).sort((a, b) => (orderMap[a] || 99) - (orderMap[b] || 99)); 
-      
-      keys.forEach(key => { 
+      Object.keys(groups).sort((a, b) => (orderMap[a] || 99) - (orderMap[b] || 99)).forEach(key => { 
         let themeColor = 'var(--color-melancholy-love)'; let sectionTitle = `<i class="fas fa-star"></i> ${key}`; let textColor = '#fff';
         if (key === 'Melancholy') { themeColor = 'var(--color-melancholy)'; sectionTitle = `SUB UNIT: ${key}`; } 
         else if (key === 'Love') { themeColor = 'var(--color-love)'; sectionTitle = `SUB UNIT: ${key}`; } 
         else if (currentUnitFilter === 'All') { themeColor = 'var(--black)'; textColor = 'var(--color-melancholy-love)'; }
-        
         container.innerHTML += `<div>
           <h4 class="section-title" style="margin-top:20px; background:${themeColor}; color:${textColor};">${sectionTitle}</h4>
           <div class="grid-3">
-            ${groups[key].map(m => `<div class="item-card" onclick="if(!isAdminMode) alert('Ative o modo Admin no botão acima para editar!')">
+            ${groups[key].map(m => `<div class="item-card" onclick="openMemberModal(${m._idx})">
               <button class="admin-edit-btn admin-only" onclick="openAdminModal('member', ${m._idx}, event)"><i class="fas fa-pen"></i></button>
-              <img src="${resolveImage(m.Foto)}" style="border-color:${themeColor}">
-              <div class="item-name">${m.Nome}</div>
+              <img src="${resolveImage(m.Foto || m.foto)}" style="border-color:${themeColor}">
+              <div class="item-name">${m.Nome || m.nome}</div>
             </div>`).join('')}
           </div>
         </div>`; 
       }); 
     }
 
-    function renderStagesList() { 
-        document.getElementById('stages-list').innerHTML = loadedStages.map((s, i) => `<div class="stage-card" onclick="if(!isAdminMode) alert('Ative o modo Admin no botão acima para editar!')">
-            <button class="admin-edit-btn admin-only" onclick="openAdminModal('stage', ${i}, event)"><i class="fas fa-pen"></i></button>
-            <img src="${s.Capa || pImg('STG','All')}" class="stage-cover">
-            <div class="stage-info"><div class="stage-title">${s.Titulo}</div><div class="stage-sub">${s.Subtitulo || ''}</div><span class="stage-badge">${s.Status || 'Confirmado'}</span></div>
-        </div>`).join(''); 
+    function openMemberModal(idx) {
+      const m = loadedMembers[idx]; if(!m) return;
+      const sub = m.SubUnit || m.subunit;
+      const themeColor = sub === 'Melancholy' ? 'var(--color-melancholy)' : 'var(--color-love)';
+      document.getElementById("member-modal").style.setProperty('--primary', themeColor);
+      
+      document.getElementById("m-name").innerHTML = m.Nome || m.nome; 
+      document.getElementById("m-team").innerHTML = `Sub Unit: ${sub}`; 
+      document.getElementById("m-cover").src = resolveImage(m.Foto || m.foto); 
+      document.getElementById("m-bio").innerHTML = (m.Perfil || m.perfil) || "Sem bio.";
+      
+      let th = []; try { th = JSON.parse(m.Historico_Times || m.historico_times || "[]"); } catch(e){}
+      const mm = { 'Jan':1, 'Fev':2, 'Mar':3, 'Abr':4, 'Mai':5, 'Jun':6, 'Jul':7, 'Ago':8, 'Set':9, 'Out':10, 'Nov':11, 'Dez':12 };
+      th.sort((a,b) => { let aP=(a.data||'').split(' '), bP=(b.data||'').split(' '); let yA=parseInt(aP[1])||0, yB=parseInt(bP[1])||0; return yA!==yB ? yB-yA : (mm[bP[0]]||0) - (mm[aP[0]]||0); });
+
+      const histEl = document.getElementById("m-history-timeline");
+      if(th.length === 0) histEl.innerHTML = `<div style="color:#000; font-size:0.8rem; font-weight:bold;">Nenhum registro.</div>`;
+      else histEl.innerHTML = th.map(h => `<div class="team-history-item"><span class="team-history-date">${h.data}</span><br>${h.para}</div>`).join('');
+
+      let parts = typeof (m.Participacoes||m.participacoes) === "string" ? JSON.parse(m.Participacoes||m.participacoes || "[]") : (m.Participacoes||m.participacoes); if (!Array.isArray(parts)) parts = []; const discoMap = {}; loadedDiscos.forEach(d => { discoMap[d.Titulo||d.titulo] = d.id || 0; }); parts.sort((a, b) => { const titleA = typeof a === 'string' ? a.split(':')[0] : (a.single || ''); const titleB = typeof b === 'string' ? b.split(':')[0] : (b.single || ''); return (discoMap[titleA] || 99999) - (discoMap[titleB] || 99999); });
+      const partsHTML = parts.map(p => { if (typeof p === 'string') return `<div class="part-card"><div class="part-row" style="font-weight:700;">${p}</div></div>`; const rawTracks = p.tracks || []; const tracks = Array.isArray(rawTracks) ? rawTracks : [rawTracks]; const rows = tracks.map(t => { if (!t) return ""; const labels = t.labels || []; const badges = Array.isArray(labels) ? labels.map(l => { const slug = String(l).toLowerCase(); let cls = ''; let icon = 'fa-tag'; if(slug.includes('a-side') || slug==='aside') { cls='is-aside'; icon='fa-star'; } else if(slug.includes('b-side') || slug==='bside') { cls='is-bside'; icon='fa-compact-disc'; } else if(slug.includes('center')) { cls='is-center'; icon='fa-crown'; } else if(slug.includes('unit')) { cls='is-unit'; icon='fa-users'; } return `<span class="label-brat ${cls}"><i class="fas ${icon}"></i> ${l}</span>`; }).join('') : ''; return `<div class="part-row"><span>${t.title || 'Música'}</span><div>${badges}</div></div>`; }).join(''); return `<div class="part-card"><div class="part-header">${p.single || 'Single'}</div>${rows}</div>`; }).join('');
+      document.getElementById("m-part").innerHTML = partsHTML || '<p style="text-align:center; font-weight:bold; padding:20px;">Nenhuma música registrada.</p>'; switchTabModal('perfil', document.querySelector('#member-modal .tab-btn')); document.getElementById("member-modal").classList.add("active");
     }
+
+    function openDiscoModal(idx) { 
+      const d = loadedDiscos[idx]; 
+      
+      let unitOfDisco = d.Unit || 'All';
+      let themeColor = 'var(--color-melancholy-love)'; 
+      let unitName = 'Melancholy Love';
+
+      if (unitOfDisco === 'Love') { themeColor = 'var(--color-love)'; unitName = 'Love <i class="fas fa-heart"></i>'; }
+      else if (unitOfDisco === 'Melancholy') { themeColor = 'var(--color-melancholy)'; unitName = 'Melancholy <i class="fas fa-skull"></i>'; }
+      
+      document.getElementById("disco-modal").style.setProperty('--primary', themeColor);
+      document.getElementById("dm-cover").src = resolveImage(d.Capa || d.capa); 
+      document.getElementById("dm-title").innerHTML = d.Titulo || d.titulo; 
+      
+      // PREENCHE AS DUAS TAGS
+      const uTag = document.getElementById("dm-unit-tag");
+      uTag.innerHTML = unitName;
+      uTag.style.background = themeColor;
+      
+      const subTag = document.getElementById("dm-sub");
+      subTag.innerHTML = d.Tipo || d.tipo;
+      subTag.style.color = themeColor;
+      subTag.style.borderColor = themeColor;
+
+      const box = document.getElementById("dm-content"); box.innerHTML = ""; 
+      let fJSON = d.Tracklist || d.tracklist; if (typeof fJSON === 'string') { try { fJSON = JSON.parse(fJSON); } catch(e){ fJSON = []; } }
+      if (Array.isArray(fJSON)) { box.innerHTML = `<div class="tabs"><button class="tab-btn active" data-target="t">Tracklist</button><button class="tab-btn" data-target="f">Formação</button></div><div id="pane-t" class="modal-section active" style="padding: 20px;">${renderTracklistFromJSON(fJSON)}</div><div id="pane-f" class="modal-section" style="padding: 20px;">${renderFormationFromJSON(fJSON)}</div>`; } 
+      initTabsAndAccordion(box); document.getElementById("disco-modal").classList.add("active"); 
+    }
+
+    function renderStagesList() { document.getElementById('stages-list').innerHTML = loadedStages.map((s, i) => `<div class="stage-card" onclick="if(!isAdminMode) alert('Ative o modo Admin no botão acima para editar!')"><button class="admin-edit-btn admin-only" onclick="openAdminModal('stage', ${i}, event)"><i class="fas fa-pen"></i></button><img src="${resolveImage(s.Capa || s.capa)}" class="stage-cover"><div class="stage-info"><div class="stage-title">${s.Titulo || s.titulo}</div><div class="stage-sub">${s.Subtitulo || s.subtitulo || ''}</div><span class="stage-badge">${s.Status || s.status || 'Confirmado'}</span></div></div>`).join(''); }
 
     function closeModal(id) { document.getElementById(id).classList.remove("active"); }
     function resolveImage(f) { if(!f) return pImg("?", "All"); return (typeof f === "string" ? f : f.publicUrl).replace(/[\[\]"]/g, ""); }
+    function switchTabModal(t, el) { const p = el.parentElement; p.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active")); el.classList.add("active"); const content = p.nextElementSibling.parentElement; content.querySelectorAll(".tab-pane").forEach(tp => tp.classList.remove("active")); content.querySelector("#tab-"+t).classList.add("active"); }
 
-    // --- BUILDER HISTÓRICO ---
+    // BUILDERS E ADMIN ACTIONS 
     function updHist(idx, field, val) { tempHist[idx][field] = val; }
     function delHist(idx) { tempHist.splice(idx,1); renderHistBuilder(); }
     function addHist() { tempHist.push({mes:'Jan', ano:'', acao:'Debut', desc:''}); renderHistBuilder(); }
-    
     function renderHistBuilder() {
-        let html = '';
-        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-        const acoes = ['Debut', 'Entrou para Unit', 'Foi Transferida', 'Graduou', 'Foi Expulsa', 'Entrou em Hiatus', 'Retornou de Hiatus', 'Outro'];
-
+        let html = ''; const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']; const acoes = ['Debut', 'Entrou para Unit', 'Foi Transferida', 'Graduou', 'Foi Expulsa', 'Entrou em Hiatus', 'Retornou de Hiatus', 'Outro'];
         tempHist.forEach((h, i) => {
-            if (h.data !== undefined) {
-                let p = h.data.split(' '); h.mes = p[0] || 'Jan'; h.ano = p[1] || ''; h.acao = 'Outro'; h.desc = h.para; delete h.data; delete h.para;
-            }
+            if (h.data !== undefined) { let p = h.data.split(' '); h.mes = p[0] || 'Jan'; h.ano = p[1] || ''; h.acao = 'Outro'; h.desc = h.para; delete h.data; delete h.para; }
             let showDesc = h.acao === 'Outro' || h.acao === 'Entrou para Unit' || h.acao === 'Foi Transferida';
-
-            html += `<div class="builder-row" style="flex-direction:column; gap:8px;">
-                <div style="display:flex; gap:5px; width:100%;">
-                    <select onchange="updHist(${i}, 'mes', this.value)" style="flex:0.3;">
-                        ${meses.map(m => `<option value="${m}" ${h.mes === m ? 'selected' : ''}>${m}</option>`).join('')}
-                    </select>
-                    <input type="number" placeholder="Ano" value="${h.ano||''}" oninput="updHist(${i}, 'ano', this.value)" style="flex:0.3;">
-                    <select onchange="updHist(${i}, 'acao', this.value); renderHistBuilder();" style="flex:0.8;">
-                        ${acoes.map(a => `<option value="${a}" ${h.acao === a ? 'selected' : ''}>${a}</option>`).join('')}
-                    </select>
-                    <button class="btn-builder-del" onclick="delHist(${i})"><i class="fas fa-trash"></i></button>
-                </div>
-                ${showDesc ? `<input type="text" placeholder="Detalhes (Qual unit? Motivo?)" value="${h.desc||''}" oninput="updHist(${i}, 'desc', this.value)" style="width:100%;">` : ''}
-            </div>`;
+            html += `<div class="builder-row" style="flex-direction:column; gap:8px;"><div style="display:flex; gap:5px; width:100%;"><select onchange="updHist(${i}, 'mes', this.value)" style="flex:0.3;">${meses.map(m => `<option value="${m}" ${h.mes === m ? 'selected' : ''}>${m}</option>`).join('')}</select><input type="number" placeholder="Ano" value="${h.ano||''}" oninput="updHist(${i}, 'ano', this.value)" style="flex:0.3;"><select onchange="updHist(${i}, 'acao', this.value); renderHistBuilder();" style="flex:0.8;">${acoes.map(a => `<option value="${a}" ${h.acao === a ? 'selected' : ''}>${a}</option>`).join('')}</select><button class="btn-builder-del" onclick="delHist(${i})"><i class="fas fa-trash"></i></button></div>${showDesc ? `<input type="text" placeholder="Detalhes (Qual unit? Motivo?)" value="${h.desc||''}" oninput="updHist(${i}, 'desc', this.value)" style="width:100%;">` : ''}</div>`;
         });
-        html += `<button class="btn-builder-add" onclick="addHist()">+ Adicionar Fato Histórico</button>`;
-        document.getElementById('bld-hist').innerHTML = html;
+        html += `<button class="btn-builder-add" onclick="addHist()">+ Adicionar Fato Histórico</button>`; document.getElementById('bld-hist').innerHTML = html;
     }
 
-    // --- BUILDER MÚSICAS ---
     function updPart(idx, field, val) { tempPart[idx][field] = val; }
     function delPart(idx) { tempPart.splice(idx,1); renderPartBuilder(); }
     function addPart() { tempPart.push({single:'', title:'', labels:''}); renderPartBuilder(); }
     function renderPartBuilder() {
-        let html = '<div class="help-text" style="margin-bottom:10px;">Elas serão agrupadas pelo nome do Single ao salvar! Etiquetas: separe por vírgula.</div>';
-        tempPart.forEach((p, i) => {
-            html += `<div class="builder-row">
-                <input type="text" placeholder="Single" value="${p.single||''}" oninput="updPart(${i}, 'single', this.value)">
-                <input type="text" placeholder="Música" value="${p.title||''}" oninput="updPart(${i}, 'title', this.value)">
-                <input type="text" placeholder="Tags (A-Side, Center...)" value="${p.labels||''}" oninput="updPart(${i}, 'labels', this.value)" style="flex: 100%;">
-                <button class="btn-builder-del" style="flex: 100%; padding:5px;" onclick="delPart(${i})"><i class="fas fa-trash"></i> Remover</button>
-            </div>`;
-        });
-        html += `<button class="btn-builder-add" onclick="addPart()">+ Adicionar Música</button>`;
-        document.getElementById('bld-part').innerHTML = html;
+        let html = '<div class="help-text" style="margin-bottom:10px;">Elas serão agrupadas pelo nome do Single ao salvar!</div>';
+        tempPart.forEach((p, i) => { html += `<div class="builder-row"><input type="text" placeholder="Single" value="${p.single||''}" oninput="updPart(${i}, 'single', this.value)"><input type="text" placeholder="Música" value="${p.title||''}" oninput="updPart(${i}, 'title', this.value)"><input type="text" placeholder="Tags (A-Side, Center...)" value="${p.labels||''}" oninput="updPart(${i}, 'labels', this.value)" style="flex: 100%;"><button class="btn-builder-del" style="flex: 100%; padding:5px;" onclick="delPart(${i})"><i class="fas fa-trash"></i> Remover</button></div>`; });
+        html += `<button class="btn-builder-add" onclick="addPart()">+ Adicionar Música</button>`; document.getElementById('bld-part').innerHTML = html;
     }
 
-    // --- BUILDER FAIXAS/DISCO ---
     function updTrack(idx, field, val) { tempTrack[idx][field] = val; }
     function delTrack(idx) { tempTrack.splice(idx,1); renderTrackBuilder(); }
     function addTrack() { tempTrack.push({kind:'A-Side', name:'', members: []}); renderTrackBuilder(); }
-    function toggleTrackMember(tIdx, memberIndex) {
-        const activeMembers = loadedMembers.filter(m => !['graduada','demitida'].includes(m.Status?.toLowerCase()));
-        let mName = activeMembers[memberIndex].Nome; let track = tempTrack[tIdx]; if (!track.members) track.members = [];
-        let existingIndex = track.members.findIndex(m => m.name === mName);
-        if (existingIndex >= 0) track.members.splice(existingIndex, 1); else track.members.push({ name: mName, isCenter: false });
-        renderTrackBuilder();
-    }
-    function setTrackCenter(tIdx, memberIndex, event) {
-        event.stopPropagation(); const activeMembers = loadedMembers.filter(m => !['graduada','demitida'].includes(m.Status?.toLowerCase()));
-        let mName = activeMembers[memberIndex].Nome; let track = tempTrack[tIdx]; if (!track.members) track.members = [];
-        let member = track.members.find(m => m.name === mName);
-        if (!member) { member = { name: mName, isCenter: true }; track.members.push(member); } else { member.isCenter = !member.isCenter; }
-        renderTrackBuilder();
-    }
+    function toggleTrackMember(tIdx, memberIndex) { const activeMembers = loadedMembers.filter(m => !['graduada','demitida'].includes((m.Status||m.status)?.toLowerCase())); let mName = activeMembers[memberIndex].Nome || activeMembers[memberIndex].nome; let track = tempTrack[tIdx]; if (!track.members) track.members = []; let existingIndex = track.members.findIndex(m => m.name === mName); if (existingIndex >= 0) track.members.splice(existingIndex, 1); else track.members.push({ name: mName, isCenter: false }); renderTrackBuilder(); }
+    function setTrackCenter(tIdx, memberIndex, event) { event.stopPropagation(); const activeMembers = loadedMembers.filter(m => !['graduada','demitida'].includes((m.Status||m.status)?.toLowerCase())); let mName = activeMembers[memberIndex].Nome || activeMembers[memberIndex].nome; let track = tempTrack[tIdx]; if (!track.members) track.members = []; let member = track.members.find(m => m.name === mName); if (!member) { member = { name: mName, isCenter: true }; track.members.push(member); } else { member.isCenter = !member.isCenter; } renderTrackBuilder(); }
     function renderTrackBuilder() {
-        let html = '<div class="help-text" style="margin-bottom:10px;">Clique no nome para adicionar/remover. Clique na <i class="fas fa-star"></i> para Center.</div>';
-        const activeMembers = loadedMembers.filter(m => !['graduada','demitida'].includes(m.Status?.toLowerCase()));
+        let html = '<div class="help-text" style="margin-bottom:10px;">Clique no nome para add/remover. Clique na <i class="fas fa-star"></i> para Center.</div>';
+        const activeMembers = loadedMembers.filter(m => !['graduada','demitida'].includes((m.Status||m.status)?.toLowerCase()));
         tempTrack.forEach((t, i) => {
-            html += `<div class="builder-row" style="flex-direction: column;">
-                <div style="display:flex; gap:5px; width: 100%;">
-                    <input type="text" placeholder="Tipo" value="${t.kind||''}" oninput="updTrack(${i}, 'kind', this.value)" style="flex:0.5;">
-                    <input type="text" placeholder="Nome da Música" value="${t.name||''}" oninput="updTrack(${i}, 'name', this.value)">
-                    <button class="btn-builder-del" onclick="delTrack(${i})"><i class="fas fa-trash"></i></button>
-                </div>
-                <div class="member-pill-wrap">`;
-            activeMembers.forEach((m, mIdx) => {
-                let cleanName = m.Nome.replace(/<[^>]*>?/gm, '').trim(); let inTrack = (t.members || []).find(tm => tm.name === m.Nome);
-                let isCenter = !!inTrack && inTrack.isCenter;
-                html += `<div class="m-pill ${inTrack ? 'is-active' : ''}">
-                    <div class="m-pill-name" onclick="toggleTrackMember(${i}, ${mIdx})">${cleanName}</div>
-                    <div class="m-pill-center ${isCenter ? 'is-center' : ''}" onclick="setTrackCenter(${i}, ${mIdx}, event)"><i class="fas fa-star"></i></div>
-                </div>`;
-            });
+            html += `<div class="builder-row" style="flex-direction: column;"><div style="display:flex; gap:5px; width: 100%;"><input type="text" placeholder="Tipo" value="${t.kind||''}" oninput="updTrack(${i}, 'kind', this.value)" style="flex:0.5;"><input type="text" placeholder="Nome da Música" value="${t.name||''}" oninput="updTrack(${i}, 'name', this.value)"><button class="btn-builder-del" onclick="delTrack(${i})"><i class="fas fa-trash"></i></button></div><div class="member-pill-wrap">`;
+            activeMembers.forEach((m, mIdx) => { let cleanName = (m.Nome||m.nome).replace(/<[^>]*>?/gm, '').trim(); let inTrack = (t.members || []).find(tm => tm.name === (m.Nome||m.nome)); let isCenter = !!inTrack && inTrack.isCenter; html += `<div class="m-pill ${inTrack ? 'is-active' : ''}"><div class="m-pill-name" onclick="toggleTrackMember(${i}, ${mIdx})">${cleanName}</div><div class="m-pill-center ${isCenter ? 'is-center' : ''}" onclick="setTrackCenter(${i}, ${mIdx}, event)"><i class="fas fa-star"></i></div></div>`; });
             html += `</div></div>`;
         });
-        html += `<button class="btn-builder-add" onclick="addTrack()">+ Adicionar Faixa</button>`;
-        document.getElementById('bld-track').innerHTML = html;
+        html += `<button class="btn-builder-add" onclick="addTrack()">+ Adicionar Faixa</button>`; document.getElementById('bld-track').innerHTML = html;
     }
 
-    function insertSetlist(text) {
-        const el = document.getElementById('fm-setlist');
-        if(el.value && !el.value.endsWith('\n')) el.value += '\n';
-        el.value += text; el.focus();
-    }
+    function insertSetlist(text) { const el = document.getElementById('fm-setlist'); if(el.value && !el.value.endsWith('\n')) el.value += '\n'; el.value += text; el.focus(); }
 
-    // --- ABRIR MODAL ADMIN ---
     function openAdminModal(type, index, event) {
-        if(event) event.stopPropagation(); editType = type; editIndex = index;
-        const container = document.getElementById('admin-form-container');
-        let html = `<h2 style="margin-bottom:20px;">${index >= 0 ? 'Editar' : 'Adicionar'} ${type.toUpperCase()}</h2>`;
-        
+        if(event) event.stopPropagation(); editType = type; editIndex = index; const container = document.getElementById('admin-form-container'); let html = `<h2 style="margin-bottom:20px;">${index >= 0 ? 'Editar' : 'Adicionar'} ${type.toUpperCase()}</h2>`;
         if (type === 'banner') {
             let d = loadedBanner || {url_midia:'', tag:'', titulo:'', subtitulo:''};
-            html += `<div class="form-group"><label>URL da Imagem</label><input type="text" id="fm-url" value="${d.url_midia||''}"></div>
-                     <div class="form-group"><label>Tag Superior</label><input type="text" id="fm-tag" value='${d.tag||''}'></div>
-                     <div class="form-group"><label>Título</label><input type="text" id="fm-title" value='${d.titulo||''}'></div>
-                     <div class="form-group"><label>Subtítulo</label><input type="text" id="fm-sub" value="${d.subtitulo||''}"></div>`;
-        } 
-        else if (type === 'news') {
+            html += `<div class="form-group"><label>URL da Imagem</label><input type="text" id="fm-url" value="${d.url_midia||''}"></div><div class="form-group"><label>Tag Superior</label><input type="text" id="fm-tag" value='${d.tag||''}'></div><div class="form-group"><label>Título</label><input type="text" id="fm-title" value='${d.titulo||''}'></div><div class="form-group"><label>Subtítulo</label><input type="text" id="fm-sub" value="${d.subtitulo||''}"></div>`;
+        } else if (type === 'news') {
             let d = index >= 0 ? loadedNews[index] : {Data: "", Categoria: "", Titulo: ""};
-            html += `<div class="form-group"><label>Data</label><input type="date" id="fm-data" value="${d.Data}"></div>
-                     <div class="form-group"><label>Categoria</label><input type="text" id="fm-cat" value="${d.Categoria}"></div>
-                     <div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo}"></div>`;
-        }
-        else if (type === 'disco') {
+            html += `<div class="form-group"><label>Data</label><input type="date" id="fm-data" value="${d.Data}"></div><div class="form-group"><label>Categoria</label><input type="text" id="fm-cat" value="${d.Categoria}"></div><div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo}"></div>`;
+        } else if (type === 'disco') {
             let d = index >= 0 ? loadedDiscos[index] : {Titulo: "", Tipo: "", Capa: "", Unit: "All", Tracklist: "[]"};
-            let rawT = []; 
-            if (typeof d.Tracklist === 'string') {
-                if (d.Tracklist.includes('ctl48-formation-data')) {
-                    const temp = document.createElement("div"); temp.innerHTML = d.Tracklist; 
-                    const jsonEl = temp.querySelector("#ctl48-formation-data"); 
-                    if(jsonEl) { try { rawT = JSON.parse(jsonEl.textContent.trim()); } catch(e){} }
-                } else { try { rawT = JSON.parse(d.Tracklist); } catch(e){} }
-            } else { rawT = d.Tracklist || []; }
-
+            let rawT = []; if (typeof d.Tracklist === 'string') { if (d.Tracklist.includes('ctl48-formation-data')) { const temp = document.createElement("div"); temp.innerHTML = d.Tracklist; const jsonEl = temp.querySelector("#ctl48-formation-data"); if(jsonEl) { try { rawT = JSON.parse(jsonEl.textContent.trim()); } catch(e){} } } else { try { rawT = JSON.parse(d.Tracklist); } catch(e){} } } else { rawT = d.Tracklist || []; }
             tempTrack = (rawT||[]).map(t => ({ kind: t.kind, name: t.name, members: JSON.parse(JSON.stringify(t.members || [])) }));
-            
-            html += `<div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo}"></div>
-                     <div class="form-group"><label>Tipo</label><input type="text" id="fm-tipo" value="${d.Tipo}"></div>
-                     <div class="form-group"><label>URL da Capa</label><input type="text" id="fm-capa" value="${d.Capa||''}"></div>
-                     
-                     <div class="form-group">
-                        <label>Quem irá lançar? (Unit)</label>
-                        <select id="fm-unit-disco">
-                            <option value="All" ${d.Unit==='All'?'selected':''}>Melancholy Love (Grupo Completo)</option>
-                            <option value="Melancholy" ${d.Unit==='Melancholy'?'selected':''}>Melancholy</option>
-                            <option value="Love" ${d.Unit==='Love'?'selected':''}>Love</option>
-                        </select>
-                     </div>
-
-                     <div class="form-group"><label>Faixas & Formação</label><div id="bld-track" class="builder-container"></div></div>`;
-        }
-        else if (type === 'member') {
+            html += `<div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo || d.titulo || ''}"></div><div class="form-group"><label>Tipo</label><input type="text" id="fm-tipo" value="${d.Tipo || d.tipo || ''}"></div><div class="form-group"><label>URL da Capa</label><input type="text" id="fm-capa" value="${d.Capa || d.capa || ''}"></div><div class="form-group"><label>Quem irá lançar? (Unit)</label><select id="fm-unit-disco"><option value="All" ${d.Unit==='All'?'selected':''}>Melancholy Love</option><option value="Melancholy" ${d.Unit==='Melancholy'?'selected':''}>Melancholy</option><option value="Love" ${d.Unit==='Love'?'selected':''}>Love</option></select></div><div class="form-group"><label>Faixas & Formação</label><div id="bld-track" class="builder-container"></div></div>`;
+        } else if (type === 'member') {
             let d = index >= 0 ? loadedMembers[index] : {Nome: "", Geracao: "1ª Geração", Foto: "", SubUnit: "Love", Status: "Ativa", Perfil: "", Historico_Times: "[]", Participacoes: "[]"};
-            try { tempHist = typeof d.Historico_Times === 'string' ? JSON.parse(d.Historico_Times) : d.Historico_Times; } catch(e){ tempHist=[]; }
-            tempPart = []; let rawP = []; try { rawP = typeof d.Participacoes === 'string' ? JSON.parse(d.Participacoes) : d.Participacoes; } catch(e){}
-            (rawP||[]).forEach(p => {
-                if(typeof p === 'string') tempPart.push({single: p, title:'', labels:''});
-                else (p.tracks||[]).forEach(t => tempPart.push({ single: p.single||'', title: t.title||'', labels: (t.labels||[]).join(', ') }));
-            });
-            html += `<div class="form-group"><label>Nome (Aceita HTML)</label><input type="text" id="fm-nome" value="${d.Nome.replace(/"/g, '&quot;')}"></div>
-                     <div class="form-group"><label>Geração</label><input type="text" id="fm-gen" value="${d.Geracao}"></div>
-                     <div class="form-group"><label>Sub Unit</label><select id="fm-unit"><option value="Love" ${d.SubUnit==='Love'?'selected':''}>Love</option><option value="Melancholy" ${d.SubUnit==='Melancholy'?'selected':''}>Melancholy</option></select></div>
-                     <div class="form-group"><label>Status</label><input type="text" id="fm-status" value="${d.Status}"></div>
-                     <div class="form-group"><label>URL Foto</label><input type="text" id="fm-foto" value="${(d.Foto||'').includes('ui-avatars') ? '' : d.Foto}"></div>
-                     <div class="form-group"><label>Perfil</label><textarea id="fm-perfil">${d.Perfil}</textarea></div>
-                     <div class="form-group"><label>Histórico</label><div id="bld-hist" class="builder-container"></div></div>
-                     <div class="form-group"><label>Músicas</label><div id="bld-part" class="builder-container"></div></div>`;
-        }
-        else if (type === 'stage') {
+            try { tempHist = typeof (d.Historico_Times||d.historico_times) === 'string' ? JSON.parse(d.Historico_Times||d.historico_times) : (d.Historico_Times||d.historico_times); } catch(e){ tempHist=[]; }
+            tempPart = []; let rawP = []; try { rawP = typeof (d.Participacoes||d.participacoes) === 'string' ? JSON.parse(d.Participacoes||d.participacoes) : (d.Participacoes||d.participacoes); } catch(e){}
+            (rawP||[]).forEach(p => { if(typeof p === 'string') tempPart.push({single: p, title:'', labels:''}); else (p.tracks||[]).forEach(t => tempPart.push({ single: p.single||'', title: t.title||'', labels: (t.labels||[]).join(', ') })); });
+            html += `<div class="form-group"><label>Nome</label><input type="text" id="fm-nome" value="${(d.Nome||d.nome||'').replace(/"/g, '&quot;')}"></div><div class="form-group"><label>Geração</label><input type="text" id="fm-gen" value="${d.Geracao||d.geracao||''}"></div><div class="form-group"><label>Sub Unit</label><select id="fm-unit"><option value="Love" ${(d.SubUnit||d.subunit)==='Love'?'selected':''}>Love</option><option value="Melancholy" ${(d.SubUnit||d.subunit)==='Melancholy'?'selected':''}>Melancholy</option></select></div><div class="form-group"><label>Status</label><input type="text" id="fm-status" value="${d.Status||d.status||''}"></div><div class="form-group"><label>URL Foto</label><input type="text" id="fm-foto" value="${((d.Foto||d.foto)||'').includes('ui-avatars') ? '' : (d.Foto||d.foto||'')}"></div><div class="form-group"><label>Perfil</label><textarea id="fm-perfil">${d.Perfil||d.perfil||''}</textarea></div><div class="form-group"><label>Histórico</label><div id="bld-hist" class="builder-container"></div></div><div class="form-group"><label>Músicas</label><div id="bld-part" class="builder-container"></div></div>`;
+        } else if (type === 'stage') {
             let d = index >= 0 ? loadedStages[index] : {Titulo: "", Subtitulo: "", Status: "", Capa: "", Setlist: ""};
-            html += `<div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo}"></div>
-                     <div class="form-group"><label>Subtítulo</label><input type="text" id="fm-sub" value="${d.Subtitulo}"></div>
-                     <div class="form-group"><label>Status</label><input type="text" id="fm-status" value="${d.Status}"></div>
-                     <div class="form-group"><label>URL da Capa</label><input type="text" id="fm-capa" value="${d.Capa||''}"></div>
-                     <div class="form-group">
-                        <label>Setlist</label>
-                        <div style="display: flex; gap: 5px; margin-bottom: 8px; overflow-x: auto;">
-                           <button type="button" style="background:#000; color:var(--primary); font-weight:900; border:2px solid var(--primary); padding:6px 12px; cursor:pointer;" onclick="insertSetlist('M01. ')">+ M (Música)</button>
-                           <button type="button" style="background:var(--primary); color:#fff; font-weight:900; border:2px solid #000; padding:6px 12px; cursor:pointer;" onclick="insertSetlist('MC1. ')">+ MC</button>
-                           <button type="button" style="background:#fff; color:#000; font-weight:900; border:2px dashed #000; padding:6px 12px; cursor:pointer;" onclick="insertSetlist('ENCORE\\n')">+ ENCORE</button>
-                        </div>
-                        <textarea id="fm-setlist">${d.Setlist||''}</textarea>
-                     </div>`;
+            html += `<div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo||d.titulo||''}"></div><div class="form-group"><label>Subtítulo</label><input type="text" id="fm-sub" value="${d.Subtitulo||d.subtitulo||''}"></div><div class="form-group"><label>Status</label><input type="text" id="fm-status" value="${d.Status||d.status||''}"></div><div class="form-group"><label>URL da Capa</label><input type="text" id="fm-capa" value="${d.Capa||d.capa||''}"></div><div class="form-group"><label>Setlist</label><div style="display: flex; gap: 5px; margin-bottom: 8px; overflow-x: auto;"><button type="button" style="background:#000; color:var(--primary); font-weight:900; border:2px solid var(--primary); padding:6px 12px; cursor:pointer;" onclick="insertSetlist('M01. ')">+ M (Música)</button><button type="button" style="background:var(--primary); color:#fff; font-weight:900; border:2px solid #000; padding:6px 12px; cursor:pointer;" onclick="insertSetlist('MC1. ')">+ MC</button><button type="button" style="background:#fff; color:#000; font-weight:900; border:2px dashed #000; padding:6px 12px; cursor:pointer;" onclick="insertSetlist('ENCORE\\n')">+ ENCORE</button></div><textarea id="fm-setlist">${d.Setlist||d.setlist||''}</textarea></div>`;
         }
-
-        html += `<button class="btn-save" onclick="saveAdminForm()"><i class="fas fa-save"></i> Salvar na Nuvem</button>`;
-        if (index >= 0 && type !== 'banner') html += `<button class="btn-delete" onclick="deleteAdminItem()"><i class="fas fa-trash"></i> Excluir</button>`;
+        html += `<button class="btn-save" onclick="saveAdminForm()"><i class="fas fa-save"></i> Salvar na Nuvem</button>`; if (index >= 0 && type !== 'banner') html += `<button class="btn-delete" onclick="deleteAdminItem()"><i class="fas fa-trash"></i> Excluir</button>`;
         container.innerHTML = html; document.getElementById('admin-modal').classList.add('active');
         if(document.getElementById('bld-hist')) renderHistBuilder(); if(document.getElementById('bld-part')) renderPartBuilder(); if(document.getElementById('bld-track')) renderTrackBuilder();
     }
+
+    function initTabsAndAccordion(box) { box.querySelectorAll(".tab-btn").forEach(btn => { btn.onclick = () => { box.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active")); box.querySelectorAll(".modal-section").forEach(s => s.classList.remove("active")); btn.classList.add("active"); box.querySelector(`#pane-${btn.dataset.target}`).classList.add("active"); }; }); box.querySelectorAll(".formation-group").forEach(group => { let header = group.querySelector(".formation-header"); if(!header) { const title = group.querySelector(".formation-title"); if(title) { const txt = title.innerText; header = document.createElement("div"); header.className="formation-header"; header.innerHTML = `<div class="formation-title"><span class="formation-idol-icon"><i class="fas fa-skull"></i></span>${txt}</div><i class="fas fa-chevron-down formation-arrow"></i>`; group.insertBefore(header, group.firstChild); title.remove(); } } if(header) header.onclick = () => group.classList.toggle("open"); }); }
+    function renderTracklistFromJSON(list) { if(!list || !list.length) return "<p>Vazio.</p>"; return `<ul class="tracklist">${list.map(item => { let cls='is-bside'; const k = (item.kind||"").toLowerCase(); if(k.includes('a-side')||k.includes('aside')) cls='is-aside'; else if(k.includes('unit')) cls='is-unit'; return `<li><span>${item.name}</span><span class="label-brat ${cls}">${item.kind}</span></li>`; }).join('')}</ul>`; }
+    function renderFormationFromJSON(list) { if(!list || !list.length) return "<p>Vazio.</p>"; return list.map(g => `<div class="formation-group"><div class="formation-header"><div class="formation-title"><span class="formation-idol-icon"><i class="fas fa-skull"></i></span>${g.name}</div><i class="fas fa-chevron-down formation-arrow"></i></div><div class="formation-content"><div class="member-grid">${(g.members||[]).map(m => { const cleanMName = m.name.replace(/<[^>]*>?/gm, '').trim(); const real = loadedMembers.find(x => (x.Nome||x.nome).replace(/<[^>]*>?/gm, '').trim() === cleanMName); const url = real ? resolveImage(real.Foto||real.foto) : pImg(m.name, "Love"); return `<div class="member-card-static ${m.isCenter?'is-center':''}"><img src="${url}"><div class="member-info"><h3>${m.name}</h3></div></div>`; }).join('')}</div></div></div>`).join(''); }
 
     async function saveAdminForm() {
         try {
             document.querySelector('.btn-save').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
             if (editType === 'banner') {
-                const obj = { url_midia: document.getElementById('fm-url').value, tag: document.getElementById('fm-tag').value, titulo: document.getElementById('fm-title').value, subtitulo: document.getElementById('fm-sub').value };
-                await db.from('banner').update(obj).eq('id', 1);
-            } 
-            else if (editType === 'news') {
+                await db.from('banner').update({ url_midia: document.getElementById('fm-url').value, tag: document.getElementById('fm-tag').value, titulo: document.getElementById('fm-title').value, subtitulo: document.getElementById('fm-sub').value }).eq('id', 1);
+            } else if (editType === 'news') {
                 let obj = { data: document.getElementById('fm-data').value, categoria: document.getElementById('fm-cat').value, titulo: document.getElementById('fm-title').value };
                 if (editIndex >= 0) await db.from('news').update(obj).eq('id', loadedNews[editIndex].id); else await db.from('news').insert([obj]);
-            }
-            else if (editType === 'disco') {
-                let obj = { 
-                    titulo: document.getElementById('fm-title').value, 
-                    tipo: document.getElementById('fm-tipo').value, 
-                    capa: document.getElementById('fm-capa').value || pImg(document.getElementById('fm-title').value, "All"), 
-                    unit: document.getElementById('fm-unit-disco').value,
-                    tracklist: tempTrack 
-                };
+            } else if (editType === 'disco') {
+                let obj = { titulo: document.getElementById('fm-title').value, tipo: document.getElementById('fm-tipo').value, capa: document.getElementById('fm-capa').value || pImg(document.getElementById('fm-title').value, "All"), unit: document.getElementById('fm-unit-disco').value, tracklist: tempTrack };
                 if (editIndex >= 0) await db.from('discos').update(obj).eq('id', loadedDiscos[editIndex].id); else await db.from('discos').insert([obj]);
-            }
-            else if (editType === 'member') {
-                let groupedPart = {};
-                tempPart.forEach(p => {
-                    if(!p.single) return; if(!groupedPart[p.single]) groupedPart[p.single] = { single: p.single, tracks: [] };
-                    if(p.title) groupedPart[p.single].tracks.push({ title: p.title, labels: (p.labels||'').split(',').map(s=>s.trim()).filter(s=>s) });
-                });
-                
-                let formatHist = tempHist.map(h => {
-                    let text = h.acao;
-                    if (h.desc) text += `: ${h.desc}`;
-                    return { data: `${h.mes} ${h.ano}`.trim(), para: text };
-                }).filter(h => h.para !== 'Outro' && h.data !== '');
-
+            } else if (editType === 'member') {
+                let groupedPart = {}; tempPart.forEach(p => { if(!p.single) return; if(!groupedPart[p.single]) groupedPart[p.single] = { single: p.single, tracks: [] }; if(p.title) groupedPart[p.single].tracks.push({ title: p.title, labels: (p.labels||'').split(',').map(s=>s.trim()).filter(s=>s) }); });
+                let formatHist = tempHist.map(h => { let text = h.acao; if (h.desc) text += `: ${h.desc}`; return { data: `${h.mes} ${h.ano}`.trim(), para: text }; }).filter(h => h.para !== 'Outro' && h.data !== '');
                 const mm = { 'Jan':1, 'Fev':2, 'Mar':3, 'Abr':4, 'Mai':5, 'Jun':6, 'Jul':7, 'Ago':8, 'Set':9, 'Out':10, 'Nov':11, 'Dez':12 };
-                formatHist.sort((a,b) => {
-                    let aP=(a.data||'').split(' '), bP=(b.data||'').split(' ');
-                    let yA=parseInt(aP[1])||0, yB=parseInt(bP[1])||0;
-                    return yA!==yB ? yB-yA : (mm[bP[0]]||0) - (mm[aP[0]]||0);
-                });
-
-                let obj = {
-                    nome: document.getElementById('fm-nome').value, geracao: document.getElementById('fm-gen').value, subunit: document.getElementById('fm-unit').value, 
-                    status: document.getElementById('fm-status').value, foto: document.getElementById('fm-foto').value || pImg(document.getElementById('fm-nome').value, document.getElementById('fm-unit').value), 
-                    perfil: document.getElementById('fm-perfil').value, historico_times: formatHist, participacoes: Object.values(groupedPart)
-                };
+                formatHist.sort((a,b) => { let aP=(a.data||'').split(' '), bP=(b.data||'').split(' '); let yA=parseInt(aP[1])||0, yB=parseInt(bP[1])||0; return yA!==yB ? yB-yA : (mm[bP[0]]||0) - (mm[aP[0]]||0); });
+                let obj = { nome: document.getElementById('fm-nome').value, geracao: document.getElementById('fm-gen').value, subunit: document.getElementById('fm-unit').value, status: document.getElementById('fm-status').value, foto: document.getElementById('fm-foto').value || pImg(document.getElementById('fm-nome').value, document.getElementById('fm-unit').value), perfil: document.getElementById('fm-perfil').value, historico_times: formatHist, participacoes: Object.values(groupedPart) };
                 if (editIndex >= 0) await db.from('members').update(obj).eq('id', loadedMembers[editIndex].id); else await db.from('members').insert([obj]);
-            }
-            else if (editType === 'stage') {
+            } else if (editType === 'stage') {
                 let obj = { titulo: document.getElementById('fm-title').value, subtitulo: document.getElementById('fm-sub').value, status: document.getElementById('fm-status').value, capa: document.getElementById('fm-capa').value || pImg("STG", "All"), setlist: document.getElementById('fm-setlist').value };
                 if (editIndex >= 0) await db.from('stages').update(obj).eq('id', loadedStages[editIndex].id); else await db.from('stages').insert([obj]);
             }
             closeModal('admin-modal'); await init(); 
-        } catch (e) {
-            alert("Erro ao salvar! Veja no console (F12) se tem erro de permissão. Erro: " + e.message);
-            document.querySelector('.btn-save').innerHTML = 'Tentar Novamente';
-        }
+        } catch (e) { alert("Erro ao salvar! Veja no console (F12) se tem erro de permissão (RLS) no Supabase. Erro: " + e.message); document.querySelector('.btn-save').innerHTML = 'Tentar Novamente'; }
     }
 
     async function deleteAdminItem() {
