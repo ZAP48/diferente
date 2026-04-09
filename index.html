@@ -65,6 +65,7 @@
     .item-name { font-weight: 900; font-size: 0.8rem; line-height: 1.2; text-transform: uppercase; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 
     .hero { position: relative; height: 350px; border: var(--border); box-shadow: var(--shadow); margin-bottom: 30px; overflow: hidden; background: #000; color: #fff; cursor: pointer; transition: transform 0.2s;}
+    .hero:active { transform: translate(3px, 3px); box-shadow: none; }
     .hero-media { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.8; z-index: 1; pointer-events: none; filter: contrast(120%);}
     .hero-content { position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px; z-index: 2; background: linear-gradient(to top, rgba(0,0,0,1), transparent); pointer-events: none; }
     .tag { background: var(--primary); color: var(--white); font-weight: 900; font-size: 0.7rem; padding: 4px 10px; display: inline-block; margin-bottom: 8px; border: 2px solid #000; transition: 0.3s;}
@@ -105,7 +106,7 @@
     .stage-sub { font-size: 0.7rem; font-weight: 700; color: #666; margin-top: 4px; }
     .stage-badge { font-size: 0.6rem; padding: 4px 8px; background: var(--primary); color: #000; font-weight: 900; display: inline-block; margin-top: 6px; border: 2px solid #000; }
 
-    /* --- ESTILOS EXCLUSIVOS DO MODO ADMIN --- */
+    /* --- ADMIN CSS --- */
     .admin-only { display: none; }
     .admin-mode .admin-only { display: block; }
     
@@ -130,7 +131,6 @@
     .btn-save:active { transform: translate(3px, 3px); box-shadow: none; }
     .btn-delete { background: #E60000; color: #fff; border: var(--border); padding: 15px; width: 100%; font-weight: 900; text-transform: uppercase; cursor: pointer; margin-top: 15px; transition: 0.1s;}
 
-    /* CONSTRUTORES VISUAIS */
     .builder-container { background: #fff; border: var(--border); padding: 10px; box-shadow: var(--shadow-sm); }
     .builder-row { display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; align-items: stretch; background: var(--bg); padding: 5px; border: 2px dashed #000;}
     .builder-row input, .builder-row select { flex: 1; padding: 8px; font-size: 0.8rem; border: 2px solid #000; box-shadow: none; min-width: 100px; margin:0;}
@@ -173,29 +173,33 @@
   </div>
 
   <div id="view-disco" class="view-section container">
-    <h3 class="section-title">Discografia <i class="fas fa-compact-disc"></i></h3>
+    <h3 class="section-title">Discografia</h3>
     <button class="admin-add-btn admin-only" onclick="openAdminModal('disco', -1)"><i class="fas fa-plus"></i> Adicionar Single/Álbum</button>
+    
     <div class="tags-container">
       <button class="btn-tag tag-all active" onclick="setUnitFilter('All')">Melancholy Love <i class="fas fa-heart"></i></button>
       <button class="btn-tag tag-melancholy" onclick="setUnitFilter('Melancholy')">Melancholy <i class="fas fa-skull"></i></button>
       <button class="btn-tag tag-love" onclick="setUnitFilter('Love')">Love <i class="fas fa-heart"></i></button>
     </div>
+
     <div id="disco-grid" class="grid-2"></div>
   </div>
 
   <div id="view-members" class="view-section container">
-    <h3 class="section-title">Membros <i class="fas fa-skull"></i></h3>
+    <h3 class="section-title">Membros</h3>
     <button class="admin-add-btn admin-only" onclick="openAdminModal('member', -1)"><i class="fas fa-plus"></i> Adicionar Membro</button>
+    
     <div class="tags-container">
       <button class="btn-tag tag-all active" onclick="setUnitFilter('All')">Melancholy Love <i class="fas fa-heart"></i></button>
       <button class="btn-tag tag-melancholy" onclick="setUnitFilter('Melancholy')">Melancholy <i class="fas fa-skull"></i></button>
       <button class="btn-tag tag-love" onclick="setUnitFilter('Love')">Love <i class="fas fa-heart"></i></button>
     </div>
+    
     <div id="members-container"></div>
   </div>
 
   <div id="view-stages" class="view-section container">
-    <h3 class="section-title">Shows <i class="fas fa-guitar"></i></h3>
+    <h3 class="section-title">Shows</h3>
     <button class="admin-add-btn admin-only" onclick="openAdminModal('stage', -1)"><i class="fas fa-plus"></i> Adicionar Show</button>
     <div id="stages-list"></div>
   </div>
@@ -207,6 +211,22 @@
     </div>
   </div>
 
+  <div id="disco-modal" class="modal-overlay" onclick="if(event.target==this)closeModal('disco-modal')">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal('disco-modal')"><i class="fas fa-times"></i></button>
+      <div style="padding: 30px 20px 20px; text-align: center; background:var(--black); border-bottom:var(--border);">
+        <img id="dm-cover" src="" style="width:160px; height:160px; border:var(--border); border-color: var(--primary); object-fit:cover; box-shadow: 5px 5px 0 var(--primary); transition: 0.3s;">
+        <h2 id="dm-title" class="font-head" style="margin-top:20px; font-size:1.6rem; color:var(--primary);"></h2>
+        
+        <div style="display:flex; justify-content:center; gap:8px; margin-top:10px;">
+            <span id="dm-unit-tag" style="background:var(--primary); color:#fff; font-weight:900; text-transform:uppercase; font-size:0.8rem; padding:4px 12px; border:2px solid #000; transition:0.3s;"></span>
+            <span id="dm-sub" style="background:#000; color:var(--primary); font-weight:900; text-transform:uppercase; font-size:0.8rem; padding:4px 12px; border:2px solid var(--primary); transition:0.3s;"></span>
+        </div>
+      </div>
+      <div id="dm-content" style="padding: 0;"></div>
+    </div>
+  </div>
+
   <div class="bottom-nav">
     <button class="nav-item active black-text" onclick="switchView('view-home', this)"><i class="fas fa-skull"></i>Início</button>
     <button class="nav-item" onclick="switchView('view-disco', this)"><i class="fas fa-compact-disc"></i>Discos</button>
@@ -215,13 +235,11 @@
   </div>
 
   <script>
-    // --- API KEYS SETUP ---
+    // --- SUPABASE SETUP ---
     var supaUrl = 'https://cotzdfxjazojpwpmkoss.supabase.co';
     var supaKey = 'sb_publishable_vF3JVZw3vDrfLM5M6xtw_w_0VJh7uwm';
     var db = window.supabase.createClient(supaUrl, supaKey);
-
-    // 🔴 IMPORTANTE: INSIRA SUA CHAVE DO IMGBB AQUI 🔴
-    var IMGBB_API_KEY = '81f7ca81cf22d739de576bd1dac7dcc2'; 
+    var IMGBB_API_KEY = 'SUA_CHAVE_IMGBB_AQUI'; 
 
     var loadedMembers = [], loadedDiscos = [], loadedStages = [], loadedNews = [], loadedBanner = null;
     var currentUnitFilter = 'All';
@@ -237,9 +255,6 @@
         let cleanName = name.replace(/<[^>]*>?/gm, '').trim().substring(0,3).toUpperCase();
         return `https://ui-avatars.com/api/?name=${encodeURIComponent(cleanName)}&background=${hexCol}&color=111&size=200&font-size=0.33&bold=true`;
     };
-
-    const mockMembers = [{ Nome: "Yua", Geracao: "1ª Geração", Foto: pImg("YUA", "Love"), SubUnit: "Love", Status: "Ativa", Perfil: "Mock Member", Historico_Times: "[]", Participacoes: "[]" }];
-    const mockDiscos = []; const mockNews = []; const mockStages = [];
 
     async function init() {
       try {
@@ -270,6 +285,19 @@
     function renderDynamicHero() { const wrapper = document.getElementById("hero-media-wrapper"); let b = loadedBanner; if(!b) return; document.getElementById("hero-title").innerHTML = b.titulo; document.getElementById("hero-sub").innerHTML = b.subtitulo; if(b.tag) document.getElementById("hero-tag").innerHTML = b.tag; wrapper.innerHTML = `<img class="hero-media" src="${b.url_midia}">`; }
     function renderNews() { document.getElementById("news-list").innerHTML = loadedNews.map((n, i) => { const d = (n.Data||"").split("-"); return `<div class="card" style="display:flex; align-items:center; gap:15px;"><button class="admin-edit-btn admin-only" onclick="openAdminModal('news', ${i})"><i class="fas fa-pen"></i></button><div style="text-align:center; min-width:50px; border-right:3px dashed #000; padding-right:15px;"><b style="font-size:1.5rem; color:var(--primary); -webkit-text-stroke:1px #000;">${d[2]||'00'}</b><br><span style="font-size:0.7rem; font-weight:900;">${d[1]||'00'}/${d[0]||'00'}</span></div><div><span class="tag" style="font-size:0.6rem; padding:2px 5px;">${n.Categoria}</span><h4 style="font-size:0.9rem; text-transform:uppercase;">${n.Titulo}</h4></div></div>`; }).join(''); }
     
+    function getTracklistJSON(d) {
+        if (!d || !d.Tracklist) return null;
+        if (typeof d.Tracklist === 'string') {
+            if (d.Tracklist.includes('ctl48-formation-data')) {
+                const temp = document.createElement("div"); temp.innerHTML = d.Tracklist; 
+                const jsonEl = temp.querySelector("#ctl48-formation-data"); 
+                if(jsonEl) { try { return JSON.parse(jsonEl.textContent.trim()); } catch(e){ return null; } }
+            }
+            try { return JSON.parse(d.Tracklist); } catch(e) { return null; }
+        }
+        return d.Tracklist;
+    }
+
     function setUnitFilter(unit) {
       currentUnitFilter = unit;
       let tagClass = unit === 'All' ? 'tag-all' : 'tag-' + unit.toLowerCase();
@@ -295,7 +323,7 @@
         else if (unitOfDisco === 'Melancholy') displayColor = 'var(--color-melancholy)';
         
         count++;
-        grid.innerHTML += `<div class="item-card" onclick="if(!isAdminMode) alert('Ative o modo Admin no botão acima para editar!')">
+        grid.innerHTML += `<div class="item-card" onclick="openDiscoModal(${idx})">
           <button class="admin-edit-btn admin-only" onclick="openAdminModal('disco', ${idx}, event)"><i class="fas fa-pen"></i></button>
           <img src="${resolveImage(d.Capa || d.capa)}" style="border-color: ${displayColor}; border-style: solid; border-width: 3px;">
           <div class="item-name">${d.Titulo || d.titulo}</div>
@@ -331,12 +359,37 @@
       }); 
     }
 
+    function openDiscoModal(idx) { 
+      const d = loadedDiscos[idx]; 
+      
+      let unitOfDisco = d.Unit || 'All';
+      let themeColor = 'var(--color-melancholy-love)'; 
+      let unitName = 'Melancholy Love';
+
+      if (unitOfDisco === 'Love') { themeColor = 'var(--color-love)'; unitName = 'Love <i class="fas fa-heart"></i>'; }
+      else if (unitOfDisco === 'Melancholy') { themeColor = 'var(--color-melancholy)'; unitName = 'Melancholy <i class="fas fa-skull"></i>'; }
+      
+      document.getElementById("disco-modal").style.setProperty('--primary', themeColor);
+      document.getElementById("dm-cover").src = resolveImage(d.Capa || d.capa); 
+      document.getElementById("dm-title").innerHTML = d.Titulo || d.titulo; 
+      
+      const uTag = document.getElementById("dm-unit-tag");
+      uTag.innerHTML = unitName; uTag.style.background = themeColor;
+      
+      const subTag = document.getElementById("dm-sub");
+      subTag.innerHTML = d.Tipo || d.tipo; subTag.style.color = themeColor; subTag.style.borderColor = themeColor;
+
+      const box = document.getElementById("dm-content"); box.innerHTML = ""; 
+      let fJSON = getTracklistJSON(d);
+      if (Array.isArray(fJSON)) { box.innerHTML = `<div class="tabs"><button class="tab-btn active" data-target="t">Tracklist</button><button class="tab-btn" data-target="f">Formação</button></div><div id="pane-t" class="modal-section active" style="padding: 20px;">${renderTracklistFromJSON(fJSON)}</div><div id="pane-f" class="modal-section" style="padding: 20px;">${renderFormationFromJSON(fJSON)}</div>`; } 
+      initTabsAndAccordion(box); document.getElementById("disco-modal").classList.add("active"); 
+    }
+
     function renderStagesList() { document.getElementById('stages-list').innerHTML = loadedStages.map((s, i) => `<div class="stage-card" onclick="if(!isAdminMode) alert('Ative o modo Admin no botão acima para editar!')"><button class="admin-edit-btn admin-only" onclick="openAdminModal('stage', ${i}, event)"><i class="fas fa-pen"></i></button><img src="${resolveImage(s.Capa || s.capa)}" class="stage-cover"><div class="stage-info"><div class="stage-title">${s.Titulo || s.titulo}</div><div class="stage-sub">${s.Subtitulo || s.subtitulo || ''}</div><span class="stage-badge">${s.Status || s.status || 'Confirmado'}</span></div></div>`).join(''); }
 
     function closeModal(id) { document.getElementById(id).classList.remove("active"); }
     function resolveImage(f) { if(!f) return pImg("?", "All"); return (typeof f === "string" ? f : f.publicUrl).replace(/[\[\]"]/g, ""); }
 
-    // --- UPLOAD IMGBB FUNÇÕES ---
     async function handleImageUpload(event, targetId) {
         const file = event.target.files[0];
         if (!file) return;
@@ -368,19 +421,18 @@
         }
     }
 
-    // Helper para criar o input de texto com o botão de arquivo do lado
     function createUploadField(id, val) {
         return `
         <div style="display:flex; gap:5px; align-items:center;">
-            <input type="text" id="${id}" value="${val}" style="flex:1;" placeholder="Insira o link ou faça upload...">
+            <input type="text" id="${id}" value="${val}" style="flex:1;" placeholder="Link ou upload...">
             <input type="file" id="file-${id}" style="display:none" accept="image/*" onchange="handleImageUpload(event, '${id}')">
-            <button type="button" style="background:#000; color:var(--primary); font-weight:900; border:2px solid var(--primary); padding:12px; cursor:pointer;" onclick="document.getElementById('file-${id}').click()" title="Fazer Upload do PC">
+            <button type="button" style="background:#000; color:var(--primary); font-weight:900; border:2px solid var(--primary); padding:10px 15px; cursor:pointer;" onclick="document.getElementById('file-${id}').click()" title="Fazer Upload do PC">
                 <i class="fas fa-upload"></i>
             </button>
         </div>`;
     }
 
-    // --- BUILDERS ---
+    // BUILDERS E ADMIN ACTIONS 
     function updHist(idx, field, val) { tempHist[idx][field] = val; }
     function delHist(idx) { tempHist.splice(idx,1); renderHistBuilder(); }
     function addHist() { tempHist.push({mes:'Jan', ano:'', acao:'Debut', desc:''}); renderHistBuilder(); }
@@ -392,15 +444,6 @@
             html += `<div class="builder-row" style="flex-direction:column; gap:8px;"><div style="display:flex; gap:5px; width:100%;"><select onchange="updHist(${i}, 'mes', this.value)" style="flex:0.3;">${meses.map(m => `<option value="${m}" ${h.mes === m ? 'selected' : ''}>${m}</option>`).join('')}</select><input type="number" placeholder="Ano" value="${h.ano||''}" oninput="updHist(${i}, 'ano', this.value)" style="flex:0.3;"><select onchange="updHist(${i}, 'acao', this.value); renderHistBuilder();" style="flex:0.8;">${acoes.map(a => `<option value="${a}" ${h.acao === a ? 'selected' : ''}>${a}</option>`).join('')}</select><button class="btn-builder-del" onclick="delHist(${i})"><i class="fas fa-trash"></i></button></div>${showDesc ? `<input type="text" placeholder="Detalhes (Qual unit? Motivo?)" value="${h.desc||''}" oninput="updHist(${i}, 'desc', this.value)" style="width:100%;">` : ''}</div>`;
         });
         html += `<button class="btn-builder-add" onclick="addHist()">+ Adicionar Fato Histórico</button>`; document.getElementById('bld-hist').innerHTML = html;
-    }
-
-    function updPart(idx, field, val) { tempPart[idx][field] = val; }
-    function delPart(idx) { tempPart.splice(idx,1); renderPartBuilder(); }
-    function addPart() { tempPart.push({single:'', title:'', labels:''}); renderPartBuilder(); }
-    function renderPartBuilder() {
-        let html = '<div class="help-text" style="margin-bottom:10px;">Elas serão agrupadas pelo nome do Single ao salvar!</div>';
-        tempPart.forEach((p, i) => { html += `<div class="builder-row"><input type="text" placeholder="Single" value="${p.single||''}" oninput="updPart(${i}, 'single', this.value)"><input type="text" placeholder="Música" value="${p.title||''}" oninput="updPart(${i}, 'title', this.value)"><input type="text" placeholder="Tags (A-Side, Center...)" value="${p.labels||''}" oninput="updPart(${i}, 'labels', this.value)" style="flex: 100%;"><button class="btn-builder-del" style="flex: 100%; padding:5px;" onclick="delPart(${i})"><i class="fas fa-trash"></i> Remover</button></div>`; });
-        html += `<button class="btn-builder-add" onclick="addPart()">+ Adicionar Música</button>`; document.getElementById('bld-part').innerHTML = html;
     }
 
     function updTrack(idx, field, val) { tempTrack[idx][field] = val; }
@@ -426,53 +469,26 @@
         
         if (type === 'banner') {
             let d = loadedBanner || {url_midia:'', tag:'', titulo:'', subtitulo:''};
-            html += `<div class="form-group"><label>Imagem do Banner</label>${createUploadField('fm-url', d.url_midia||'')}</div>
-                     <div class="form-group"><label>Tag Superior</label><input type="text" id="fm-tag" value='${d.tag||''}'></div>
-                     <div class="form-group"><label>Título</label><input type="text" id="fm-title" value='${d.titulo||''}'></div>
-                     <div class="form-group"><label>Subtítulo</label><input type="text" id="fm-sub" value="${d.subtitulo||''}"></div>`;
-        } 
-        else if (type === 'news') {
+            html += `<div class="form-group"><label>Imagem do Banner</label>${createUploadField('fm-url', d.url_midia||'')}</div><div class="form-group"><label>Tag Superior</label><input type="text" id="fm-tag" value='${d.tag||''}'></div><div class="form-group"><label>Título</label><input type="text" id="fm-title" value='${d.titulo||''}'></div><div class="form-group"><label>Subtítulo</label><input type="text" id="fm-sub" value="${d.subtitulo||''}"></div>`;
+        } else if (type === 'news') {
             let d = index >= 0 ? loadedNews[index] : {Data: "", Categoria: "", Titulo: ""};
-            html += `<div class="form-group"><label>Data</label><input type="date" id="fm-data" value="${d.Data}"></div>
-                     <div class="form-group"><label>Categoria</label><input type="text" id="fm-cat" value="${d.Categoria}"></div>
-                     <div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo}"></div>`;
-        } 
-        else if (type === 'disco') {
+            html += `<div class="form-group"><label>Data</label><input type="date" id="fm-data" value="${d.Data}"></div><div class="form-group"><label>Categoria</label><input type="text" id="fm-cat" value="${d.Categoria}"></div><div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo}"></div>`;
+        } else if (type === 'disco') {
             let d = index >= 0 ? loadedDiscos[index] : {Titulo: "", Tipo: "", Capa: "", Unit: "All", Tracklist: "[]"};
             let rawT = []; if (typeof d.Tracklist === 'string') { if (d.Tracklist.includes('ctl48-formation-data')) { const temp = document.createElement("div"); temp.innerHTML = d.Tracklist; const jsonEl = temp.querySelector("#ctl48-formation-data"); if(jsonEl) { try { rawT = JSON.parse(jsonEl.textContent.trim()); } catch(e){} } } else { try { rawT = JSON.parse(d.Tracklist); } catch(e){} } } else { rawT = d.Tracklist || []; }
             tempTrack = (rawT||[]).map(t => ({ kind: t.kind, name: t.name, members: JSON.parse(JSON.stringify(t.members || [])) }));
-            html += `<div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo || d.titulo || ''}"></div>
-                     <div class="form-group"><label>Tipo</label><input type="text" id="fm-tipo" value="${d.Tipo || d.tipo || ''}"></div>
-                     <div class="form-group"><label>URL da Capa</label>${createUploadField('fm-capa', d.Capa || d.capa || '')}</div>
-                     <div class="form-group"><label>Quem irá lançar? (Unit)</label><select id="fm-unit-disco"><option value="All" ${d.Unit==='All'?'selected':''}>Melancholy Love</option><option value="Melancholy" ${d.Unit==='Melancholy'?'selected':''}>Melancholy</option><option value="Love" ${d.Unit==='Love'?'selected':''}>Love</option></select></div>
-                     <div class="form-group"><label>Faixas & Formação</label><div id="bld-track" class="builder-container"></div></div>`;
-        } 
-        else if (type === 'member') {
-            let d = index >= 0 ? loadedMembers[index] : {Nome: "", Geracao: "1ª Geração", Foto: "", SubUnit: "Love", Status: "Ativa", Perfil: "", Historico_Times: "[]", Participacoes: "[]"};
+            html += `<div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo || d.titulo || ''}"></div><div class="form-group"><label>Tipo</label><input type="text" id="fm-tipo" value="${d.Tipo || d.tipo || ''}"></div><div class="form-group"><label>URL da Capa</label>${createUploadField('fm-capa', d.Capa || d.capa || '')}</div><div class="form-group"><label>Quem irá lançar? (Unit)</label><select id="fm-unit-disco"><option value="All" ${d.Unit==='All'?'selected':''}>Melancholy Love</option><option value="Melancholy" ${d.Unit==='Melancholy'?'selected':''}>Melancholy</option><option value="Love" ${d.Unit==='Love'?'selected':''}>Love</option></select></div><div class="form-group"><label>Faixas & Formação</label><div id="bld-track" class="builder-container"></div></div>`;
+        } else if (type === 'member') {
+            let d = index >= 0 ? loadedMembers[index] : {Nome: "", Geracao: "1ª Geração", Foto: "", SubUnit: "Love", Status: "Ativa", Perfil: "", Historico_Times: "[]"};
             try { tempHist = typeof (d.Historico_Times||d.historico_times) === 'string' ? JSON.parse(d.Historico_Times||d.historico_times) : (d.Historico_Times||d.historico_times); } catch(e){ tempHist=[]; }
-            tempPart = []; let rawP = []; try { rawP = typeof (d.Participacoes||d.participacoes) === 'string' ? JSON.parse(d.Participacoes||d.participacoes) : (d.Participacoes||d.participacoes); } catch(e){}
-            (rawP||[]).forEach(p => { if(typeof p === 'string') tempPart.push({single: p, title:'', labels:''}); else (p.tracks||[]).forEach(t => tempPart.push({ single: p.single||'', title: t.title||'', labels: (t.labels||[]).join(', ') })); });
-            html += `<div class="form-group"><label>Nome (Aceita HTML)</label><input type="text" id="fm-nome" value="${(d.Nome||d.nome||'').replace(/"/g, '&quot;')}"></div>
-                     <div class="form-group"><label>Geração</label><input type="text" id="fm-gen" value="${d.Geracao||d.geracao||''}"></div>
-                     <div class="form-group"><label>Sub Unit</label><select id="fm-unit"><option value="Love" ${(d.SubUnit||d.subunit)==='Love'?'selected':''}>Love</option><option value="Melancholy" ${(d.SubUnit||d.subunit)==='Melancholy'?'selected':''}>Melancholy</option></select></div>
-                     <div class="form-group"><label>Status</label><input type="text" id="fm-status" value="${d.Status||d.status||''}"></div>
-                     <div class="form-group"><label>URL Foto (Deixe em branco p/ Gerar Avatar)</label>${createUploadField('fm-foto', ((d.Foto||d.foto)||'').includes('ui-avatars') ? '' : (d.Foto||d.foto||''))}</div>
-                     <div class="form-group"><label>Perfil</label><textarea id="fm-perfil">${d.Perfil||d.perfil||''}</textarea></div>
-                     <div class="form-group"><label>Histórico</label><div id="bld-hist" class="builder-container"></div></div>
-                     <div class="form-group"><label>Músicas</label><div id="bld-part" class="builder-container"></div></div>`;
-        } 
-        else if (type === 'stage') {
+            html += `<div class="form-group"><label>Nome</label><input type="text" id="fm-nome" value="${(d.Nome||d.nome||'').replace(/"/g, '&quot;')}"></div><div class="form-group"><label>Geração</label><input type="text" id="fm-gen" value="${d.Geracao||d.geracao||''}"></div><div class="form-group"><label>Sub Unit</label><select id="fm-unit"><option value="Love" ${(d.SubUnit||d.subunit)==='Love'?'selected':''}>Love</option><option value="Melancholy" ${(d.SubUnit||d.subunit)==='Melancholy'?'selected':''}>Melancholy</option></select></div><div class="form-group"><label>Status</label><input type="text" id="fm-status" value="${d.Status||d.status||''}"></div><div class="form-group"><label>URL Foto</label>${createUploadField('fm-foto', ((d.Foto||d.foto)||'').includes('ui-avatars') ? '' : (d.Foto||d.foto||''))}</div><div class="form-group"><label>Perfil</label><textarea id="fm-perfil">${d.Perfil||d.perfil||''}</textarea></div><div class="form-group"><label>Histórico</label><div id="bld-hist" class="builder-container"></div></div><div class="form-group"><label>Músicas</label><div class="help-text">As músicas são vinculadas <b>automaticamente</b> ao criar um Disco/Single!</div></div>`;
+        } else if (type === 'stage') {
             let d = index >= 0 ? loadedStages[index] : {Titulo: "", Subtitulo: "", Status: "", Capa: "", Setlist: ""};
-            html += `<div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo||d.titulo||''}"></div>
-                     <div class="form-group"><label>Subtítulo</label><input type="text" id="fm-sub" value="${d.Subtitulo||d.subtitulo||''}"></div>
-                     <div class="form-group"><label>Status</label><input type="text" id="fm-status" value="${d.Status||d.status||''}"></div>
-                     <div class="form-group"><label>URL da Capa</label>${createUploadField('fm-capa', d.Capa||d.capa||'')}</div>
-                     <div class="form-group"><label>Setlist</label><div style="display: flex; gap: 5px; margin-bottom: 8px; overflow-x: auto;"><button type="button" style="background:#000; color:var(--primary); font-weight:900; border:2px solid var(--primary); padding:6px 12px; cursor:pointer;" onclick="insertSetlist('M01. ')">+ M (Música)</button><button type="button" style="background:var(--primary); color:#fff; font-weight:900; border:2px solid #000; padding:6px 12px; cursor:pointer;" onclick="insertSetlist('MC1. ')">+ MC</button><button type="button" style="background:#fff; color:#000; font-weight:900; border:2px dashed #000; padding:6px 12px; cursor:pointer;" onclick="insertSetlist('ENCORE\\n')">+ ENCORE</button></div><textarea id="fm-setlist">${d.Setlist||d.setlist||''}</textarea></div>`;
+            html += `<div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo||d.titulo||''}"></div><div class="form-group"><label>Subtítulo</label><input type="text" id="fm-sub" value="${d.Subtitulo||d.subtitulo||''}"></div><div class="form-group"><label>Status</label><input type="text" id="fm-status" value="${d.Status||d.status||''}"></div><div class="form-group"><label>URL da Capa</label>${createUploadField('fm-capa', d.Capa||d.capa||'')}</div><div class="form-group"><label>Setlist</label><div style="display: flex; gap: 5px; margin-bottom: 8px; overflow-x: auto;"><button type="button" style="background:#000; color:var(--primary); font-weight:900; border:2px solid var(--primary); padding:6px 12px; cursor:pointer;" onclick="insertSetlist('M01. ')">+ M (Música)</button><button type="button" style="background:var(--primary); color:#fff; font-weight:900; border:2px solid #000; padding:6px 12px; cursor:pointer;" onclick="insertSetlist('MC1. ')">+ MC</button><button type="button" style="background:#fff; color:#000; font-weight:900; border:2px dashed #000; padding:6px 12px; cursor:pointer;" onclick="insertSetlist('ENCORE\\n')">+ ENCORE</button></div><textarea id="fm-setlist">${d.Setlist||d.setlist||''}</textarea></div>`;
         }
-
         html += `<button class="btn-save" onclick="saveAdminForm()"><i class="fas fa-save"></i> Salvar na Nuvem</button>`; if (index >= 0 && type !== 'banner') html += `<button class="btn-delete" onclick="deleteAdminItem()"><i class="fas fa-trash"></i> Excluir</button>`;
         container.innerHTML = html; document.getElementById('admin-modal').classList.add('active');
-        if(document.getElementById('bld-hist')) renderHistBuilder(); if(document.getElementById('bld-part')) renderPartBuilder(); if(document.getElementById('bld-track')) renderTrackBuilder();
+        if(document.getElementById('bld-hist')) renderHistBuilder(); if(document.getElementById('bld-track')) renderTrackBuilder();
     }
 
     async function saveAdminForm() {
@@ -487,11 +503,10 @@
                 let obj = { titulo: document.getElementById('fm-title').value, tipo: document.getElementById('fm-tipo').value, capa: document.getElementById('fm-capa').value || pImg(document.getElementById('fm-title').value, "All"), unit: document.getElementById('fm-unit-disco').value, tracklist: tempTrack };
                 if (editIndex >= 0) await db.from('discos').update(obj).eq('id', loadedDiscos[editIndex].id); else await db.from('discos').insert([obj]);
             } else if (editType === 'member') {
-                let groupedPart = {}; tempPart.forEach(p => { if(!p.single) return; if(!groupedPart[p.single]) groupedPart[p.single] = { single: p.single, tracks: [] }; if(p.title) groupedPart[p.single].tracks.push({ title: p.title, labels: (p.labels||'').split(',').map(s=>s.trim()).filter(s=>s) }); });
                 let formatHist = tempHist.map(h => { let text = h.acao; if (h.desc) text += `: ${h.desc}`; return { data: `${h.mes} ${h.ano}`.trim(), para: text }; }).filter(h => h.para !== 'Outro' && h.data !== '');
                 const mm = { 'Jan':1, 'Fev':2, 'Mar':3, 'Abr':4, 'Mai':5, 'Jun':6, 'Jul':7, 'Ago':8, 'Set':9, 'Out':10, 'Nov':11, 'Dez':12 };
                 formatHist.sort((a,b) => { let aP=(a.data||'').split(' '), bP=(b.data||'').split(' '); let yA=parseInt(aP[1])||0, yB=parseInt(bP[1])||0; return yA!==yB ? yB-yA : (mm[bP[0]]||0) - (mm[aP[0]]||0); });
-                let obj = { nome: document.getElementById('fm-nome').value, geracao: document.getElementById('fm-gen').value, subunit: document.getElementById('fm-unit').value, status: document.getElementById('fm-status').value, foto: document.getElementById('fm-foto').value || pImg(document.getElementById('fm-nome').value, document.getElementById('fm-unit').value), perfil: document.getElementById('fm-perfil').value, historico_times: formatHist, participacoes: Object.values(groupedPart) };
+                let obj = { nome: document.getElementById('fm-nome').value, geracao: document.getElementById('fm-gen').value, subunit: document.getElementById('fm-unit').value, status: document.getElementById('fm-status').value, foto: document.getElementById('fm-foto').value || pImg(document.getElementById('fm-nome').value, document.getElementById('fm-unit').value), perfil: document.getElementById('fm-perfil').value, historico_times: formatHist };
                 if (editIndex >= 0) await db.from('members').update(obj).eq('id', loadedMembers[editIndex].id); else await db.from('members').insert([obj]);
             } else if (editType === 'stage') {
                 let obj = { titulo: document.getElementById('fm-title').value, subtitulo: document.getElementById('fm-sub').value, status: document.getElementById('fm-status').value, capa: document.getElementById('fm-capa').value || pImg("STG", "All"), setlist: document.getElementById('fm-setlist').value };
@@ -511,6 +526,10 @@
             closeModal('admin-modal'); await init();
         } catch (e) { alert("Erro ao excluir! " + e.message); }
     }
+
+    function initTabsAndAccordion(box) { box.querySelectorAll(".tab-btn").forEach(btn => { btn.onclick = () => { box.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active")); box.querySelectorAll(".modal-section").forEach(s => s.classList.remove("active")); btn.classList.add("active"); box.querySelector(`#pane-${btn.dataset.target}`).classList.add("active"); }; }); box.querySelectorAll(".formation-group").forEach(group => { let header = group.querySelector(".formation-header"); if(!header) { const title = group.querySelector(".formation-title"); if(title) { const txt = title.innerText; header = document.createElement("div"); header.className="formation-header"; header.innerHTML = `<div class="formation-title"><span class="formation-idol-icon"><i class="fas fa-skull"></i></span>${txt}</div><i class="fas fa-chevron-down formation-arrow"></i>`; group.insertBefore(header, group.firstChild); title.remove(); } } if(header) header.onclick = () => group.classList.toggle("open"); }); }
+    function renderTracklistFromJSON(list) { if(!list || !list.length) return "<p>Vazio.</p>"; return `<ul class="tracklist">${list.map(item => { let cls='is-bside'; const k = (item.kind||"").toLowerCase(); if(k.includes('a-side')||k.includes('aside')) cls='is-aside'; else if(k.includes('unit')) cls='is-unit'; return `<li><span>${item.name}</span><span class="label-brat ${cls}">${item.kind}</span></li>`; }).join('')}</ul>`; }
+    function renderFormationFromJSON(list) { if(!list || !list.length) return "<p>Vazio.</p>"; return list.map(g => `<div class="formation-group"><div class="formation-header"><div class="formation-title"><span class="formation-idol-icon"><i class="fas fa-skull"></i></span>${g.name}</div><i class="fas fa-chevron-down formation-arrow"></i></div><div class="formation-content"><div class="member-grid">${(g.members||[]).map(m => { const cleanMName = m.name.replace(/<[^>]*>?/gm, '').trim(); const real = loadedMembers.find(x => (x.Nome||x.nome).replace(/<[^>]*>?/gm, '').trim() === cleanMName); const url = real ? resolveImage(real.Foto||real.foto) : pImg(m.name, "Love"); return `<div class="member-card-static ${m.isCenter?'is-center':''}"><img src="${url}"><div class="member-info"><h3>${m.name}</h3></div></div>`; }).join('')}</div></div></div>`).join(''); }
 
     init();
   </script>
