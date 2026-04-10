@@ -398,27 +398,34 @@
         const originalValue = targetInput.value;
         targetInput.value = "Fazendo upload (aguarde)...";
 
-        const formData = new FormData();
-        formData.append('image', file);
-
-        try {
-            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                method: 'POST',
-                body: formData
-            });
-            const data = await res.json();
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        
+        reader.onloadend = async () => {
+            const base64data = reader.result.split(',')[1];
             
-            if (data.success) {
-                targetInput.value = data.data.url;
-            } else {
-                alert('Erro no ImgBB: ' + data.error.message);
+            const formData = new FormData();
+            formData.append('image', base64data);
+
+            try {
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    targetInput.value = data.data.url;
+                } else {
+                    alert('Erro no ImgBB: ' + (data.error ? data.error.message : 'Erro desconhecido'));
+                    targetInput.value = originalValue;
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Falha na conexão com o ImgBB.');
                 targetInput.value = originalValue;
             }
-        } catch (err) {
-            console.error(err);
-            alert('Falha na conexão com o ImgBB.');
-            targetInput.value = originalValue;
-        }
+        };
     }
 
     function createUploadField(id, val) {
