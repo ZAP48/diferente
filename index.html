@@ -281,6 +281,15 @@
     }
 
     function toggleAdminMode() { isAdminMode = !isAdminMode; document.body.classList.toggle('admin-mode', isAdminMode); renderAll(); }
+    
+    function renderAll() {
+        renderDynamicHero();
+        renderNews();
+        renderMembers();
+        renderDisco();
+        renderStagesList();
+    }
+
     function switchView(id, el) { document.querySelectorAll(".view-section").forEach(v => v.classList.remove("active")); document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active")); document.getElementById(id).classList.add("active"); el.classList.add("active"); window.scrollTo(0,0); }
     function renderDynamicHero() { const wrapper = document.getElementById("hero-media-wrapper"); let b = loadedBanner; if(!b) return; document.getElementById("hero-title").innerHTML = b.titulo; document.getElementById("hero-sub").innerHTML = b.subtitulo; if(b.tag) document.getElementById("hero-tag").innerHTML = b.tag; wrapper.innerHTML = `<img class="hero-media" src="${b.url_midia}">`; }
     function renderNews() { document.getElementById("news-list").innerHTML = loadedNews.map((n, i) => { const d = (n.Data||"").split("-"); return `<div class="card" style="display:flex; align-items:center; gap:15px;"><button class="admin-edit-btn admin-only" onclick="openAdminModal('news', ${i})"><i class="fas fa-pen"></i></button><div style="text-align:center; min-width:50px; border-right:3px dashed #000; padding-right:15px;"><b style="font-size:1.5rem; color:var(--primary); -webkit-text-stroke:1px #000;">${d[2]||'00'}</b><br><span style="font-size:0.7rem; font-weight:900;">${d[1]||'00'}/${d[0]||'00'}</span></div><div><span class="tag" style="font-size:0.6rem; padding:2px 5px;">${n.Categoria}</span><h4 style="font-size:0.9rem; text-transform:uppercase;">${n.Titulo}</h4></div></div>`; }).join(''); }
@@ -443,14 +452,68 @@
     function updHist(idx, field, val) { tempHist[idx][field] = val; }
     function delHist(idx) { tempHist.splice(idx,1); renderHistBuilder(); }
     function addHist() { tempHist.push({mes:'Jan', ano:'', acao:'Debut', desc:''}); renderHistBuilder(); }
+    
+    // BUILDER HISTÓRICO CORRIGIDO (Bug do 'Outro: Outro' resolvido)
     function renderHistBuilder() {
-        let html = ''; const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']; const acoes = ['Debut', 'Entrou para Unit', 'Foi Transferida', 'Graduou', 'Foi Expulsa', 'Entrou em Hiatus', 'Retornou de Hiatus', 'Outro'];
+        let html = ''; 
+        const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']; 
+        const acoes = ['Debut', 'Entrou para Unit', 'Foi Transferida', 'Graduou', 'Foi Expulsa', 'Entrou em Hiatus', 'Retornou de Hiatus', 'Outro'];
+        const unitsOptions = ['Love', 'Melancholy', 'Melancholy Love', 'Trainee'];
+
         tempHist.forEach((h, i) => {
-            if (h.data !== undefined) { let p = h.data.split(' '); h.mes = p[0] || 'Jan'; h.ano = p[1] || ''; h.acao = 'Outro'; h.desc = h.para; delete h.data; delete h.para; }
-            let showDesc = h.acao === 'Outro' || h.acao === 'Entrou para Unit' || h.acao === 'Foi Transferida';
-            html += `<div class="builder-row" style="flex-direction:column; gap:8px;"><div style="display:flex; gap:5px; width:100%;"><select onchange="updHist(${i}, 'mes', this.value)" style="flex:0.3;">${meses.map(m => `<option value="${m}" ${h.mes === m ? 'selected' : ''}>${m}</option>`).join('')}</select><input type="number" placeholder="Ano" value="${h.ano||''}" oninput="updHist(${i}, 'ano', this.value)" style="flex:0.3;"><select onchange="updHist(${i}, 'acao', this.value); renderHistBuilder();" style="flex:0.8;">${acoes.map(a => `<option value="${a}" ${h.acao === a ? 'selected' : ''}>${a}</option>`).join('')}</select><button class="btn-builder-del" onclick="delHist(${i})"><i class="fas fa-trash"></i></button></div>${showDesc ? `<input type="text" placeholder="Detalhes (Qual unit? Motivo?)" value="${h.desc||''}" oninput="updHist(${i}, 'desc', this.value)" style="width:100%;">` : ''}</div>`;
+            // Processa o banco de dados desmembrando corretamente para as dropdowns 
+            if (h.data !== undefined) { 
+                let p = h.data.split(' '); 
+                h.mes = p[0] || 'Jan'; 
+                h.ano = p[1] || ''; 
+                
+                let rawPara = h.para || '';
+                h.acao = 'Outro'; 
+                h.desc = rawPara; 
+
+                // Tenta rastrear a ação a partir do texto que estava salvo
+                for (let a of acoes) {
+                    if (a !== 'Outro' && rawPara.startsWith(a)) {
+                        h.acao = a;
+                        // Extrai apenas o que está depois dos dois pontos
+                        h.desc = rawPara.substring(a.length).replace(/^:\s*/, '').trim();
+                        break;
+                    }
+                }
+                
+                delete h.data; 
+                delete h.para; 
+            }
+
+            let showDesc = h.acao === 'Outro';
+            let showUnit = h.acao === 'Entrou para Unit' || h.acao === 'Foi Transferida';
+
+            // Gerando as options das Units, prevenindo perda caso haja uma customizada no banco
+            let unitSelectOptions = `<option value="" ${!h.desc ? 'selected' : ''}>Selecione a Unit...</option>`;
+            unitsOptions.forEach(u => {
+                unitSelectOptions += `<option value="${u}" ${h.desc === u ? 'selected' : ''}>${u}</option>`;
+            });
+            if (h.desc && !unitsOptions.includes(h.desc) && showUnit) {
+                unitSelectOptions += `<option value="${h.desc}" selected>${h.desc} (Customizada)</option>`;
+            }
+
+            html += `<div class="builder-row" style="flex-direction:column; gap:8px;">
+                <div style="display:flex; gap:5px; width:100%;">
+                    <select onchange="updHist(${i}, 'mes', this.value)" style="flex:0.3;">
+                        ${meses.map(m => `<option value="${m}" ${h.mes === m ? 'selected' : ''}>${m}</option>`).join('')}
+                    </select>
+                    <input type="number" placeholder="Ano" value="${h.ano||''}" oninput="updHist(${i}, 'ano', this.value)" style="flex:0.3;">
+                    <select onchange="updHist(${i}, 'acao', this.value); renderHistBuilder();" style="flex:0.8;">
+                        ${acoes.map(a => `<option value="${a}" ${h.acao === a ? 'selected' : ''}>${a}</option>`).join('')}
+                    </select>
+                    <button class="btn-builder-del" onclick="delHist(${i})"><i class="fas fa-trash"></i></button>
+                </div>
+                ${showUnit ? `<select onchange="updHist(${i}, 'desc', this.value)" style="width:100%;">${unitSelectOptions}</select>` : ''}
+                ${showDesc ? `<input type="text" placeholder="Detalhes (Motivo? etc)" value="${h.desc||''}" oninput="updHist(${i}, 'desc', this.value)" style="width:100%;">` : ''}
+            </div>`;
         });
-        html += `<button class="btn-builder-add" onclick="addHist()">+ Adicionar Fato Histórico</button>`; document.getElementById('bld-hist').innerHTML = html;
+        html += `<button class="btn-builder-add" onclick="addHist()">+ Adicionar Fato Histórico</button>`; 
+        document.getElementById('bld-hist').innerHTML = html;
     }
 
     function updTrack(idx, field, val) { tempTrack[idx][field] = val; }
@@ -469,7 +532,33 @@
         html += `<button class="btn-builder-add" onclick="addTrack()">+ Adicionar Faixa</button>`; document.getElementById('bld-track').innerHTML = html;
     }
 
-    function insertSetlist(text) { const el = document.getElementById('fm-setlist'); if(el.value && !el.value.endsWith('\n')) el.value += '\n'; el.value += text; el.focus(); }
+    function insertSetlistAuto(type) { 
+        const el = document.getElementById('fm-setlist'); 
+        let lines = el.value.split('\n').map(l => l.trim()); 
+        let nextNum = 1; 
+        
+        if (type === 'M' || type === 'MC') { 
+            const regex = new RegExp(`^${type}(\\d+)`, 'i'); 
+            lines.forEach(line => { 
+                const match = line.match(regex); 
+                if (match) { 
+                    const num = parseInt(match[1], 10); 
+                    if (num >= nextNum) nextNum = num + 1; 
+                } 
+            }); 
+            let prefix = type + nextNum.toString().padStart(type === 'M' ? 2 : 1, '0') + '. '; 
+            if(el.value && !el.value.endsWith('\n')) el.value += '\n'; 
+            el.value += prefix; 
+        } else if (type === 'ENCORE') { 
+            if (!el.value.toUpperCase().includes('ENCORE')) { 
+                if(el.value && !el.value.endsWith('\n')) el.value += '\n\n'; 
+                el.value += 'ENCORE\n'; 
+            } else {
+                alert('O ENCORE já foi adicionado nesta setlist!');
+            }
+        } 
+        el.focus(); 
+    }
 
     function openAdminModal(type, index, event) {
         if(event) event.stopPropagation(); editType = type; editIndex = index; const container = document.getElementById('admin-form-container'); let html = `<h2 style="margin-bottom:20px;">${index >= 0 ? 'Editar' : 'Adicionar'} ${type.toUpperCase()}</h2>`;
@@ -486,12 +575,34 @@
             tempTrack = (rawT||[]).map(t => ({ kind: t.kind, name: t.name, members: JSON.parse(JSON.stringify(t.members || [])) }));
             html += `<div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo || d.titulo || ''}"></div><div class="form-group"><label>Tipo</label><input type="text" id="fm-tipo" value="${d.Tipo || d.tipo || ''}"></div><div class="form-group"><label>URL da Capa</label>${createUploadField('fm-capa', d.Capa || d.capa || '')}</div><div class="form-group"><label>Quem irá lançar? (Unit)</label><select id="fm-unit-disco"><option value="All" ${d.Unit==='All'?'selected':''}>Melancholy Love</option><option value="Melancholy" ${d.Unit==='Melancholy'?'selected':''}>Melancholy</option><option value="Love" ${d.Unit==='Love'?'selected':''}>Love</option></select></div><div class="form-group"><label>Faixas & Formação</label><div id="bld-track" class="builder-container"></div></div>`;
         } else if (type === 'member') {
-            let d = index >= 0 ? loadedMembers[index] : {Nome: "", Geracao: "1ª Geração", Foto: "", SubUnit: "Love", Status: "Ativa", Perfil: "", Historico_Times: "[]"};
+            let d = index >= 0 ? loadedMembers[index] : {Nome: "", Geracao: "1ª Geração", Foto: "", SubUnit: "Melancholy Love", Status: "Ativa", Perfil: "", Historico_Times: "[]"};
             try { tempHist = typeof (d.Historico_Times||d.historico_times) === 'string' ? JSON.parse(d.Historico_Times||d.historico_times) : (d.Historico_Times||d.historico_times); } catch(e){ tempHist=[]; }
-            html += `<div class="form-group"><label>Nome</label><input type="text" id="fm-nome" value="${(d.Nome||d.nome||'').replace(/"/g, '&quot;')}"></div><div class="form-group"><label>Geração</label><input type="text" id="fm-gen" value="${d.Geracao||d.geracao||''}"></div><div class="form-group"><label>Sub Unit</label><select id="fm-unit"><option value="Love" ${(d.SubUnit||d.subunit)==='Love'?'selected':''}>Love</option><option value="Melancholy" ${(d.SubUnit||d.subunit)==='Melancholy'?'selected':''}>Melancholy</option></select></div><div class="form-group"><label>Status</label><input type="text" id="fm-status" value="${d.Status||d.status||''}"></div><div class="form-group"><label>URL Foto</label>${createUploadField('fm-foto', ((d.Foto||d.foto)||'').includes('ui-avatars') ? '' : (d.Foto||d.foto||''))}</div><div class="form-group"><label>Perfil</label><textarea id="fm-perfil">${d.Perfil||d.perfil||''}</textarea></div><div class="form-group"><label>Histórico</label><div id="bld-hist" class="builder-container"></div></div><div class="form-group"><label>Músicas</label><div class="help-text">As músicas são vinculadas <b>automaticamente</b> ao criar um Disco/Single!</div></div>`;
+            html += `<div class="form-group"><label>Nome</label><input type="text" id="fm-nome" value="${(d.Nome||d.nome||'').replace(/"/g, '&quot;')}"></div><div class="form-group"><label>Geração</label><input type="text" id="fm-gen" value="${d.Geracao||d.geracao||''}"></div><div class="form-group"><label>Sub Unit</label><select id="fm-unit"><option value="Melancholy Love" ${((d.SubUnit||d.subunit)==='Melancholy Love' || !(d.SubUnit||d.subunit))?'selected':''}>Geral (Sem Sub Unit Específica)</option><option value="Love" ${(d.SubUnit||d.subunit)==='Love'?'selected':''}>Love</option><option value="Melancholy" ${(d.SubUnit||d.subunit)==='Melancholy'?'selected':''}>Melancholy</option></select></div><div class="form-group"><label>Status</label><input type="text" id="fm-status" value="${d.Status||d.status||''}"></div><div class="form-group"><label>URL Foto</label>${createUploadField('fm-foto', ((d.Foto||d.foto)||'').includes('ui-avatars') ? '' : (d.Foto||d.foto||''))}</div><div class="form-group"><label>Perfil</label><textarea id="fm-perfil">${d.Perfil||d.perfil||''}</textarea></div><div class="form-group"><label>Histórico</label><div id="bld-hist" class="builder-container"></div></div><div class="form-group"><label>Músicas</label><div class="help-text">As músicas são vinculadas <b>automaticamente</b> ao criar um Disco/Single!</div></div>`;
         } else if (type === 'stage') {
-            let d = index >= 0 ? loadedStages[index] : {Titulo: "", Subtitulo: "", Status: "", Capa: "", Setlist: ""};
-            html += `<div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo||d.titulo||''}"></div><div class="form-group"><label>Subtítulo</label><input type="text" id="fm-sub" value="${d.Subtitulo||d.subtitulo||''}"></div><div class="form-group"><label>Status</label><input type="text" id="fm-status" value="${d.Status||d.status||''}"></div><div class="form-group"><label>URL da Capa</label>${createUploadField('fm-capa', d.Capa||d.capa||'')}</div><div class="form-group"><label>Setlist</label><div style="display: flex; gap: 5px; margin-bottom: 8px; overflow-x: auto;"><button type="button" style="background:#000; color:var(--primary); font-weight:900; border:2px solid var(--primary); padding:6px 12px; cursor:pointer;" onclick="insertSetlist('M01. ')">+ M (Música)</button><button type="button" style="background:var(--primary); color:#fff; font-weight:900; border:2px solid #000; padding:6px 12px; cursor:pointer;" onclick="insertSetlist('MC1. ')">+ MC</button><button type="button" style="background:#fff; color:#000; font-weight:900; border:2px dashed #000; padding:6px 12px; cursor:pointer;" onclick="insertSetlist('ENCORE\\n')">+ ENCORE</button></div><textarea id="fm-setlist">${d.Setlist||d.setlist||''}</textarea></div>`;
+            let d = index >= 0 ? loadedStages[index] : {Titulo: "", Subtitulo: "", Status: "Confirmado", Capa: "", Setlist: ""};
+            let st = d.Status || d.status || 'Confirmado';
+            html += `<div class="form-group"><label>Título</label><input type="text" id="fm-title" value="${d.Titulo||d.titulo||''}"></div>
+            <div class="form-group"><label>Subtítulo</label><input type="text" id="fm-sub" value="${d.Subtitulo||d.subtitulo||''}"></div>
+            <div class="form-group"><label>Status</label>
+                <select id="fm-status">
+                    <option value="Confirmado" ${st==='Confirmado'?'selected':''}>Confirmado</option>
+                    <option value="Finalizado" ${st==='Finalizado'?'selected':''}>Finalizado</option>
+                    <option value="Adiado" ${st==='Adiado'?'selected':''}>Adiado</option>
+                    <option value="Cancelado" ${st==='Cancelado'?'selected':''}>Cancelado</option>
+                </select>
+            </div>
+            <div class="form-group"><label>URL da Capa</label>${createUploadField('fm-capa', d.Capa||d.capa||'')}</div>
+            <div class="form-group"><label>Setlist (Editor Visual)</label>
+                <div style="background: var(--bg); border: 2px solid #000; border-bottom: none; padding: 10px;">
+                    <div style="font-size: 0.7rem; font-weight: 900; margin-bottom: 8px; text-transform: uppercase;">Inserção Rápida (Auto-Numeração)</div>
+                    <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                        <button type="button" style="background:#000; color:var(--primary); font-weight:900; border:2px solid var(--primary); padding:8px 12px; cursor:pointer; flex:1; min-width:80px;" onclick="insertSetlistAuto('M')"><i class="fas fa-music"></i> + MÚSICA</button>
+                        <button type="button" style="background:var(--primary); color:#fff; font-weight:900; border:2px solid #000; padding:8px 12px; cursor:pointer; flex:1; min-width:80px;" onclick="insertSetlistAuto('MC')"><i class="fas fa-microphone"></i> + MC</button>
+                        <button type="button" style="background:#fff; color:#000; font-weight:900; border:2px dashed #000; padding:8px 12px; cursor:pointer; flex:1; min-width:80px;" onclick="insertSetlistAuto('ENCORE')"><i class="fas fa-fire"></i> ENCORE</button>
+                    </div>
+                </div>
+                <textarea id="fm-setlist" style="border: 2px solid #000; border-radius: 0; min-height: 150px; font-family: monospace; font-weight: bold;">${d.Setlist||d.setlist||''}</textarea>
+            </div>`;
         }
         html += `<button class="btn-save" onclick="saveAdminForm()"><i class="fas fa-save"></i> Salvar na Nuvem</button>`; if (index >= 0 && type !== 'banner') html += `<button class="btn-delete" onclick="deleteAdminItem()"><i class="fas fa-trash"></i> Excluir</button>`;
         container.innerHTML = html; document.getElementById('admin-modal').classList.add('active');
@@ -510,9 +621,20 @@
                 let obj = { titulo: document.getElementById('fm-title').value, tipo: document.getElementById('fm-tipo').value, capa: document.getElementById('fm-capa').value || pImg(document.getElementById('fm-title').value, "All"), unit: document.getElementById('fm-unit-disco').value, tracklist: tempTrack };
                 if (editIndex >= 0) await db.from('discos').update(obj).eq('id', loadedDiscos[editIndex].id); else await db.from('discos').insert([obj]);
             } else if (editType === 'member') {
-                let formatHist = tempHist.map(h => { let text = h.acao; if (h.desc) text += `: ${h.desc}`; return { data: `${h.mes} ${h.ano}`.trim(), para: text }; }).filter(h => h.para !== 'Outro' && h.data !== '');
+                
+                // SALVANDO O HISTÓRICO CORRIGIDO (Evitando concatenação do Outro: Outro:)
+                let formatHist = tempHist.map(h => { 
+                    let text = h.acao; 
+                    // Somente adiciona a descrição na string final se a ação exigir algo a mais
+                    if (h.desc && (h.acao === 'Outro' || h.acao === 'Entrou para Unit' || h.acao === 'Foi Transferida')) {
+                        text += `: ${h.desc}`;
+                    }
+                    return { data: `${h.mes} ${h.ano}`.trim(), para: text }; 
+                }).filter(h => h.para !== 'Outro' && h.data !== ''); // Remove linhas que ficaram vazias/invalidas
+                
                 const mm = { 'Jan':1, 'Fev':2, 'Mar':3, 'Abr':4, 'Mai':5, 'Jun':6, 'Jul':7, 'Ago':8, 'Set':9, 'Out':10, 'Nov':11, 'Dez':12 };
                 formatHist.sort((a,b) => { let aP=(a.data||'').split(' '), bP=(b.data||'').split(' '); let yA=parseInt(aP[1])||0, yB=parseInt(bP[1])||0; return yA!==yB ? yB-yA : (mm[bP[0]]||0) - (mm[aP[0]]||0); });
+                
                 let obj = { nome: document.getElementById('fm-nome').value, geracao: document.getElementById('fm-gen').value, subunit: document.getElementById('fm-unit').value, status: document.getElementById('fm-status').value, foto: document.getElementById('fm-foto').value || pImg(document.getElementById('fm-nome').value, document.getElementById('fm-unit').value), perfil: document.getElementById('fm-perfil').value, historico_times: formatHist };
                 if (editIndex >= 0) await db.from('members').update(obj).eq('id', loadedMembers[editIndex].id); else await db.from('members').insert([obj]);
             } else if (editType === 'stage') {
