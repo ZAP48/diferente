@@ -150,6 +150,146 @@
 
     </div>
 
-    <script src="js/records.js"></script>
+    <script>
+        // =====================================================================
+        // COLOQUE SUAS CHAVES DO SUPABASE AQUI (as mesmas do site original)
+        // =====================================================================
+       const SUPABASE_URL = 'https://avlgxwymwotffookkimg.supabase.co'; 
+const SUPABASE_ANON_KEY = 'sb_publishable_9uhuy6fpFduf-qsEXYf5wA_BDBB1OIZ'; 
+const IMGBB_API_KEY = '81f7ca81cf22d739de576bd1dac7dcc2';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Função para formatar os números (ex: 1.500.000)
+        const formatNumber = (num) => {
+            return (num || 0).toLocaleString('pt-BR');
+        };
+
+        async function calculateRecords() {
+            try {
+                // 1. Buscar todos os dados necessários
+                const [artistsRes, songsRes, albumsRes, singlesRes] = await Promise.all([
+                    supabaseClient.from('artists').select('*'),
+                    supabaseClient.from('songs').select('*'),
+                    supabaseClient.from('albums').select('*'),
+                    supabaseClient.from('singles').select('*')
+                ]);
+
+                const artists = artistsRes.data || [];
+                const songs = songsRes.data || [];
+                const releases = [...(albumsRes.data || []), ...(singlesRes.data || [])];
+
+                // ----------------------------------------------------------------
+                // RECORD 1: FAIXA MAIS OUVIDA
+                // ----------------------------------------------------------------
+                let topSong = null;
+                let maxSongStreams = -1;
+
+                songs.forEach(song => {
+                    const streams = song.total_streams || 0;
+                    if (streams > maxSongStreams) {
+                        maxSongStreams = streams;
+                        topSong = song;
+                    }
+                });
+
+                if (topSong) {
+                    document.getElementById('topSongTitle').textContent = topSong.title;
+                    document.getElementById('topSongStreams').textContent = formatNumber(maxSongStreams);
+                    
+                    // Achar o artista da música
+                    const mainArtist = artists.find(a => a.id === topSong.artist_ids[0]);
+                    document.getElementById('topSongArtist').textContent = mainArtist ? mainArtist.name : 'Desconhecido';
+
+                    // Achar a capa (procura nos álbuns ou singles)
+                    let coverUrl = 'https://i.imgur.com/AD3MbBi.png'; // padrão
+                    if (topSong.album_ids && topSong.album_ids.length > 0) {
+                        const alb = releases.find(r => r.id === topSong.album_ids[0]);
+                        if (alb && alb.image_url) coverUrl = alb.image_url;
+                    } else if (topSong.single_ids && topSong.single_ids.length > 0) {
+                        const sgl = releases.find(r => r.id === topSong.single_ids[0]);
+                        if (sgl && sgl.image_url) coverUrl = sgl.image_url;
+                    }
+                    document.getElementById('topSongImg').src = coverUrl;
+                }
+
+                // ----------------------------------------------------------------
+                // RECORD 2: ÁLBUM / EP MAIS OUVIDO
+                // ----------------------------------------------------------------
+                let topRelease = null;
+                let maxReleaseStreams = -1;
+
+                releases.forEach(release => {
+                    // Encontrar todas as músicas que pertencem a este lançamento
+                    const releaseSongs = songs.filter(s => 
+                        (s.album_ids && s.album_ids.includes(release.id)) || 
+                        (s.single_ids && s.single_ids.includes(release.id))
+                    );
+                    
+                    // Somar os streams de todas as faixas do álbum
+                    const totalStreams = releaseSongs.reduce((sum, s) => sum + (s.total_streams || 0), 0);
+                    
+                    if (totalStreams > maxReleaseStreams) {
+                        maxReleaseStreams = totalStreams;
+                        topRelease = release;
+                    }
+                });
+
+                if (topRelease) {
+                    document.getElementById('topAlbumTitle').textContent = topRelease.title;
+                    document.getElementById('topAlbumStreams').textContent = formatNumber(maxReleaseStreams);
+                    document.getElementById('topAlbumImg').src = topRelease.image_url || 'https://i.imgur.com/AD3MbBi.png';
+                    
+                    const mainArtist = artists.find(a => a.id === topRelease.artist_id);
+                    document.getElementById('topAlbumArtist').textContent = mainArtist ? mainArtist.name : 'Desconhecido';
+                }
+
+                // ----------------------------------------------------------------
+                // RECORD 3: ARTISTA COM MAIS STREAMS TOTAIS
+                // ----------------------------------------------------------------
+                let topArtist = null;
+                let maxArtistStreams = -1;
+
+                artists.forEach(artist => {
+                    // Acha todas as músicas onde ele está envolvido (principal ou feat)
+                    const artistSongs = songs.filter(s => s.artist_ids && s.artist_ids.includes(artist.id));
+                    
+                    // Soma tudo
+                    const totalStreams = artistSongs.reduce((sum, s) => sum + (s.total_streams || 0), 0);
+
+                    if (totalStreams > maxArtistStreams) {
+                        maxArtistStreams = totalStreams;
+                        topArtist = artist;
+                    }
+                });
+
+                if (topArtist) {
+                    document.getElementById('topArtistName').textContent = topArtist.name;
+                    document.getElementById('topArtistStreams').textContent = formatNumber(maxArtistStreams);
+                    
+                    // Extrai a URL limpa da imagem do artista (tirando o #pos)
+                    let cleanImgUrl = topArtist.image_url ? topArtist.image_url.split('#')[0] : 'https://i.imgur.com/AD3MbBi.png';
+                    document.getElementById('topArtistImg').src = cleanImgUrl;
+                    
+                    // Posição da foto (se houver)
+                    if (topArtist.image_url && topArtist.image_url.includes('#pos=')) {
+                        const pos = topArtist.image_url.split('#pos=')[1];
+                        document.getElementById('topArtistImg').style.objectPosition = `center ${pos}%`;
+                    }
+                }
+
+                // Esconder ecrã de loading e mostrar os cards
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('recordsContainer').style.display = 'grid';
+
+            } catch (error) {
+                console.error("Erro ao carregar recordes:", error);
+                document.getElementById('loading').innerHTML = '<span style="color: #ff4444;">Erro ao carregar dados da base de dados. Verifique as suas chaves do Supabase.</span>';
+            }
+        }
+
+        // Inicia a busca ao abrir a página
+        window.addEventListener('DOMContentLoaded', calculateRecords);
+    </script>
 </body>
 </html>
