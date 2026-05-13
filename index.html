@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> <style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> 
+    <style>
         :root {
             --bg-color: #121212;
             --card-bg: #181818;
@@ -39,11 +40,39 @@
         }
         .subtitle {
             color: var(--text-sec);
-            margin-bottom: 50px;
+            margin-bottom: 30px;
             text-align: center;
             font-size: 18px;
         }
         
+        /* SISTEMA DE ABAS */
+        .tabs {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 40px;
+            background: #000;
+            padding: 8px;
+            border-radius: 12px;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-sec);
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 800;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            background: var(--card-hover);
+            color: var(--text-main);
+        }
+        .tab-btn.active {
+            background: var(--accent);
+        }
+
         /* GRID DOS RECORDES ABSOLUTOS */
         .records-grid {
             display: grid;
@@ -60,7 +89,7 @@
             text-align: center;
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
             transition: transform 0.3s;
-            position: relative; /* Necessário para o botão de exportar */
+            position: relative;
         }
         .record-card:hover {
             transform: translateY(-5px);
@@ -237,6 +266,17 @@
             font-variant-numeric: tabular-nums;
         }
 
+        /* CARD RIAJ ESPECÍFICO */
+        .riaj-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
         .loader {
             font-size: 24px;
             color: var(--accent);
@@ -250,66 +290,83 @@
     <h1>🏆 Hall da Fama Oficial</h1>
     <p class="subtitle">A história do Spotify RPG contada através dos números globais.</p>
 
-    <div id="loading" class="loader"><i class="fas fa-spinner fa-spin"></i> Sincronizando dados dos charts...</div>
-
-    <div id="recordsContainer" class="records-grid hidden">
-        
-        <div class="record-card" id="cardTopArtist">
-            <button onclick="exportarArte('cardTopArtist')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
-            <i class="fas fa-crown trophy-icon icon-gold"></i>
-            <div class="record-category">Artista Mais Ouvido</div>
-            <img id="topArtistImg" src="" class="record-image" alt="Artista">
-            <h2 id="topArtistName" class="record-title">-</h2>
-            <p id="topArtistSubtitle" class="record-subtitle">Catálogo Completo</p>
-            <div id="topArtistStreams" class="record-stats">-</div>
-        </div>
-
-        <div class="record-card is-album" id="cardTopSong">
-            <button onclick="exportarArte('cardTopSong')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
-            <i class="fas fa-fire trophy-icon icon-accent"></i>
-            <div class="record-category">Faixa Mais Ouvida</div>
-            <img id="topSongImg" src="" class="record-image" alt="Música">
-            <h2 id="topSongTitle" class="record-title">-</h2>
-            <p id="topSongArtist" class="record-subtitle">-</p>
-            <div id="topSongStreams" class="record-stats">-</div>
-        </div>
-
-        <div class="record-card is-album" id="cardTopAlbum">
-            <button onclick="exportarArte('cardTopAlbum')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
-            <i class="fas fa-compact-disc trophy-icon icon-silver"></i>
-            <div class="record-category">Maior Projeto (Álbum/EP)</div>
-            <img id="topAlbumImg" src="" class="record-image" alt="Álbum">
-            <h2 id="topAlbumTitle" class="record-title">-</h2>
-            <p id="topAlbumArtist" class="record-subtitle">-</p>
-            <div id="topAlbumStreams" class="record-stats">-</div>
-        </div>
-
-        <div class="record-card is-album" id="cardTopCollab">
-            <button onclick="exportarArte('cardTopCollab')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
-            <i class="fas fa-handshake trophy-icon icon-purple"></i>
-            <div class="record-category">Maior Colaboração (Feat)</div>
-            <img id="topCollabImg" src="" class="record-image" alt="Colaboração">
-            <h2 id="topCollabTitle" class="record-title">-</h2>
-            <p id="topCollabArtists" class="record-subtitle">-</p>
-            <div id="topCollabStreams" class="record-stats">-</div>
-        </div>
-
+    <div class="tabs hidden" id="tabsNav">
+        <button id="btnGeral" class="tab-btn active" onclick="switchTab('geral')">Visão Geral</button>
+        <button id="btnRiaj" class="tab-btn" onclick="switchTab('riaj')">Certificações (RIAJ)</button>
     </div>
 
-    <div id="chartsContainer" class="charts-container hidden">
-        <div class="chart-section" style="grid-column: 1 / -1;">
-            <h3>🌍 Top 10 Músicas Globais <span class="cert-legend">📀 1k+ | 💿 5k+ | 💎 10k+</span></h3>
-            <div id="top10SongsList" class="ranking-list"></div>
+    <div id="loading" class="loader"><i class="fas fa-spinner fa-spin"></i> Sincronizando dados...</div>
+
+    <div id="tabGeral" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <div id="recordsContainer" class="records-grid">
+            <div class="record-card" id="cardTopArtist">
+                <button onclick="exportarArte('cardTopArtist')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
+                <i class="fas fa-crown trophy-icon icon-gold"></i>
+                <div class="record-category">Artista Mais Ouvido</div>
+                <img id="topArtistImg" src="" class="record-image" alt="Artista">
+                <h2 id="topArtistName" class="record-title">-</h2>
+                <p id="topArtistSubtitle" class="record-subtitle">Catálogo Completo</p>
+                <div id="topArtistStreams" class="record-stats">-</div>
+            </div>
+
+            <div class="record-card is-album" id="cardTopSong">
+                <button onclick="exportarArte('cardTopSong')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
+                <i class="fas fa-fire trophy-icon icon-accent"></i>
+                <div class="record-category">Faixa Mais Ouvida</div>
+                <img id="topSongImg" src="" class="record-image" alt="Música">
+                <h2 id="topSongTitle" class="record-title">-</h2>
+                <p id="topSongArtist" class="record-subtitle">-</p>
+                <div id="topSongStreams" class="record-stats">-</div>
+            </div>
+
+            <div class="record-card is-album" id="cardTopAlbum">
+                <button onclick="exportarArte('cardTopAlbum')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
+                <i class="fas fa-compact-disc trophy-icon icon-silver"></i>
+                <div class="record-category">Maior Projeto (Álbum/EP)</div>
+                <img id="topAlbumImg" src="" class="record-image" alt="Álbum">
+                <h2 id="topAlbumTitle" class="record-title">-</h2>
+                <p id="topAlbumArtist" class="record-subtitle">-</p>
+                <div id="topAlbumStreams" class="record-stats">-</div>
+            </div>
+
+            <div class="record-card is-album" id="cardTopCollab">
+                <button onclick="exportarArte('cardTopCollab')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
+                <i class="fas fa-handshake trophy-icon icon-purple"></i>
+                <div class="record-category">Maior Colaboração (Feat)</div>
+                <img id="topCollabImg" src="" class="record-image" alt="Colaboração">
+                <h2 id="topCollabTitle" class="record-title">-</h2>
+                <p id="topCollabArtists" class="record-subtitle">-</p>
+                <div id="topCollabStreams" class="record-stats">-</div>
+            </div>
         </div>
 
-        <div class="chart-section">
-            <h3>🎤 Top 5 Artistas</h3>
-            <div id="top5ArtistsList" class="ranking-list"></div>
-        </div>
+        <div id="chartsContainer" class="charts-container">
+            <div class="chart-section" style="grid-column: 1 / -1;">
+                <h3>🌍 Top 10 Músicas Globais <span class="cert-legend">📀 1k+ | 💿 5k+ | 💎 10k+</span></h3>
+                <div id="top10SongsList" class="ranking-list"></div>
+            </div>
 
-        <div class="chart-section">
-            <h3>💿 Top 5 Álbuns e EPs</h3>
-            <div id="top5AlbumsList" class="ranking-list"></div>
+            <div class="chart-section">
+                <h3>🎤 Top 5 Artistas</h3>
+                <div id="top5ArtistsList" class="ranking-list"></div>
+            </div>
+
+            <div class="chart-section">
+                <h3>💿 Top 5 Álbuns e EPs</h3>
+                <div id="top5AlbumsList" class="ranking-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tabRiaj" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <div class="riaj-container" id="cardRIAJ">
+            <button onclick="exportarArte('cardRIAJ')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
+            <h2 style="text-align: center; margin-top: 0; font-weight: 900; letter-spacing: -1px;">🇯🇵 Streaming Certification (RIAJ)</h2>
+            <div style="text-align:center; margin-bottom: 24px; font-size: 13px; color: var(--text-sec); font-weight: 600;">
+                ⚪ Prata: 30M | 📀 Ouro: 50M | 💿 Platina: 100M | 💎 Diamante: 500M
+            </div>
+            
+            <div id="riajSongsList" class="ranking-list"></div>
         </div>
     </div>
 
@@ -341,29 +398,41 @@
             return 'center center';
         };
 
+        // ====== FUNÇÃO PARA ALTERNAR AS ABAS ======
+        function switchTab(tabId) {
+            if (tabId === 'geral') {
+                document.getElementById('tabGeral').classList.remove('hidden');
+                document.getElementById('tabRiaj').classList.add('hidden');
+                document.getElementById('btnGeral').classList.add('active');
+                document.getElementById('btnRiaj').classList.remove('active');
+            } else {
+                document.getElementById('tabGeral').classList.add('hidden');
+                document.getElementById('tabRiaj').classList.remove('hidden');
+                document.getElementById('btnGeral').classList.remove('active');
+                document.getElementById('btnRiaj').classList.add('active');
+            }
+        }
+
         // ====== FUNÇÃO PARA EXPORTAR A ARTE (DOWNLOAD) ======
         function exportarArte(cardId) {
             const card = document.getElementById(cardId);
             const btn = card.querySelector('.export-btn');
             
-            // Oculta o botão da câmera temporariamente para não sair no print
             if(btn) btn.style.display = 'none'; 
 
-            // Força a cor de fundo sólida para garantir a qualidade
             const bgOriginal = card.style.backgroundColor;
             card.style.backgroundColor = '#181818';
 
             html2canvas(card, {
-                scale: 2, // Resolução em dobro
-                useCORS: true, // Permite carregar as imagens do Imgur sem erro de segurança
+                scale: 2, 
+                useCORS: true, 
                 backgroundColor: '#181818'
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = `spotify-rpg-conquista-${Date.now()}.png`;
+                link.download = `spotify-rpg-${cardId}-${Date.now()}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
 
-                // Devolve as configurações normais pro card
                 if(btn) btn.style.display = 'flex';
                 card.style.backgroundColor = bgOriginal;
             }).catch(err => {
@@ -376,7 +445,6 @@
 
         async function loadCharts() {
             try {
-                // 1. Download de Dados
                 const [artistsRes, songsRes, albumsRes, singlesRes] = await Promise.all([
                     supabaseClient.from('artists').select('*'),
                     supabaseClient.from('songs').select('*'),
@@ -388,7 +456,6 @@
                 const songs = songsRes.data || [];
                 const releases = [...(albumsRes.data || []), ...(singlesRes.data || [])];
 
-                // 2. Processamento
                 const songsWithCalculations = songs.map(song => {
                     let cover = 'https://i.imgur.com/AD3MbBi.png';
                     if (song.album_ids && song.album_ids.length > 0) {
@@ -416,7 +483,7 @@
                     return { ...release, streams: totalStreams };
                 }).sort((a, b) => b.streams - a.streams);
 
-                // 3. PREENCHER RECORDES ABSOLUTOS
+                // --- RECORDES ABSOLUTOS ---
                 const topSong = songsWithCalculations[0];
                 if (topSong) {
                     document.getElementById('topSongTitle').textContent = topSong.title;
@@ -432,8 +499,6 @@
                     document.getElementById('topCollabStreams').textContent = formatNumber(topCollab.streams);
                     document.getElementById('topCollabArtists').textContent = getArtistNames(topCollab.artist_ids, artists);
                     document.getElementById('topCollabImg').src = topCollab.calculated_cover;
-                } else {
-                    document.getElementById('topCollabTitle').textContent = "Nenhum Feat";
                 }
 
                 const topRelease = releasesWithCalculations[0];
@@ -454,9 +519,8 @@
                     imgEl.style.objectPosition = getBgPos(topArtist.image_url);
                 }
 
-                // 4. RANKINGS COM CERTIFICADOS
+                // --- TOP 10 MÚSICAS GLOBAL (Mantido Original) ---
                 const top10SongsHtml = songsWithCalculations.slice(0, 10).map((s, index) => {
-                    // Lógica das Placas de Certificação
                     let certIcon = '';
                     if (s.streams >= 10000) certIcon = '💎';
                     else if (s.streams >= 5000) certIcon = '💿';
@@ -476,6 +540,7 @@
                 }).join('');
                 document.getElementById('top10SongsList').innerHTML = top10SongsHtml || '<p class="ranking-subtitle">Nenhuma música com streams.</p>';
 
+                // --- TOP 5 ARTISTAS E ÁLBUNS ---
                 const top5ArtistsHtml = artistsWithCalculations.slice(0, 5).filter(a => a.streams > 0).map((a, index) => `
                     <div class="ranking-item">
                         <div class="ranking-rank">${index + 1}</div>
@@ -505,14 +570,57 @@
                 }).join('');
                 document.getElementById('top5AlbumsList').innerHTML = top5AlbumsHtml || '<p class="ranking-subtitle">Nenhum álbum com streams.</p>';
 
-                // 5. Exibir UI
+                // ==========================================
+                // LÓGICA DE CERTIFICAÇÕES RIAJ (NOVA ABA)
+                // ==========================================
+                const riajSongs = songsWithCalculations.filter(s => s.streams >= 30000000); // Mínimo de 30M (Prata)
+                
+                const riajHtml = riajSongs.map(s => {
+                    let certName = '';
+                    let icon = '';
+                    
+                    if (s.streams >= 500000000) {
+                        certName = 'Diamante';
+                        icon = '💎';
+                    } else if (s.streams >= 100000000) {
+                        // Multiplicador de Platina (ex: 200M = 2x Platina)
+                        let multi = Math.floor(s.streams / 100000000);
+                        certName = multi > 1 ? `${multi}x Platina` : 'Platina';
+                        icon = '💿';
+                    } else if (s.streams >= 50000000) {
+                        certName = 'Ouro';
+                        icon = '📀';
+                    } else {
+                        certName = 'Prata';
+                        icon = '⚪';
+                    }
+
+                    return `
+                    <div class="ranking-item" style="margin-bottom: 8px;">
+                        <div class="ranking-rank" style="font-size:24px; width:40px; text-align:center;">${icon}</div>
+                        <img src="${s.calculated_cover}" class="ranking-img" crossorigin="anonymous" alt="Cover">
+                        <div class="ranking-info">
+                            <span class="ranking-title">${s.title}</span>
+                            <span class="ranking-subtitle">${getArtistNames(s.artist_ids, artists)}</span>
+                        </div>
+                        <div style="text-align: right; margin-left: 10px;">
+                            <div class="ranking-streams" style="background:transparent; padding:0; font-size:15px; color: #fff;">${certName}</div>
+                            <div class="ranking-subtitle" style="font-size:11px; margin-top:4px;">${formatNumber(s.streams)} streams</div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+
+                document.getElementById('riajSongsList').innerHTML = riajHtml || '<div class="ranking-item"><div class="ranking-info" style="text-align:center; padding: 20px;"><span class="ranking-subtitle">Nenhuma música atingiu os critérios da RIAJ (30M+) ainda.</span></div></div>';
+
+                // --- Exibir UI final ---
                 document.getElementById('loading').classList.add('hidden');
-                document.getElementById('recordsContainer').classList.remove('hidden');
-                document.getElementById('chartsContainer').classList.remove('hidden');
+                document.getElementById('tabsNav').classList.remove('hidden');
+                document.getElementById('tabGeral').classList.remove('hidden');
 
             } catch (error) {
                 console.error("Erro ao carregar recordes:", error);
-                document.getElementById('loading').innerHTML = '<span style="color: #ff4444;">Erro ao carregar os rankings. Tente novamente mais tarde.</span>';
+                document.getElementById('loading').innerHTML = '<span style="color: #ff4444;">Erro ao carregar os rankings. Verifique o console.</span>';
             }
         }
 
