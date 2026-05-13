@@ -8,8 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> <style>
         :root {
             --bg-color: #121212;
             --card-bg: #181818;
@@ -61,11 +60,38 @@
             text-align: center;
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
             transition: transform 0.3s;
+            position: relative; /* Necessário para o botão de exportar */
         }
         .record-card:hover {
             transform: translateY(-5px);
             background-color: var(--card-hover);
         }
+        
+        /* Botão de Exportar Arte */
+        .export-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-sec);
+            cursor: pointer;
+            font-size: 18px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        .export-btn:hover {
+            color: var(--text-main);
+            background: var(--accent);
+            transform: scale(1.1);
+        }
+
         .trophy-icon { font-size: 40px; margin-bottom: 16px; }
         .icon-gold { color: var(--gold); }
         .icon-accent { color: var(--accent); }
@@ -132,6 +158,14 @@
             border-bottom: 2px solid #282828;
             padding-bottom: 12px;
             margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .cert-legend {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-sec);
         }
         .ranking-list {
             display: flex;
@@ -182,6 +216,9 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         .ranking-subtitle {
             font-size: 13px;
@@ -217,7 +254,8 @@
 
     <div id="recordsContainer" class="records-grid hidden">
         
-        <div class="record-card">
+        <div class="record-card" id="cardTopArtist">
+            <button onclick="exportarArte('cardTopArtist')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
             <i class="fas fa-crown trophy-icon icon-gold"></i>
             <div class="record-category">Artista Mais Ouvido</div>
             <img id="topArtistImg" src="" class="record-image" alt="Artista">
@@ -226,7 +264,8 @@
             <div id="topArtistStreams" class="record-stats">-</div>
         </div>
 
-        <div class="record-card is-album">
+        <div class="record-card is-album" id="cardTopSong">
+            <button onclick="exportarArte('cardTopSong')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
             <i class="fas fa-fire trophy-icon icon-accent"></i>
             <div class="record-category">Faixa Mais Ouvida</div>
             <img id="topSongImg" src="" class="record-image" alt="Música">
@@ -235,7 +274,8 @@
             <div id="topSongStreams" class="record-stats">-</div>
         </div>
 
-        <div class="record-card is-album">
+        <div class="record-card is-album" id="cardTopAlbum">
+            <button onclick="exportarArte('cardTopAlbum')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
             <i class="fas fa-compact-disc trophy-icon icon-silver"></i>
             <div class="record-category">Maior Projeto (Álbum/EP)</div>
             <img id="topAlbumImg" src="" class="record-image" alt="Álbum">
@@ -244,7 +284,8 @@
             <div id="topAlbumStreams" class="record-stats">-</div>
         </div>
 
-        <div class="record-card is-album">
+        <div class="record-card is-album" id="cardTopCollab">
+            <button onclick="exportarArte('cardTopCollab')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
             <i class="fas fa-handshake trophy-icon icon-purple"></i>
             <div class="record-category">Maior Colaboração (Feat)</div>
             <img id="topCollabImg" src="" class="record-image" alt="Colaboração">
@@ -257,7 +298,7 @@
 
     <div id="chartsContainer" class="charts-container hidden">
         <div class="chart-section" style="grid-column: 1 / -1;">
-            <h3>🌍 Top 10 Músicas Globais</h3>
+            <h3>🌍 Top 10 Músicas Globais <span class="cert-legend">📀 1k+ | 💿 5k+ | 💎 10k+</span></h3>
             <div id="top10SongsList" class="ranking-list"></div>
         </div>
 
@@ -280,7 +321,6 @@
 
         const formatNumber = (num) => (num || 0).toLocaleString('pt-BR');
 
-        // Função de ajuda para montar o nome dos artistas em feats
         const getArtistNames = (artistIdsArray, allArtists) => {
             if (!artistIdsArray || artistIdsArray.length === 0) return "Desconhecido";
             const names = artistIdsArray.map(id => {
@@ -288,7 +328,7 @@
                 return a ? a.name : "?";
             });
             if (names.length === 1) return names[0];
-            return `${names[0]} (feat. ${names.slice(1).join(', ')})`; // Assumindo formato padrão de feat para simplificar a view
+            return `${names[0]} (feat. ${names.slice(1).join(', ')})`;
         };
 
         const getCleanImageUrl = (url, isArtist = false) => {
@@ -300,6 +340,39 @@
             if (url && url.includes('#pos=')) return `center ${url.split('#pos=')[1]}%`;
             return 'center center';
         };
+
+        // ====== FUNÇÃO PARA EXPORTAR A ARTE (DOWNLOAD) ======
+        function exportarArte(cardId) {
+            const card = document.getElementById(cardId);
+            const btn = card.querySelector('.export-btn');
+            
+            // Oculta o botão da câmera temporariamente para não sair no print
+            if(btn) btn.style.display = 'none'; 
+
+            // Força a cor de fundo sólida para garantir a qualidade
+            const bgOriginal = card.style.backgroundColor;
+            card.style.backgroundColor = '#181818';
+
+            html2canvas(card, {
+                scale: 2, // Resolução em dobro
+                useCORS: true, // Permite carregar as imagens do Imgur sem erro de segurança
+                backgroundColor: '#181818'
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `spotify-rpg-conquista-${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                // Devolve as configurações normais pro card
+                if(btn) btn.style.display = 'flex';
+                card.style.backgroundColor = bgOriginal;
+            }).catch(err => {
+                console.error("Erro ao gerar arte: ", err);
+                if(btn) btn.style.display = 'flex';
+                card.style.backgroundColor = bgOriginal;
+                alert("Ocorreu um erro ao tentar baixar a imagem.");
+            });
+        }
 
         async function loadCharts() {
             try {
@@ -315,9 +388,7 @@
                 const songs = songsRes.data || [];
                 const releases = [...(albumsRes.data || []), ...(singlesRes.data || [])];
 
-                // 2. Processamento e Cálculo (A base de todos os rankings)
-                
-                // Músicas com capa anexada
+                // 2. Processamento
                 const songsWithCalculations = songs.map(song => {
                     let cover = 'https://i.imgur.com/AD3MbBi.png';
                     if (song.album_ids && song.album_ids.length > 0) {
@@ -330,14 +401,12 @@
                     return { ...song, calculated_cover: cover, streams: song.total_streams || 0 };
                 }).sort((a, b) => b.streams - a.streams);
 
-                // Artistas com total calculado
                 const artistsWithCalculations = artists.map(artist => {
                     const artistSongs = songsWithCalculations.filter(s => s.artist_ids && s.artist_ids.includes(artist.id));
                     const totalStreams = artistSongs.reduce((sum, s) => sum + s.streams, 0);
                     return { ...artist, streams: totalStreams };
                 }).sort((a, b) => b.streams - a.streams);
 
-                // Álbuns com total calculado
                 const releasesWithCalculations = releases.map(release => {
                     const releaseSongs = songsWithCalculations.filter(s => 
                         (s.album_ids && s.album_ids.includes(release.id)) || 
@@ -347,9 +416,7 @@
                     return { ...release, streams: totalStreams };
                 }).sort((a, b) => b.streams - a.streams);
 
-                // 3. PREENCHER OS RECORDES ABSOLUTOS (CARDS)
-
-                // A. Faixa Mais Ouvida
+                // 3. PREENCHER RECORDES ABSOLUTOS
                 const topSong = songsWithCalculations[0];
                 if (topSong) {
                     document.getElementById('topSongTitle').textContent = topSong.title;
@@ -358,7 +425,6 @@
                     document.getElementById('topSongImg').src = topSong.calculated_cover;
                 }
 
-                // B. Maior Colaboração (Músicas com mais de 1 artista)
                 const collabs = songsWithCalculations.filter(s => s.artist_ids && s.artist_ids.length > 1);
                 const topCollab = collabs.length > 0 ? collabs[0] : null;
                 if (topCollab) {
@@ -370,7 +436,6 @@
                     document.getElementById('topCollabTitle').textContent = "Nenhum Feat";
                 }
 
-                // C. Maior Projeto (Álbum/EP)
                 const topRelease = releasesWithCalculations[0];
                 if (topRelease) {
                     document.getElementById('topAlbumTitle').textContent = topRelease.title;
@@ -380,7 +445,6 @@
                     document.getElementById('topAlbumImg').src = getCleanImageUrl(topRelease.image_url);
                 }
 
-                // D. Artista Mais Ouvido
                 const topArtist = artistsWithCalculations[0];
                 if (topArtist) {
                     document.getElementById('topArtistName').textContent = topArtist.name;
@@ -390,27 +454,32 @@
                     imgEl.style.objectPosition = getBgPos(topArtist.image_url);
                 }
 
-                // 4. PREENCHER AS LISTAS DE RANKINGS
+                // 4. RANKINGS COM CERTIFICADOS
+                const top10SongsHtml = songsWithCalculations.slice(0, 10).map((s, index) => {
+                    // Lógica das Placas de Certificação
+                    let certIcon = '';
+                    if (s.streams >= 10000) certIcon = '💎';
+                    else if (s.streams >= 5000) certIcon = '💿';
+                    else if (s.streams >= 1000) certIcon = '📀';
 
-                // Top 10 Músicas
-                const top10SongsHtml = songsWithCalculations.slice(0, 10).map((s, index) => `
+                    return `
                     <div class="ranking-item">
                         <div class="ranking-rank">${index + 1}</div>
-                        <img src="${s.calculated_cover}" class="ranking-img" alt="Cover">
+                        <img src="${s.calculated_cover}" class="ranking-img" crossorigin="anonymous" alt="Cover">
                         <div class="ranking-info">
-                            <span class="ranking-title">${s.title}</span>
+                            <span class="ranking-title">${s.title} <span title="Certificado">${certIcon}</span></span>
                             <span class="ranking-subtitle">${getArtistNames(s.artist_ids, artists)}</span>
                         </div>
                         <div class="ranking-streams">${formatNumber(s.streams)}</div>
                     </div>
-                `).join('');
+                    `;
+                }).join('');
                 document.getElementById('top10SongsList').innerHTML = top10SongsHtml || '<p class="ranking-subtitle">Nenhuma música com streams.</p>';
 
-                // Top 5 Artistas
                 const top5ArtistsHtml = artistsWithCalculations.slice(0, 5).filter(a => a.streams > 0).map((a, index) => `
                     <div class="ranking-item">
                         <div class="ranking-rank">${index + 1}</div>
-                        <img src="${getCleanImageUrl(a.image_url, true)}" class="ranking-img round" style="object-position: ${getBgPos(a.image_url)};" alt="Artist">
+                        <img src="${getCleanImageUrl(a.image_url, true)}" crossorigin="anonymous" class="ranking-img round" style="object-position: ${getBgPos(a.image_url)};" alt="Artist">
                         <div class="ranking-info">
                             <span class="ranking-title">${a.name}</span>
                             <span class="ranking-subtitle">Catálogo</span>
@@ -420,13 +489,12 @@
                 `).join('');
                 document.getElementById('top5ArtistsList').innerHTML = top5ArtistsHtml || '<p class="ranking-subtitle">Nenhum artista com streams.</p>';
 
-                // Top 5 Álbuns
                 const top5AlbumsHtml = releasesWithCalculations.slice(0, 5).filter(r => r.streams > 0).map((r, index) => {
                     const art = artists.find(a => a.id === r.artist_id);
                     return `
                     <div class="ranking-item">
                         <div class="ranking-rank">${index + 1}</div>
-                        <img src="${getCleanImageUrl(r.image_url)}" class="ranking-img" alt="Cover">
+                        <img src="${getCleanImageUrl(r.image_url)}" crossorigin="anonymous" class="ranking-img" alt="Cover">
                         <div class="ranking-info">
                             <span class="ranking-title">${r.title}</span>
                             <span class="ranking-subtitle">${art ? art.name : 'Desconhecido'}</span>
