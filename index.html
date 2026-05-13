@@ -13,10 +13,13 @@
         :root {
             --bg-color: #121212;
             --card-bg: #181818;
+            --card-hover: #282828;
             --text-main: #ffffff;
             --text-sec: #b3b3b3;
             --accent: #1db954;
             --gold: #FFD700;
+            --silver: #C0C0C0;
+            --bronze: #cd7f32;
         }
         body {
             font-family: 'Montserrat', sans-serif;
@@ -33,18 +36,23 @@
             font-weight: 900;
             margin-bottom: 10px;
             text-align: center;
+            letter-spacing: -1px;
         }
         .subtitle {
             color: var(--text-sec);
             margin-bottom: 50px;
             text-align: center;
+            font-size: 18px;
         }
+        
+        /* GRID DOS RECORDES ABSOLUTOS */
         .records-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 24px;
             width: 100%;
-            max-width: 1000px;
+            max-width: 1100px;
+            margin-bottom: 60px;
         }
         .record-card {
             background-color: var(--card-bg);
@@ -53,39 +61,36 @@
             text-align: center;
             box-shadow: 0 8px 24px rgba(0,0,0,0.5);
             transition: transform 0.3s;
-            position: relative;
-            overflow: hidden;
         }
         .record-card:hover {
             transform: translateY(-5px);
-            background-color: #282828;
+            background-color: var(--card-hover);
         }
-        .trophy-icon {
-            font-size: 40px;
-            color: var(--gold);
-            margin-bottom: 16px;
-        }
+        .trophy-icon { font-size: 40px; margin-bottom: 16px; }
+        .icon-gold { color: var(--gold); }
+        .icon-accent { color: var(--accent); }
+        .icon-silver { color: var(--silver); }
+        .icon-purple { color: #a855f7; }
+
         .record-category {
-            font-size: 14px;
-            color: var(--accent);
+            font-size: 12px;
+            color: var(--text-sec);
             text-transform: uppercase;
             font-weight: 800;
             margin-bottom: 16px;
             letter-spacing: 1px;
         }
         .record-image {
-            width: 150px;
-            height: 150px;
+            width: 140px;
+            height: 140px;
             object-fit: cover;
             border-radius: 50%;
             margin: 0 auto 16px;
             box-shadow: 0 8px 16px rgba(0,0,0,0.5);
         }
-        .is-album .record-image {
-            border-radius: 8px; /* Álbuns e músicas são quadrados */
-        }
+        .is-album .record-image { border-radius: 8px; }
         .record-title {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 800;
             margin: 0 0 8px 0;
             white-space: nowrap;
@@ -93,36 +98,127 @@
             text-overflow: ellipsis;
         }
         .record-subtitle {
-            font-size: 16px;
+            font-size: 14px;
             color: var(--text-sec);
             margin: 0 0 16px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .record-stats {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 900;
             color: var(--text-main);
             background: rgba(255,255,255,0.05);
             padding: 12px;
             border-radius: 8px;
+            letter-spacing: -1px;
         }
+
+        /* GRID DOS CHARTS (RANKINGS) */
+        .charts-container {
+            width: 100%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+        @media(max-width: 800px) {
+            .charts-container { grid-template-columns: 1fr; }
+        }
+        .chart-section h3 {
+            font-size: 24px;
+            font-weight: 800;
+            border-bottom: 2px solid #282828;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            background: rgba(255,255,255,0.02);
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .ranking-item:hover {
+            background: rgba(255,255,255,0.08);
+        }
+        .ranking-rank {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-sec);
+            width: 30px;
+            text-align: left;
+        }
+        .ranking-item:nth-child(1) .ranking-rank { color: var(--gold); }
+        .ranking-item:nth-child(2) .ranking-rank { color: var(--silver); }
+        .ranking-item:nth-child(3) .ranking-rank { color: var(--bronze); }
+        
+        .ranking-img {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 16px;
+        }
+        .ranking-img.round { border-radius: 50%; }
+        
+        .ranking-info {
+            flex-grow: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .ranking-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ranking-subtitle {
+            font-size: 13px;
+            color: var(--text-sec);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ranking-streams {
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--text-main);
+            background: var(--card-bg);
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-variant-numeric: tabular-nums;
+        }
+
         .loader {
             font-size: 24px;
             color: var(--accent);
             margin-top: 50px;
         }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <h1>🏆 Hall da Fama Oficial</h1>
-    <p class="subtitle">Os recordes absolutos de streams de todos os tempos.</p>
+    <p class="subtitle">A história do Spotify RPG contada através dos números globais.</p>
 
-    <div id="loading" class="loader"><i class="fas fa-spinner fa-spin"></i> Calculando recordes...</div>
+    <div id="loading" class="loader"><i class="fas fa-spinner fa-spin"></i> Sincronizando dados dos charts...</div>
 
-    <div id="recordsContainer" class="records-grid" style="display: none;">
+    <div id="recordsContainer" class="records-grid hidden">
         
         <div class="record-card">
-            <i class="fas fa-crown trophy-icon"></i>
+            <i class="fas fa-crown trophy-icon icon-gold"></i>
             <div class="record-category">Artista Mais Ouvido</div>
             <img id="topArtistImg" src="" class="record-image" alt="Artista">
             <h2 id="topArtistName" class="record-title">-</h2>
@@ -131,7 +227,7 @@
         </div>
 
         <div class="record-card is-album">
-            <i class="fas fa-fire trophy-icon"></i>
+            <i class="fas fa-fire trophy-icon icon-accent"></i>
             <div class="record-category">Faixa Mais Ouvida</div>
             <img id="topSongImg" src="" class="record-image" alt="Música">
             <h2 id="topSongTitle" class="record-title">-</h2>
@@ -140,7 +236,7 @@
         </div>
 
         <div class="record-card is-album">
-            <i class="fas fa-compact-disc trophy-icon"></i>
+            <i class="fas fa-compact-disc trophy-icon icon-silver"></i>
             <div class="record-category">Maior Projeto (Álbum/EP)</div>
             <img id="topAlbumImg" src="" class="record-image" alt="Álbum">
             <h2 id="topAlbumTitle" class="record-title">-</h2>
@@ -148,26 +244,66 @@
             <div id="topAlbumStreams" class="record-stats">-</div>
         </div>
 
+        <div class="record-card is-album">
+            <i class="fas fa-handshake trophy-icon icon-purple"></i>
+            <div class="record-category">Maior Colaboração (Feat)</div>
+            <img id="topCollabImg" src="" class="record-image" alt="Colaboração">
+            <h2 id="topCollabTitle" class="record-title">-</h2>
+            <p id="topCollabArtists" class="record-subtitle">-</p>
+            <div id="topCollabStreams" class="record-stats">-</div>
+        </div>
+
+    </div>
+
+    <div id="chartsContainer" class="charts-container hidden">
+        <div class="chart-section" style="grid-column: 1 / -1;">
+            <h3>🌍 Top 10 Músicas Globais</h3>
+            <div id="top10SongsList" class="ranking-list"></div>
+        </div>
+
+        <div class="chart-section">
+            <h3>🎤 Top 5 Artistas</h3>
+            <div id="top5ArtistsList" class="ranking-list"></div>
+        </div>
+
+        <div class="chart-section">
+            <h3>💿 Top 5 Álbuns e EPs</h3>
+            <div id="top5AlbumsList" class="ranking-list"></div>
+        </div>
     </div>
 
     <script>
-        // =====================================================================
-        // COLOQUE SUAS CHAVES DO SUPABASE AQUI (as mesmas do site original)
-        // =====================================================================
-       const SUPABASE_URL = 'https://avlgxwymwotffookkimg.supabase.co'; 
-const SUPABASE_ANON_KEY = 'sb_publishable_9uhuy6fpFduf-qsEXYf5wA_BDBB1OIZ'; 
-const IMGBB_API_KEY = '81f7ca81cf22d739de576bd1dac7dcc2';
+        const SUPABASE_URL = 'https://avlgxwymwotffookkimg.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'sb_publishable_9uhuy6fpFduf-qsEXYf5wA_BDBB1OIZ'; 
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Função para formatar os números (ex: 1.500.000)
-        const formatNumber = (num) => {
-            return (num || 0).toLocaleString('pt-BR');
+        const formatNumber = (num) => (num || 0).toLocaleString('pt-BR');
+
+        // Função de ajuda para montar o nome dos artistas em feats
+        const getArtistNames = (artistIdsArray, allArtists) => {
+            if (!artistIdsArray || artistIdsArray.length === 0) return "Desconhecido";
+            const names = artistIdsArray.map(id => {
+                const a = allArtists.find(art => art.id === id);
+                return a ? a.name : "?";
+            });
+            if (names.length === 1) return names[0];
+            return `${names[0]} (feat. ${names.slice(1).join(', ')})`; // Assumindo formato padrão de feat para simplificar a view
         };
 
-        async function calculateRecords() {
+        const getCleanImageUrl = (url, isArtist = false) => {
+            if (!url) return 'https://i.imgur.com/AD3MbBi.png';
+            return isArtist ? url.split('#')[0] : url;
+        };
+
+        const getBgPos = (url) => {
+            if (url && url.includes('#pos=')) return `center ${url.split('#pos=')[1]}%`;
+            return 'center center';
+        };
+
+        async function loadCharts() {
             try {
-                // 1. Buscar todos os dados necessários
+                // 1. Download de Dados
                 const [artistsRes, songsRes, albumsRes, singlesRes] = await Promise.all([
                     supabaseClient.from('artists').select('*'),
                     supabaseClient.from('songs').select('*'),
@@ -179,117 +315,140 @@ const IMGBB_API_KEY = '81f7ca81cf22d739de576bd1dac7dcc2';
                 const songs = songsRes.data || [];
                 const releases = [...(albumsRes.data || []), ...(singlesRes.data || [])];
 
-                // ----------------------------------------------------------------
-                // RECORD 1: FAIXA MAIS OUVIDA
-                // ----------------------------------------------------------------
-                let topSong = null;
-                let maxSongStreams = -1;
-
-                songs.forEach(song => {
-                    const streams = song.total_streams || 0;
-                    if (streams > maxSongStreams) {
-                        maxSongStreams = streams;
-                        topSong = song;
+                // 2. Processamento e Cálculo (A base de todos os rankings)
+                
+                // Músicas com capa anexada
+                const songsWithCalculations = songs.map(song => {
+                    let cover = 'https://i.imgur.com/AD3MbBi.png';
+                    if (song.album_ids && song.album_ids.length > 0) {
+                        const alb = releases.find(r => r.id === song.album_ids[0]);
+                        if (alb && alb.image_url) cover = alb.image_url;
+                    } else if (song.single_ids && song.single_ids.length > 0) {
+                        const sgl = releases.find(r => r.id === song.single_ids[0]);
+                        if (sgl && sgl.image_url) cover = sgl.image_url;
                     }
-                });
+                    return { ...song, calculated_cover: cover, streams: song.total_streams || 0 };
+                }).sort((a, b) => b.streams - a.streams);
 
-                if (topSong) {
-                    document.getElementById('topSongTitle').textContent = topSong.title;
-                    document.getElementById('topSongStreams').textContent = formatNumber(maxSongStreams);
-                    
-                    // Achar o artista da música
-                    const mainArtist = artists.find(a => a.id === topSong.artist_ids[0]);
-                    document.getElementById('topSongArtist').textContent = mainArtist ? mainArtist.name : 'Desconhecido';
+                // Artistas com total calculado
+                const artistsWithCalculations = artists.map(artist => {
+                    const artistSongs = songsWithCalculations.filter(s => s.artist_ids && s.artist_ids.includes(artist.id));
+                    const totalStreams = artistSongs.reduce((sum, s) => sum + s.streams, 0);
+                    return { ...artist, streams: totalStreams };
+                }).sort((a, b) => b.streams - a.streams);
 
-                    // Achar a capa (procura nos álbuns ou singles)
-                    let coverUrl = 'https://i.imgur.com/AD3MbBi.png'; // padrão
-                    if (topSong.album_ids && topSong.album_ids.length > 0) {
-                        const alb = releases.find(r => r.id === topSong.album_ids[0]);
-                        if (alb && alb.image_url) coverUrl = alb.image_url;
-                    } else if (topSong.single_ids && topSong.single_ids.length > 0) {
-                        const sgl = releases.find(r => r.id === topSong.single_ids[0]);
-                        if (sgl && sgl.image_url) coverUrl = sgl.image_url;
-                    }
-                    document.getElementById('topSongImg').src = coverUrl;
-                }
-
-                // ----------------------------------------------------------------
-                // RECORD 2: ÁLBUM / EP MAIS OUVIDO
-                // ----------------------------------------------------------------
-                let topRelease = null;
-                let maxReleaseStreams = -1;
-
-                releases.forEach(release => {
-                    // Encontrar todas as músicas que pertencem a este lançamento
-                    const releaseSongs = songs.filter(s => 
+                // Álbuns com total calculado
+                const releasesWithCalculations = releases.map(release => {
+                    const releaseSongs = songsWithCalculations.filter(s => 
                         (s.album_ids && s.album_ids.includes(release.id)) || 
                         (s.single_ids && s.single_ids.includes(release.id))
                     );
-                    
-                    // Somar os streams de todas as faixas do álbum
-                    const totalStreams = releaseSongs.reduce((sum, s) => sum + (s.total_streams || 0), 0);
-                    
-                    if (totalStreams > maxReleaseStreams) {
-                        maxReleaseStreams = totalStreams;
-                        topRelease = release;
-                    }
-                });
+                    const totalStreams = releaseSongs.reduce((sum, s) => sum + s.streams, 0);
+                    return { ...release, streams: totalStreams };
+                }).sort((a, b) => b.streams - a.streams);
 
+                // 3. PREENCHER OS RECORDES ABSOLUTOS (CARDS)
+
+                // A. Faixa Mais Ouvida
+                const topSong = songsWithCalculations[0];
+                if (topSong) {
+                    document.getElementById('topSongTitle').textContent = topSong.title;
+                    document.getElementById('topSongStreams').textContent = formatNumber(topSong.streams);
+                    document.getElementById('topSongArtist').textContent = getArtistNames(topSong.artist_ids, artists);
+                    document.getElementById('topSongImg').src = topSong.calculated_cover;
+                }
+
+                // B. Maior Colaboração (Músicas com mais de 1 artista)
+                const collabs = songsWithCalculations.filter(s => s.artist_ids && s.artist_ids.length > 1);
+                const topCollab = collabs.length > 0 ? collabs[0] : null;
+                if (topCollab) {
+                    document.getElementById('topCollabTitle').textContent = topCollab.title;
+                    document.getElementById('topCollabStreams').textContent = formatNumber(topCollab.streams);
+                    document.getElementById('topCollabArtists').textContent = getArtistNames(topCollab.artist_ids, artists);
+                    document.getElementById('topCollabImg').src = topCollab.calculated_cover;
+                } else {
+                    document.getElementById('topCollabTitle').textContent = "Nenhum Feat";
+                }
+
+                // C. Maior Projeto (Álbum/EP)
+                const topRelease = releasesWithCalculations[0];
                 if (topRelease) {
                     document.getElementById('topAlbumTitle').textContent = topRelease.title;
-                    document.getElementById('topAlbumStreams').textContent = formatNumber(maxReleaseStreams);
-                    document.getElementById('topAlbumImg').src = topRelease.image_url || 'https://i.imgur.com/AD3MbBi.png';
-                    
+                    document.getElementById('topAlbumStreams').textContent = formatNumber(topRelease.streams);
                     const mainArtist = artists.find(a => a.id === topRelease.artist_id);
-                    document.getElementById('topAlbumArtist').textContent = mainArtist ? mainArtist.name : 'Desconhecido';
+                    document.getElementById('topAlbumArtist').textContent = mainArtist ? mainArtist.name : 'Vários Artistas';
+                    document.getElementById('topAlbumImg').src = getCleanImageUrl(topRelease.image_url);
                 }
 
-                // ----------------------------------------------------------------
-                // RECORD 3: ARTISTA COM MAIS STREAMS TOTAIS
-                // ----------------------------------------------------------------
-                let topArtist = null;
-                let maxArtistStreams = -1;
-
-                artists.forEach(artist => {
-                    // Acha todas as músicas onde ele está envolvido (principal ou feat)
-                    const artistSongs = songs.filter(s => s.artist_ids && s.artist_ids.includes(artist.id));
-                    
-                    // Soma tudo
-                    const totalStreams = artistSongs.reduce((sum, s) => sum + (s.total_streams || 0), 0);
-
-                    if (totalStreams > maxArtistStreams) {
-                        maxArtistStreams = totalStreams;
-                        topArtist = artist;
-                    }
-                });
-
+                // D. Artista Mais Ouvido
+                const topArtist = artistsWithCalculations[0];
                 if (topArtist) {
                     document.getElementById('topArtistName').textContent = topArtist.name;
-                    document.getElementById('topArtistStreams').textContent = formatNumber(maxArtistStreams);
-                    
-                    // Extrai a URL limpa da imagem do artista (tirando o #pos)
-                    let cleanImgUrl = topArtist.image_url ? topArtist.image_url.split('#')[0] : 'https://i.imgur.com/AD3MbBi.png';
-                    document.getElementById('topArtistImg').src = cleanImgUrl;
-                    
-                    // Posição da foto (se houver)
-                    if (topArtist.image_url && topArtist.image_url.includes('#pos=')) {
-                        const pos = topArtist.image_url.split('#pos=')[1];
-                        document.getElementById('topArtistImg').style.objectPosition = `center ${pos}%`;
-                    }
+                    document.getElementById('topArtistStreams').textContent = formatNumber(topArtist.streams);
+                    const imgEl = document.getElementById('topArtistImg');
+                    imgEl.src = getCleanImageUrl(topArtist.image_url, true);
+                    imgEl.style.objectPosition = getBgPos(topArtist.image_url);
                 }
 
-                // Esconder ecrã de loading e mostrar os cards
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('recordsContainer').style.display = 'grid';
+                // 4. PREENCHER AS LISTAS DE RANKINGS
+
+                // Top 10 Músicas
+                const top10SongsHtml = songsWithCalculations.slice(0, 10).map((s, index) => `
+                    <div class="ranking-item">
+                        <div class="ranking-rank">${index + 1}</div>
+                        <img src="${s.calculated_cover}" class="ranking-img" alt="Cover">
+                        <div class="ranking-info">
+                            <span class="ranking-title">${s.title}</span>
+                            <span class="ranking-subtitle">${getArtistNames(s.artist_ids, artists)}</span>
+                        </div>
+                        <div class="ranking-streams">${formatNumber(s.streams)}</div>
+                    </div>
+                `).join('');
+                document.getElementById('top10SongsList').innerHTML = top10SongsHtml || '<p class="ranking-subtitle">Nenhuma música com streams.</p>';
+
+                // Top 5 Artistas
+                const top5ArtistsHtml = artistsWithCalculations.slice(0, 5).filter(a => a.streams > 0).map((a, index) => `
+                    <div class="ranking-item">
+                        <div class="ranking-rank">${index + 1}</div>
+                        <img src="${getCleanImageUrl(a.image_url, true)}" class="ranking-img round" style="object-position: ${getBgPos(a.image_url)};" alt="Artist">
+                        <div class="ranking-info">
+                            <span class="ranking-title">${a.name}</span>
+                            <span class="ranking-subtitle">Catálogo</span>
+                        </div>
+                        <div class="ranking-streams">${formatNumber(a.streams)}</div>
+                    </div>
+                `).join('');
+                document.getElementById('top5ArtistsList').innerHTML = top5ArtistsHtml || '<p class="ranking-subtitle">Nenhum artista com streams.</p>';
+
+                // Top 5 Álbuns
+                const top5AlbumsHtml = releasesWithCalculations.slice(0, 5).filter(r => r.streams > 0).map((r, index) => {
+                    const art = artists.find(a => a.id === r.artist_id);
+                    return `
+                    <div class="ranking-item">
+                        <div class="ranking-rank">${index + 1}</div>
+                        <img src="${getCleanImageUrl(r.image_url)}" class="ranking-img" alt="Cover">
+                        <div class="ranking-info">
+                            <span class="ranking-title">${r.title}</span>
+                            <span class="ranking-subtitle">${art ? art.name : 'Desconhecido'}</span>
+                        </div>
+                        <div class="ranking-streams">${formatNumber(r.streams)}</div>
+                    </div>
+                    `;
+                }).join('');
+                document.getElementById('top5AlbumsList').innerHTML = top5AlbumsHtml || '<p class="ranking-subtitle">Nenhum álbum com streams.</p>';
+
+                // 5. Exibir UI
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('recordsContainer').classList.remove('hidden');
+                document.getElementById('chartsContainer').classList.remove('hidden');
 
             } catch (error) {
                 console.error("Erro ao carregar recordes:", error);
-                document.getElementById('loading').innerHTML = '<span style="color: #ff4444;">Erro ao carregar dados da base de dados. Verifique as suas chaves do Supabase.</span>';
+                document.getElementById('loading').innerHTML = '<span style="color: #ff4444;">Erro ao carregar os rankings. Tente novamente mais tarde.</span>';
             }
         }
 
-        // Inicia a busca ao abrir a página
-        window.addEventListener('DOMContentLoaded', calculateRecords);
+        window.addEventListener('DOMContentLoaded', loadCharts);
     </script>
 </body>
 </html>
