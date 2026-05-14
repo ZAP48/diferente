@@ -316,6 +316,27 @@
             font-weight: 700;
         }
         .hidden { display: none !important; }
+        
+        /* Botão de Copiar Secundário */
+        .copy-all-btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 12px 32px;
+            font-size: 16px;
+            font-weight: 800;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+        .copy-all-btn:hover {
+            transform: scale(1.05);
+            background: var(--spotify-hover);
+        }
     </style>
 </head>
 <body>
@@ -327,6 +348,7 @@
         <button id="btnGeral" class="tab-btn active" onclick="switchTab('geral')">Visão Geral (Top 10)</button>
         <button id="btnTop100" class="tab-btn" onclick="switchTab('top100')">Top 100 Global</button>
         <button id="btnRiaj" class="tab-btn" onclick="switchTab('riaj')">Certificações RIAJ</button>
+        <button id="btnTexto" class="tab-btn" onclick="switchTab('texto')"><i class="fas fa-copy" style="margin-right:4px;"></i> Copiar Texto</button>
     </div>
 
     <div id="loading" class="loader">
@@ -429,6 +451,17 @@
         </div>
     </div>
 
+    <div id="tabTexto" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <div class="list-container-wide" style="max-width: 900px; padding: 32px;">
+            <h2 style="text-align: center; margin-top: 0; margin-bottom: 8px; font-weight: 900; font-size: 32px; letter-spacing: -1px;">📋 Formato de Texto</h2>
+            <p style="text-align: center; color: var(--text-sec); margin-bottom: 32px; font-size: 14px;">Ideal para partilhar no WhatsApp, Discord ou fóruns.</p>
+            
+            <button class="copy-all-btn" onclick="copiarTextoFinal()"><i class="fas fa-copy"></i> COPIAR TUDO</button>
+            
+            <textarea id="textoCopia" readonly style="width: 100%; height: 500px; background: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; font-family: monospace; font-size: 13px; resize: vertical; line-height: 1.5; outline: none;"></textarea>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://avlgxwymwotffookkimg.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_9uhuy6fpFduf-qsEXYf5wA_BDBB1OIZ'; 
@@ -472,6 +505,7 @@
             document.getElementById('tabGeral').classList.add('hidden');
             document.getElementById('tabTop100').classList.add('hidden');
             document.getElementById('tabRiaj').classList.add('hidden');
+            document.getElementById('tabTexto').classList.add('hidden');
 
             if (tabId === 'geral') {
                 document.getElementById('tabGeral').classList.remove('hidden');
@@ -479,10 +513,23 @@
             } else if (tabId === 'top100') {
                 document.getElementById('tabTop100').classList.remove('hidden');
                 document.getElementById('btnTop100').classList.add('active');
-            } else {
+            } else if (tabId === 'riaj') {
                 document.getElementById('tabRiaj').classList.remove('hidden');
                 document.getElementById('btnRiaj').classList.add('active');
+            } else if (tabId === 'texto') {
+                document.getElementById('tabTexto').classList.remove('hidden');
+                document.getElementById('btnTexto').classList.add('active');
             }
+        }
+
+        // ====== COPIAR TEXTO DA TEXTAREA ======
+        function copiarTextoFinal() {
+            const textarea = document.getElementById('textoCopia');
+            textarea.select();
+            textarea.setSelectionRange(0, 99999); // Para mobile
+            document.execCommand('copy');
+            alert('Rankings copiados para a área de transferência!');
+            window.getSelection().removeAllRanges(); // Tira o highlight azul
         }
 
         // ====== FUNÇÃO PARA EXPORTAR A ARTE (DOWNLOAD) ======
@@ -595,7 +642,7 @@
                     imgEl.style.objectPosition = getBgPos(topArtist.image_url);
                 }
 
-                // --- FUNÇÃO RENDERIZAR LISTA DE MÚSICAS ---
+                // --- FUNÇÕES RENDERIZAR LISTAS HTML ---
                 const renderSongList = (songsArray, limit) => {
                     return songsArray.slice(0, limit).filter(s => s.streams > 0).map((s, index) => {
                         const certIcon = getCertIcon(s.streams);
@@ -613,7 +660,6 @@
                     }).join('');
                 };
 
-                // --- FUNÇÃO RENDERIZAR LISTA DE ÁLBUNS/SINGLES ---
                 const renderReleaseList = (releasesArray, limit) => {
                     return releasesArray.slice(0, limit).filter(r => r.streams > 0).map((r, index) => {
                         const art = artists.find(a => a.id === r.artist_id);
@@ -631,23 +677,21 @@
                     }).join('');
                 };
 
-                // --- TOP 10 MÚSICAS GLOBAL ---
+                // --- HTML: TOP 10 / TOP 100 MÚSICAS ---
                 const top10SongsHtml = renderSongList(songsWithCalculations, 10);
                 document.getElementById('top10SongsList').innerHTML = top10SongsHtml || '<p class="ranking-subtitle" style="padding:10px;">Nenhuma música com streams.</p>';
 
-                // --- TOP 100 MÚSICAS GLOBAL ---
                 const top100SongsHtml = renderSongList(songsWithCalculations, 100);
                 document.getElementById('top100SongsList').innerHTML = top100SongsHtml || '<p class="ranking-subtitle" style="padding:10px; text-align:center;">Nenhuma música com streams.</p>';
 
-                // --- TOP 10 ÁLBUNS ---
+                // --- HTML: TOP 10 / TOP 100 ÁLBUNS ---
                 const top10AlbumsHtml = renderReleaseList(releasesWithCalculations, 10);
                 document.getElementById('top10AlbumsList').innerHTML = top10AlbumsHtml || '<p class="ranking-subtitle" style="padding:10px;">Nenhum álbum com streams.</p>';
 
-                // --- TOP 100 ÁLBUNS GLOBAL ---
                 const top100AlbumsHtml = renderReleaseList(releasesWithCalculations, 100);
                 document.getElementById('top100AlbumsList').innerHTML = top100AlbumsHtml || '<p class="ranking-subtitle" style="padding:10px; text-align:center;">Nenhum álbum com streams.</p>';
 
-                // --- TOP 10 ARTISTAS ---
+                // --- HTML: TOP 10 ARTISTAS ---
                 const top10ArtistsHtml = artistsWithCalculations.slice(0, 10).filter(a => a.streams > 0).map((a, index) => `
                     <div class="ranking-item">
                         <div class="ranking-rank">${index + 1}</div>
@@ -670,16 +714,12 @@
                     let certName = '';
                     let icon = getCertIcon(s.streams);
                     
-                    if (s.streams >= 500000000) {
-                        certName = 'Diamante';
-                    } else if (s.streams >= 100000000) {
+                    if (s.streams >= 500000000) certName = 'Diamante';
+                    else if (s.streams >= 100000000) {
                         let multi = Math.floor(s.streams / 100000000);
                         certName = multi > 1 ? `${multi}x Platina` : 'Platina';
-                    } else if (s.streams >= 50000000) {
-                        certName = 'Ouro';
-                    } else {
-                        certName = 'Prata';
-                    }
+                    } else if (s.streams >= 50000000) certName = 'Ouro';
+                    else certName = 'Prata';
 
                     return `
                     <div class="ranking-item" style="margin-bottom: 8px;">
@@ -698,6 +738,63 @@
                 }).join('');
 
                 document.getElementById('riajSongsList').innerHTML = riajHtml || '<div class="ranking-item"><div class="ranking-info" style="text-align:center; padding: 20px;"><span class="ranking-subtitle">Nenhuma música atingiu os critérios da RIAJ (30M+) ainda.</span></div></div>';
+
+                // ==========================================
+                // GERAÇÃO DO TEXTO PARA A ÁREA DE TRANSFERÊNCIA
+                // ==========================================
+                let txt = "🏆 HALL DA FAMA - SPOTIFY RPG 🏆\n";
+                txt += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+
+                txt += "👑 RECORDES ABSOLUTOS\n";
+                if(topArtist) txt += `• Artista Mais Ouvido: ${topArtist.name} (${formatNumber(topArtist.streams)})\n`;
+                if(topSong) txt += `• Faixa Mais Ouvida: ${topSong.title} - ${getArtistNames(topSong.artist_ids, artists)} (${formatNumber(topSong.streams)})\n`;
+                if(topRelease) txt += `• Maior Projeto: ${topRelease.title} (${formatNumber(topRelease.streams)})\n`;
+                if(topCollab) txt += `• Maior Colab: ${topCollab.title} - ${getArtistNames(topCollab.artist_ids, artists)} (${formatNumber(topCollab.streams)})\n\n`;
+                txt += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+
+                txt += "🌍 TOP 10 MÚSICAS\n";
+                songsWithCalculations.slice(0, 10).filter(s => s.streams > 0).forEach((s, i) => {
+                    const icn = getCertIcon(s.streams);
+                    txt += `${i + 1}. ${s.title} - ${getArtistNames(s.artist_ids, artists)} | ${formatNumber(s.streams)} ${icn}\n`;
+                });
+                txt += "\n🎤 TOP 10 ARTISTAS\n";
+                artistsWithCalculations.slice(0, 10).filter(a => a.streams > 0).forEach((a, i) => {
+                    txt += `${i + 1}. ${a.name} | ${formatNumber(a.streams)}\n`;
+                });
+                txt += "\n💿 TOP 10 ÁLBUNS/EPs\n";
+                releasesWithCalculations.slice(0, 10).filter(r => r.streams > 0).forEach((r, i) => {
+                    const art = artists.find(a => a.id === r.artist_id);
+                    txt += `${i + 1}. ${r.title} - ${art ? art.name : 'Desconhecido'} | ${formatNumber(r.streams)}\n`;
+                });
+                txt += "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+
+                txt += "💯 TOP 100 MÚSICAS GLOBAL\n";
+                songsWithCalculations.slice(0, 100).filter(s => s.streams > 0).forEach((s, i) => {
+                    const icn = getCertIcon(s.streams);
+                    txt += `${i + 1}. ${s.title} - ${getArtistNames(s.artist_ids, artists)} | ${formatNumber(s.streams)} ${icn}\n`;
+                });
+                txt += "\n💯 TOP 100 ÁLBUNS/EPs GLOBAL\n";
+                releasesWithCalculations.slice(0, 100).filter(r => r.streams > 0).forEach((r, i) => {
+                    const art = artists.find(a => a.id === r.artist_id);
+                    txt += `${i + 1}. ${r.title} - ${art ? art.name : 'Desconhecido'} | ${formatNumber(r.streams)}\n`;
+                });
+                txt += "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+
+                txt += "✨ CERTIFICAÇÕES RIAJ\n";
+                if(riajSongs.length === 0) txt += "Nenhuma faixa certificada ainda.\n";
+                riajSongs.forEach(s => {
+                    let certName = 'Prata';
+                    let icn = getCertIcon(s.streams);
+                    if (s.streams >= 500000000) certName = 'Diamante';
+                    else if (s.streams >= 100000000) {
+                        let multi = Math.floor(s.streams / 100000000);
+                        certName = multi > 1 ? `${multi}x Platina` : 'Platina';
+                    } else if (s.streams >= 50000000) certName = 'Ouro';
+                    
+                    txt += `${icn} ${s.title} - ${getArtistNames(s.artist_ids, artists)} | ${certName} (${formatNumber(s.streams)})\n`;
+                });
+
+                document.getElementById('textoCopia').value = txt;
 
                 // --- Exibir UI final ---
                 document.getElementById('loading').classList.add('hidden');
