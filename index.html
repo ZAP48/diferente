@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spotify RPG - Recordes Oficiais</title>
+    <title>Spotify RPG - Hall da Fama</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -73,15 +73,13 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        .tab-btn:hover {
-            color: var(--text-main);
-        }
+        .tab-btn:hover { color: var(--text-main); }
         .tab-btn.active {
             background: var(--text-main);
             color: #000;
         }
 
-        /* GRID DOS RECORDES ABSOLUTOS */
+        /* GRID RECORDES */
         .records-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -95,402 +93,135 @@
             border-radius: 16px;
             padding: 32px 24px;
             text-align: center;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
             position: relative;
             border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s;
         }
-        .record-card:hover {
-            transform: translateY(-8px);
-            background-color: var(--card-hover);
-            border-color: rgba(255,255,255,0.1);
-        }
+        .record-card:hover { transform: translateY(-8px); background-color: var(--card-hover); }
         
         .export-btn {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: rgba(0, 0, 0, 0.5);
-            border: none;
-            color: var(--text-sec);
-            cursor: pointer;
-            font-size: 16px;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            z-index: 10;
+            position: absolute; top: 16px; right: 16px;
+            background: rgba(0, 0, 0, 0.5); border: none; color: var(--text-sec);
+            cursor: pointer; width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
         }
-        .export-btn:hover {
-            color: #000;
-            background: var(--text-main);
-            transform: scale(1.1);
-        }
+        .export-btn:hover { color: #000; background: var(--text-main); transform: scale(1.1); }
 
-        .trophy-icon { font-size: 36px; margin-bottom: 20px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5)); }
-        .icon-gold { color: var(--gold); }
-        .icon-accent { color: var(--accent); }
-        .icon-silver { color: var(--silver); }
-        .icon-purple { color: #a855f7; }
-
-        .record-category {
-            font-size: 11px;
-            color: var(--text-sec);
-            text-transform: uppercase;
-            font-weight: 800;
-            margin-bottom: 20px;
-            letter-spacing: 1.5px;
-        }
-        .record-image {
-            width: 160px;
-            height: 160px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            box-shadow: 0 12px 24px rgba(0,0,0,0.6);
-        }
+        .record-category { font-size: 11px; color: var(--text-sec); text-transform: uppercase; font-weight: 800; margin-bottom: 20px; letter-spacing: 1.5px; }
+        .record-image { width: 160px; height: 160px; object-fit: cover; border-radius: 50%; margin: 0 auto 20px; box-shadow: 0 12px 24px rgba(0,0,0,0.6); }
         .is-album .record-image { border-radius: 8px; }
-        
-        .record-title {
-            font-size: 20px;
-            font-weight: 800;
-            margin: 0 0 6px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .record-subtitle {
-            font-size: 14px;
-            color: var(--text-sec);
-            margin: 0 0 20px 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-weight: 500;
-        }
-        .record-stats {
-            font-size: 26px;
-            font-weight: 900;
-            color: var(--text-main);
-            background: rgba(255,255,255,0.05);
-            padding: 12px;
-            border-radius: 8px;
-            letter-spacing: -1px;
-        }
+        .record-title { font-size: 20px; font-weight: 800; margin: 0 0 6px 0; overflow: hidden; text-overflow: ellipsis; }
+        .record-stats { font-size: 26px; font-weight: 900; color: var(--text-main); background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; }
 
-        /* GRID DOS CHARTS (RANKINGS) */
-        .charts-container {
-            width: 100%;
-            max-width: 1200px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 32px;
-        }
-        @media(max-width: 1024px) {
-            .charts-container { grid-template-columns: 1fr 1fr; }
-            .charts-container .chart-section:first-child { grid-column: 1 / -1; }
-        }
-        @media(max-width: 768px) {
-            .charts-container { grid-template-columns: 1fr; }
-        }
+        /* CHARTS */
+        .charts-container { width: 100%; max-width: 1200px; display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 32px; }
+        .chart-section { background: var(--card-bg); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); }
+        .chart-section h3 { font-size: 20px; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         
-        .chart-section {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 24px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .chart-section h3 {
-            font-size: 20px;
-            font-weight: 800;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 16px;
-            margin-top: 0;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .cert-legend {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-sec);
-            background: rgba(0,0,0,0.5);
-            padding: 6px 12px;
-            border-radius: 50px;
-        }
-        
-        .ranking-list {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .ranking-item {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            border-radius: 8px;
-            transition: background 0.2s;
-        }
-        .ranking-item:hover {
-            background: rgba(255,255,255,0.1);
-        }
-        
-        .ranking-rank {
-            font-size: 16px;
-            font-weight: 800;
-            color: var(--text-sec);
-            width: 36px;
-            text-align: center;
-        }
-        .ranking-item:nth-child(1) .ranking-rank { color: var(--gold); font-size: 20px; }
-        .ranking-item:nth-child(2) .ranking-rank { color: var(--silver); font-size: 18px; }
-        .ranking-item:nth-child(3) .ranking-rank { color: var(--bronze); font-size: 18px; }
-        
-        .ranking-img {
-            width: 48px;
-            height: 48px;
-            object-fit: cover;
-            border-radius: 4px;
-            margin-right: 16px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-        .ranking-img.round { border-radius: 50%; }
-        
-        .ranking-info {
-            flex-grow: 1;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        .ranking-title {
-            font-weight: 700;
-            font-size: 15px;
-            color: var(--text-main);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .ranking-subtitle {
-            font-size: 13px;
-            color: var(--text-sec);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-top: 2px;
-        }
-        .ranking-streams {
-            font-weight: 800;
-            font-size: 13px;
-            color: var(--text-main);
-            text-align: right;
-            font-variant-numeric: tabular-nums;
-        }
+        .ranking-item { display: flex; align-items: center; padding: 10px; border-radius: 8px; transition: 0.2s; }
+        .ranking-item:hover { background: rgba(255,255,255,0.1); }
+        .ranking-rank { font-size: 16px; font-weight: 800; color: var(--text-sec); width: 36px; text-align: center; }
+        .ranking-img { width: 48px; height: 48px; object-fit: cover; border-radius: 4px; margin-right: 16px; }
+        .ranking-info { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; }
+        .ranking-title { font-weight: 700; font-size: 15px; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ranking-streams { font-weight: 800; font-size: 13px; color: var(--text-main); text-align: right; }
 
-        /* CARD RIAJ / TOP 100 ESPECÍFICO */
-        .list-container-wide {
-            width: 100%;
-            background-color: var(--card-bg);
-            border-radius: 16px;
-            padding: 32px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-            position: relative;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .loader {
-            font-size: 24px;
-            color: var(--accent);
-            margin-top: 50px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            font-weight: 700;
-        }
         .hidden { display: none !important; }
-        
-        /* Botão de Copiar Secundário */
-        .copy-all-btn {
-            background: var(--accent);
-            color: #000;
-            border: none;
-            padding: 12px 32px;
-            font-size: 16px;
-            font-weight: 800;
-            border-radius: 50px;
-            cursor: pointer;
-            margin: 0 auto 24px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: transform 0.2s;
-        }
-        .copy-all-btn:hover {
-            transform: scale(1.05);
-            background: var(--spotify-hover);
-        }
+        .loader { font-size: 20px; color: var(--accent); margin-top: 50px; text-align: center; font-weight: 700; }
+        textarea { width: 100%; height: 400px; background: #111; color: #fff; border: 1px solid #333; padding: 15px; border-radius: 10px; font-family: monospace; }
+        .copy-all-btn { background: var(--accent); color: #000; border: none; padding: 15px 30px; border-radius: 50px; font-weight: 800; cursor: pointer; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
     <h1>🏆 Hall da Fama</h1>
-    <p class="subtitle">A história do Spotify RPG contada através dos números globais.</p>
+    <p class="subtitle">Os maiores recordes e rankings globais do Spotify RPG.</p>
 
     <div class="tabs hidden" id="tabsNav">
-        <button id="btnGeral" class="tab-btn active" onclick="switchTab('geral')">Visão Geral (Top 10)</button>
-        <button id="btnTop100" class="tab-btn" onclick="switchTab('top100')">Top 100 Global</button>
-        <button id="btnRiaj" class="tab-btn" onclick="switchTab('riaj')">Certificações RIAJ</button>
-        <button id="btnTexto" class="tab-btn" onclick="switchTab('texto')"><i class="fas fa-copy" style="margin-right:4px;"></i> Copiar Texto</button>
+        <button class="tab-btn active" onclick="switchTab('geral')">Recordes Atuais</button>
+        <button class="tab-btn" onclick="switchTab('top100')">Top 100 Global</button>
+        <button class="tab-btn" onclick="switchTab('riaj')">Certificações</button>
+        <button class="tab-btn" onclick="switchTab('texto')">Versão Texto</button>
     </div>
 
-    <div id="loading" class="loader">
-        <i class="fas fa-spinner fa-spin" style="font-size: 40px;"></i>
-        Sincronizando dados globais...
-    </div>
+    <div id="loading" class="loader"><i class="fas fa-spinner fa-spin"></i><br>Calculando recordes globais...</div>
 
-    <div id="tabGeral" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-        <div id="recordsContainer" class="records-grid">
+    <div id="tabGeral" class="hidden" style="width: 100%; max-width: 1200px;">
+        <div class="records-grid">
             <div class="record-card" id="cardTopArtist">
-                <button onclick="exportarArte('cardTopArtist')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
-                <i class="fas fa-crown trophy-icon icon-gold"></i>
-                <div class="record-category">Artista Mais Ouvido</div>
-                <img id="topArtistImg" src="" class="record-image" alt="Artista">
+                <button onclick="exportarArte('cardTopArtist')" class="export-btn"><i class="fas fa-camera"></i></button>
+                <div class="record-category">Artista #1</div>
+                <img id="topArtistImg" src="" class="record-image">
                 <h2 id="topArtistName" class="record-title">-</h2>
-                <p id="topArtistSubtitle" class="record-subtitle">Catálogo Completo</p>
                 <div id="topArtistStreams" class="record-stats">-</div>
             </div>
-
             <div class="record-card is-album" id="cardTopSong">
-                <button onclick="exportarArte('cardTopSong')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
-                <i class="fas fa-fire trophy-icon icon-accent"></i>
-                <div class="record-category">Faixa Mais Ouvida</div>
-                <img id="topSongImg" src="" class="record-image" alt="Música">
+                <button onclick="exportarArte('cardTopSong')" class="export-btn"><i class="fas fa-camera"></i></button>
+                <div class="record-category">Música #1</div>
+                <img id="topSongImg" src="" class="record-image">
                 <h2 id="topSongTitle" class="record-title">-</h2>
-                <p id="topSongArtist" class="record-subtitle">-</p>
                 <div id="topSongStreams" class="record-stats">-</div>
             </div>
-
             <div class="record-card is-album" id="cardTopAlbum">
-                <button onclick="exportarArte('cardTopAlbum')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
-                <i class="fas fa-compact-disc trophy-icon icon-silver"></i>
-                <div class="record-category">Maior Projeto (Álbum/EP)</div>
-                <img id="topAlbumImg" src="" class="record-image" alt="Álbum">
+                <button onclick="exportarArte('cardTopAlbum')" class="export-btn"><i class="fas fa-camera"></i></button>
+                <div class="record-category">Álbum/EP #1</div>
+                <img id="topAlbumImg" src="" class="record-image">
                 <h2 id="topAlbumTitle" class="record-title">-</h2>
-                <p id="topAlbumArtist" class="record-subtitle">-</p>
                 <div id="topAlbumStreams" class="record-stats">-</div>
             </div>
-
-            <div class="record-card is-album" id="cardTopCollab">
-                <button onclick="exportarArte('cardTopCollab')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
-                <i class="fas fa-handshake trophy-icon icon-purple"></i>
-                <div class="record-category">Maior Colaboração (Feat)</div>
-                <img id="topCollabImg" src="" class="record-image" alt="Colaboração">
-                <h2 id="topCollabTitle" class="record-title">-</h2>
-                <p id="topCollabArtists" class="record-subtitle">-</p>
-                <div id="topCollabStreams" class="record-stats">-</div>
-            </div>
         </div>
-
-        <div id="chartsContainer" class="charts-container">
-            <div class="chart-section" style="grid-column: 1 / -1;">
-                <h3>
-                    <span><i class="fas fa-globe-americas" style="color: var(--accent); margin-right: 8px;"></i> Top 10 Músicas</span>
-                    <span class="cert-legend">⚪ 30M | 📀 50M | 💿 100M | 💎 500M</span>
-                </h3>
+        
+        <div class="charts-container">
+            <div class="chart-section">
+                <h3>Músicas (Top 10)</h3>
                 <div id="top10SongsList" class="ranking-list"></div>
             </div>
-
             <div class="chart-section">
-                <h3><i class="fas fa-microphone" style="color: var(--gold); margin-right: 8px;"></i> Top 10 Artistas</h3>
-                <div id="top10ArtistsList" class="ranking-list"></div>
-            </div>
-
-            <div class="chart-section" style="grid-column: auto;">
-                <h3><i class="fas fa-record-vinyl" style="color: var(--silver); margin-right: 8px;"></i> Top 10 Álbuns</h3>
+                <h3>Álbuns/EPs (Top 10)</h3>
                 <div id="top10AlbumsList" class="ranking-list"></div>
             </div>
         </div>
     </div>
 
-    <div id="tabTop100" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-        <div style="text-align: center; margin-bottom: 32px;">
-            <h2 style="margin: 0; font-weight: 900; font-size: 36px; letter-spacing: -1px;">💯 Top 100 Global</h2>
-            <p style="color: var(--text-sec); font-size: 15px; margin-top: 8px;">Os maiores sucessos de todos os tempos.</p>
-        </div>
-        
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; width: 100%; max-width: 1200px;">
-            <div class="list-container-wide" style="max-width: 100%; padding: 24px;">
-                <h3 style="text-align: center; margin-top: 0; font-weight: 800; font-size: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px; margin-bottom: 20px;"><i class="fas fa-music" style="color: var(--accent); margin-right: 8px;"></i> Top 100 Músicas</h3>
+    <div id="tabTop100" class="hidden" style="width: 100%; max-width: 1200px;">
+        <div class="charts-container">
+            <div class="chart-section">
+                <h3><i class="fas fa-music"></i> Top 100 Músicas</h3>
                 <div id="top100SongsList" class="ranking-list"></div>
             </div>
-            
-            <div class="list-container-wide" style="max-width: 100%; padding: 24px;">
-                <h3 style="text-align: center; margin-top: 0; font-weight: 800; font-size: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px; margin-bottom: 20px;"><i class="fas fa-compact-disc" style="color: var(--silver); margin-right: 8px;"></i> Top 100 Álbuns/EPs</h3>
+            <div class="chart-section">
+                <h3><i class="fas fa-compact-disc"></i> Top 100 Álbuns/EPs</h3>
                 <div id="top100AlbumsList" class="ranking-list"></div>
             </div>
         </div>
     </div>
 
-    <div id="tabRiaj" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-        <div class="list-container-wide" id="cardRIAJ" style="max-width: 900px;">
-            <button onclick="exportarArte('cardRIAJ')" class="export-btn" title="Exportar Arte"><i class="fas fa-camera"></i></button>
-            <h2 style="text-align: center; margin-top: 0; margin-bottom: 8px; font-weight: 900; font-size: 32px; letter-spacing: -1px;">Streaming Certification</h2>
-            <div style="text-align:center; margin-bottom: 32px; font-size: 14px; color: var(--text-sec); font-weight: 600; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px;">
-                ⚪ Prata: 30M | 📀 Ouro: 50M | 💿 Platina: 100M | 💎 Diamante: 500M
-            </div>
-            
+    <div id="tabRiaj" class="hidden" style="width: 100%; max-width: 800px;">
+        <div class="chart-section">
+            <h3 style="justify-content: center;">Certificações de Streaming</h3>
             <div id="riajSongsList" class="ranking-list"></div>
         </div>
     </div>
 
-    <div id="tabTexto" class="hidden" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-        <div class="list-container-wide" style="max-width: 900px; padding: 32px;">
-            <h2 style="text-align: center; margin-top: 0; margin-bottom: 8px; font-weight: 900; font-size: 32px; letter-spacing: -1px;">📋 Formato de Texto</h2>
-            <p style="text-align: center; color: var(--text-sec); margin-bottom: 32px; font-size: 14px;">Ideal para partilhar no WhatsApp, Discord ou fóruns.</p>
-            
-            <button class="copy-all-btn" onclick="copiarTextoFinal()"><i class="fas fa-copy"></i> COPIAR TUDO</button>
-            
-            <textarea id="textoCopia" readonly style="width: 100%; height: 500px; background: rgba(0,0,0,0.3); color: var(--text-main); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; font-family: monospace; font-size: 13px; resize: vertical; line-height: 1.5; outline: none;"></textarea>
-        </div>
+    <div id="tabTexto" class="hidden" style="width: 100%; max-width: 800px; text-align: center;">
+        <button class="copy-all-btn" onclick="copiarTexto()">Copiar Rankings para WhatsApp/Discord</button>
+        <textarea id="textoCopia" readonly></textarea>
     </div>
 
     <script>
         const SUPABASE_URL = 'https://avlgxwymwotffookkimg.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_9uhuy6fpFduf-qsEXYf5wA_BDBB1OIZ'; 
-
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        const formatNumber = (num) => (num || 0).toLocaleString('pt-BR');
+        function formatNumber(num) { return (num || 0).toLocaleString('pt-BR'); }
+        
+        function switchTab(tabId) {
+            ['tabGeral', 'tabTop100', 'tabRiaj', 'tabTexto'].forEach(t => document.getElementById(t).classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.remove('hidden');
+            event.currentTarget.classList.add('active');
+        }
 
-        const getArtistNames = (artistIdsArray, allArtists) => {
-            if (!artistIdsArray || artistIdsArray.length === 0) return "Desconhecido";
-            const names = artistIdsArray.map(id => {
-                const a = allArtists.find(art => art.id === id);
-                return a ? a.name : "?";
-            });
-            if (names.length === 1) return names[0];
-            return `${names[0]} (feat. ${names.slice(1).join(', ')})`;
-        };
-
-        const getCleanImageUrl = (url, isArtist = false) => {
-            if (!url) return 'https://i.imgur.com/AD3MbBi.png';
-            return isArtist ? url.split('#')[0] : url;
-        };
-
-        const getBgPos = (url) => {
-            if (url && url.includes('#pos=')) return `center ${url.split('#pos=')[1]}%`;
-            return 'center center';
-        };
-
-        // ====== FUNÇÃO PARA O ÍCONE DE CERTIFICAÇÃO (PADRÃO PARA TODAS AS ABAS) ======
         function getCertIcon(streams) {
             if (streams >= 500000000) return '💎';
             if (streams >= 100000000) return '💿';
@@ -499,315 +230,116 @@
             return '';
         }
 
-        // ====== FUNÇÃO PARA ALTERNAR AS ABAS ======
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('tabGeral').classList.add('hidden');
-            document.getElementById('tabTop100').classList.add('hidden');
-            document.getElementById('tabRiaj').classList.add('hidden');
-            document.getElementById('tabTexto').classList.add('hidden');
-
-            if (tabId === 'geral') {
-                document.getElementById('tabGeral').classList.remove('hidden');
-                document.getElementById('btnGeral').classList.add('active');
-            } else if (tabId === 'top100') {
-                document.getElementById('tabTop100').classList.remove('hidden');
-                document.getElementById('btnTop100').classList.add('active');
-            } else if (tabId === 'riaj') {
-                document.getElementById('tabRiaj').classList.remove('hidden');
-                document.getElementById('btnRiaj').classList.add('active');
-            } else if (tabId === 'texto') {
-                document.getElementById('tabTexto').classList.remove('hidden');
-                document.getElementById('btnTexto').classList.add('active');
-            }
-        }
-
-        // ====== COPIAR TEXTO DA TEXTAREA ======
-        function copiarTextoFinal() {
-            const textarea = document.getElementById('textoCopia');
-            textarea.select();
-            textarea.setSelectionRange(0, 99999); // Para mobile
-            document.execCommand('copy');
-            alert('Rankings copiados para a área de transferência!');
-            window.getSelection().removeAllRanges(); // Tira o highlight azul
-        }
-
-        // ====== FUNÇÃO PARA EXPORTAR A ARTE (DOWNLOAD) ======
-        function exportarArte(cardId) {
-            const card = document.getElementById(cardId);
-            const btn = card.querySelector('.export-btn');
-            
-            if(btn) btn.style.display = 'none'; 
-
-            const bgOriginal = card.style.backgroundColor;
-            const borderOriginal = card.style.border;
-            card.style.backgroundColor = '#181818';
-            card.style.border = 'none';
-
-            html2canvas(card, {
-                scale: 2, 
-                useCORS: true, 
-                backgroundColor: '#181818'
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `spotify-rpg-${cardId}-${Date.now()}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-
-                if(btn) btn.style.display = 'flex';
-                card.style.backgroundColor = bgOriginal;
-                card.style.border = borderOriginal;
-            }).catch(err => {
-                console.error("Erro ao gerar arte: ", err);
-                if(btn) btn.style.display = 'flex';
-                card.style.backgroundColor = bgOriginal;
-                card.style.border = borderOriginal;
-                alert("Ocorreu um erro ao tentar baixar a imagem.");
-            });
-        }
-
-        async function loadCharts() {
+        async function loadData() {
             try {
-                const [artistsRes, songsRes, albumsRes, singlesRes] = await Promise.all([
-                    supabaseClient.from('artists').select('*'),
-                    supabaseClient.from('songs').select('*'),
-                    supabaseClient.from('albums').select('*'),
-                    supabaseClient.from('singles').select('*')
-                ]);
+                const { data: artists } = await supabaseClient.from('artists').select('*');
+                const { data: songs } = await supabaseClient.from('songs').select('*').order('total_streams', { ascending: false });
+                const { data: albums } = await supabaseClient.from('albums').select('*');
+                const { data: singles } = await supabaseClient.from('singles').select('*');
 
-                const artists = artistsRes.data || [];
-                const songs = songsRes.data || [];
-                const releases = [...(albumsRes.data || []), ...(singlesRes.data || [])];
+                const allReleases = [...albums, ...singles];
 
-                const songsWithCalculations = songs.map(song => {
-                    let cover = 'https://i.imgur.com/AD3MbBi.png';
-                    if (song.album_ids && song.album_ids.length > 0) {
-                        const alb = releases.find(r => r.id === song.album_ids[0]);
-                        if (alb && alb.image_url) cover = alb.image_url;
-                    } else if (song.single_ids && song.single_ids.length > 0) {
-                        const sgl = releases.find(r => r.id === song.single_ids[0]);
-                        if (sgl && sgl.image_url) cover = sgl.image_url;
-                    }
-                    return { ...song, calculated_cover: cover, streams: song.total_streams || 0 };
+                // 1. Processar Músicas
+                const songsFinal = songs.map(s => {
+                    const rel = allReleases.find(r => (s.album_ids && s.album_ids.includes(r.id)) || (s.single_ids && s.single_ids.includes(r.id)));
+                    const artistNames = s.artist_ids.map(id => artists.find(a => a.id === id)?.name || "Desconhecido").join(', ');
+                    return { ...s, artist_name: artistNames, cover: rel?.image_url || 'https://i.imgur.com/AD3MbBi.png' };
+                });
+
+                // 2. Processar Álbuns (Filtrando apenas a tabela de albums para o Top Álbuns)
+                const albumsFinal = albums.map(a => {
+                    const albumSongs = songsFinal.filter(s => s.album_ids && s.album_ids.includes(a.id));
+                    const total = albumSongs.reduce((acc, s) => acc + (s.total_streams || 0), 0);
+                    const artist = artists.find(art => art.id === a.artist_id)?.name || "Vários";
+                    return { ...a, streams: total, artist_name: artist };
                 }).sort((a, b) => b.streams - a.streams);
 
-                const artistsWithCalculations = artists.map(artist => {
-                    const artistSongs = songsWithCalculations.filter(s => s.artist_ids && s.artist_ids.includes(artist.id));
-                    const totalStreams = artistSongs.reduce((sum, s) => sum + s.streams, 0);
-                    return { ...artist, streams: totalStreams };
+                // 3. Processar Artistas
+                const artistsFinal = artists.map(a => {
+                    const artistSongs = songsFinal.filter(s => s.artist_ids && s.artist_ids.includes(a.id));
+                    const total = artistSongs.reduce((acc, s) => acc + (s.total_streams || 0), 0);
+                    return { ...a, streams: total };
                 }).sort((a, b) => b.streams - a.streams);
 
-                const releasesWithCalculations = releases.map(release => {
-                    const releaseSongs = songsWithCalculations.filter(s => 
-                        (s.album_ids && s.album_ids.includes(release.id)) || 
-                        (s.single_ids && s.single_ids.includes(release.id))
-                    );
-                    const totalStreams = releaseSongs.reduce((sum, s) => sum + s.streams, 0);
-                    return { ...release, streams: totalStreams };
-                }).sort((a, b) => b.streams - a.streams);
+                // Renderizar Recordes #1
+                document.getElementById('topArtistName').innerText = artistsFinal[0].name;
+                document.getElementById('topArtistStreams').innerText = formatNumber(artistsFinal[0].streams);
+                document.getElementById('topArtistImg').src = artistsFinal[0].image_url?.split('#')[0];
 
-                // --- RECORDES ABSOLUTOS ---
-                const topSong = songsWithCalculations[0];
-                if (topSong) {
-                    document.getElementById('topSongTitle').textContent = topSong.title;
-                    document.getElementById('topSongStreams').textContent = formatNumber(topSong.streams);
-                    document.getElementById('topSongArtist').textContent = getArtistNames(topSong.artist_ids, artists);
-                    document.getElementById('topSongImg').src = topSong.calculated_cover;
-                }
+                document.getElementById('topSongTitle').innerText = songsFinal[0].title;
+                document.getElementById('topSongStreams').innerText = formatNumber(songsFinal[0].total_streams);
+                document.getElementById('topSongImg').src = songsFinal[0].cover;
 
-                const collabs = songsWithCalculations.filter(s => s.artist_ids && s.artist_ids.length > 1);
-                const topCollab = collabs.length > 0 ? collabs[0] : null;
-                if (topCollab) {
-                    document.getElementById('topCollabTitle').textContent = topCollab.title;
-                    document.getElementById('topCollabStreams').textContent = formatNumber(topCollab.streams);
-                    document.getElementById('topCollabArtists').textContent = getArtistNames(topCollab.artist_ids, artists);
-                    document.getElementById('topCollabImg').src = topCollab.calculated_cover;
-                }
+                document.getElementById('topAlbumTitle').innerText = albumsFinal[0].title;
+                document.getElementById('topAlbumStreams').innerText = formatNumber(albumsFinal[0].streams);
+                document.getElementById('topAlbumImg').src = albumsFinal[0].image_url;
 
-                const topRelease = releasesWithCalculations[0];
-                if (topRelease) {
-                    document.getElementById('topAlbumTitle').textContent = topRelease.title;
-                    document.getElementById('topAlbumStreams').textContent = formatNumber(topRelease.streams);
-                    const mainArtist = artists.find(a => a.id === topRelease.artist_id);
-                    document.getElementById('topAlbumArtist').textContent = mainArtist ? mainArtist.name : 'Vários Artistas';
-                    document.getElementById('topAlbumImg').src = getCleanImageUrl(topRelease.image_url);
-                }
-
-                const topArtist = artistsWithCalculations[0];
-                if (topArtist) {
-                    document.getElementById('topArtistName').textContent = topArtist.name;
-                    document.getElementById('topArtistStreams').textContent = formatNumber(topArtist.streams);
-                    const imgEl = document.getElementById('topArtistImg');
-                    imgEl.src = getCleanImageUrl(topArtist.image_url, true);
-                    imgEl.style.objectPosition = getBgPos(topArtist.image_url);
-                }
-
-                // --- FUNÇÕES RENDERIZAR LISTAS HTML ---
-                const renderSongList = (songsArray, limit) => {
-                    return songsArray.slice(0, limit).filter(s => s.streams > 0).map((s, index) => {
-                        const certIcon = getCertIcon(s.streams);
-                        return `
+                // Renderizar Listas
+                const renderList = (list, elementId, limit, isAlbum = false) => {
+                    document.getElementById(elementId).innerHTML = list.slice(0, limit).map((item, i) => `
                         <div class="ranking-item">
-                            <div class="ranking-rank">${index + 1}</div>
-                            <img src="${s.calculated_cover}" class="ranking-img" crossorigin="anonymous" alt="Cover">
+                            <div class="ranking-rank">${i+1}</div>
+                            <img src="${isAlbum ? item.image_url : item.cover}" class="ranking-img" style="${!isAlbum && 'border-radius:50%'}">
                             <div class="ranking-info">
-                                <span class="ranking-title">${s.title} <span title="Certificado">${certIcon}</span></span>
-                                <span class="ranking-subtitle">${getArtistNames(s.artist_ids, artists)}</span>
+                                <div class="ranking-title">${item.title || item.name} ${!isAlbum ? getCertIcon(item.total_streams) : ''}</div>
+                                <div style="font-size:12px; color:#aaa">${item.artist_name || 'Catálogo'}</div>
                             </div>
-                            <div class="ranking-streams">${formatNumber(s.streams)}</div>
+                            <div class="ranking-streams">${formatNumber(item.total_streams || item.streams)}</div>
                         </div>
-                        `;
-                    }).join('');
+                    `).join('');
                 };
 
-                const renderReleaseList = (releasesArray, limit) => {
-                    return releasesArray.slice(0, limit).filter(r => r.streams > 0).map((r, index) => {
-                        const art = artists.find(a => a.id === r.artist_id);
-                        return `
-                        <div class="ranking-item">
-                            <div class="ranking-rank">${index + 1}</div>
-                            <img src="${getCleanImageUrl(r.image_url)}" crossorigin="anonymous" class="ranking-img" alt="Cover">
-                            <div class="ranking-info">
-                                <span class="ranking-title">${r.title}</span>
-                                <span class="ranking-subtitle">${art ? art.name : 'Desconhecido'}</span>
-                            </div>
-                            <div class="ranking-streams">${formatNumber(r.streams)}</div>
-                        </div>
-                        `;
-                    }).join('');
-                };
+                renderList(songsFinal, 'top10SongsList', 10);
+                renderList(albumsFinal, 'top10AlbumsList', 10, true);
+                renderList(songsFinal, 'top100SongsList', 100);
+                renderList(albumsFinal, 'top100AlbumsList', 100, true);
 
-                // --- HTML: TOP 10 / TOP 100 MÚSICAS ---
-                const top10SongsHtml = renderSongList(songsWithCalculations, 10);
-                document.getElementById('top10SongsList').innerHTML = top10SongsHtml || '<p class="ranking-subtitle" style="padding:10px;">Nenhuma música com streams.</p>';
-
-                const top100SongsHtml = renderSongList(songsWithCalculations, 100);
-                document.getElementById('top100SongsList').innerHTML = top100SongsHtml || '<p class="ranking-subtitle" style="padding:10px; text-align:center;">Nenhuma música com streams.</p>';
-
-                // --- HTML: TOP 10 / TOP 100 ÁLBUNS ---
-                const top10AlbumsHtml = renderReleaseList(releasesWithCalculations, 10);
-                document.getElementById('top10AlbumsList').innerHTML = top10AlbumsHtml || '<p class="ranking-subtitle" style="padding:10px;">Nenhum álbum com streams.</p>';
-
-                const top100AlbumsHtml = renderReleaseList(releasesWithCalculations, 100);
-                document.getElementById('top100AlbumsList').innerHTML = top100AlbumsHtml || '<p class="ranking-subtitle" style="padding:10px; text-align:center;">Nenhum álbum com streams.</p>';
-
-                // --- HTML: TOP 10 ARTISTAS ---
-                const top10ArtistsHtml = artistsWithCalculations.slice(0, 10).filter(a => a.streams > 0).map((a, index) => `
+                // RIAJ
+                document.getElementById('riajSongsList').innerHTML = songsFinal.filter(s => s.total_streams >= 30000000).map(s => `
                     <div class="ranking-item">
-                        <div class="ranking-rank">${index + 1}</div>
-                        <img src="${getCleanImageUrl(a.image_url, true)}" crossorigin="anonymous" class="ranking-img round" style="object-position: ${getBgPos(a.image_url)};" alt="Artist">
+                        <div class="ranking-rank" style="font-size:24px">${getCertIcon(s.total_streams)}</div>
+                        <img src="${s.cover}" class="ranking-img">
                         <div class="ranking-info">
-                            <span class="ranking-title">${a.name}</span>
-                            <span class="ranking-subtitle">Catálogo</span>
+                            <div class="ranking-title">${s.title}</div>
+                            <div style="font-size:12px; color:#aaa">${s.artist_name}</div>
                         </div>
-                        <div class="ranking-streams">${formatNumber(a.streams)}</div>
+                        <div class="ranking-streams">${formatNumber(s.total_streams)}</div>
                     </div>
                 `).join('');
-                document.getElementById('top10ArtistsList').innerHTML = top10ArtistsHtml || '<p class="ranking-subtitle" style="padding:10px;">Nenhum artista com streams.</p>';
 
-                // ==========================================
-                // LÓGICA DE CERTIFICAÇÕES RIAJ
-                // ==========================================
-                const riajSongs = songsWithCalculations.filter(s => s.streams >= 30000000); // Mínimo de 30M (Prata)
-                
-                const riajHtml = riajSongs.map(s => {
-                    let certName = '';
-                    let icon = getCertIcon(s.streams);
-                    
-                    if (s.streams >= 500000000) certName = 'Diamante';
-                    else if (s.streams >= 100000000) {
-                        let multi = Math.floor(s.streams / 100000000);
-                        certName = multi > 1 ? `${multi}x Platina` : 'Platina';
-                    } else if (s.streams >= 50000000) certName = 'Ouro';
-                    else certName = 'Prata';
-
-                    return `
-                    <div class="ranking-item" style="margin-bottom: 8px;">
-                        <div class="ranking-rank" style="font-size:24px; width:44px; text-align:center;">${icon}</div>
-                        <img src="${s.calculated_cover}" class="ranking-img" crossorigin="anonymous" alt="Cover">
-                        <div class="ranking-info">
-                            <span class="ranking-title">${s.title}</span>
-                            <span class="ranking-subtitle">${getArtistNames(s.artist_ids, artists)}</span>
-                        </div>
-                        <div style="text-align: right; margin-left: 10px;">
-                            <div class="ranking-streams" style="background:transparent; padding:0; font-size:15px; color: #fff;">${certName}</div>
-                            <div class="ranking-subtitle" style="font-size:11px; margin-top:4px;">${formatNumber(s.streams)} streams</div>
-                        </div>
-                    </div>
-                    `;
-                }).join('');
-
-                document.getElementById('riajSongsList').innerHTML = riajHtml || '<div class="ranking-item"><div class="ranking-info" style="text-align:center; padding: 20px;"><span class="ranking-subtitle">Nenhuma música atingiu os critérios da RIAJ (30M+) ainda.</span></div></div>';
-
-                // ==========================================
-                // GERAÇÃO DO TEXTO PARA A ÁREA DE TRANSFERÊNCIA
-                // ==========================================
-                let txt = "🏆 HALL DA FAMA - SPOTIFY RPG 🏆\n";
-                txt += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
-
-                txt += "👑 RECORDES ABSOLUTOS\n";
-                if(topArtist) txt += `• Artista Mais Ouvido: ${topArtist.name} (${formatNumber(topArtist.streams)})\n`;
-                if(topSong) txt += `• Faixa Mais Ouvida: ${topSong.title} - ${getArtistNames(topSong.artist_ids, artists)} (${formatNumber(topSong.streams)})\n`;
-                if(topRelease) txt += `• Maior Projeto: ${topRelease.title} (${formatNumber(topRelease.streams)})\n`;
-                if(topCollab) txt += `• Maior Colab: ${topCollab.title} - ${getArtistNames(topCollab.artist_ids, artists)} (${formatNumber(topCollab.streams)})\n\n`;
-                txt += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
-
-                txt += "🌍 TOP 10 MÚSICAS\n";
-                songsWithCalculations.slice(0, 10).filter(s => s.streams > 0).forEach((s, i) => {
-                    const icn = getCertIcon(s.streams);
-                    txt += `${i + 1}. ${s.title} - ${getArtistNames(s.artist_ids, artists)} | ${formatNumber(s.streams)} ${icn}\n`;
-                });
-                txt += "\n🎤 TOP 10 ARTISTAS\n";
-                artistsWithCalculations.slice(0, 10).filter(a => a.streams > 0).forEach((a, i) => {
-                    txt += `${i + 1}. ${a.name} | ${formatNumber(a.streams)}\n`;
-                });
-                txt += "\n💿 TOP 10 ÁLBUNS/EPs\n";
-                releasesWithCalculations.slice(0, 10).filter(r => r.streams > 0).forEach((r, i) => {
-                    const art = artists.find(a => a.id === r.artist_id);
-                    txt += `${i + 1}. ${r.title} - ${art ? art.name : 'Desconhecido'} | ${formatNumber(r.streams)}\n`;
-                });
-                txt += "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
-
-                txt += "💯 TOP 100 MÚSICAS GLOBAL\n";
-                songsWithCalculations.slice(0, 100).filter(s => s.streams > 0).forEach((s, i) => {
-                    const icn = getCertIcon(s.streams);
-                    txt += `${i + 1}. ${s.title} - ${getArtistNames(s.artist_ids, artists)} | ${formatNumber(s.streams)} ${icn}\n`;
-                });
-                txt += "\n💯 TOP 100 ÁLBUNS/EPs GLOBAL\n";
-                releasesWithCalculations.slice(0, 100).filter(r => r.streams > 0).forEach((r, i) => {
-                    const art = artists.find(a => a.id === r.artist_id);
-                    txt += `${i + 1}. ${r.title} - ${art ? art.name : 'Desconhecido'} | ${formatNumber(r.streams)}\n`;
-                });
-                txt += "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
-
-                txt += "✨ CERTIFICAÇÕES RIAJ\n";
-                if(riajSongs.length === 0) txt += "Nenhuma faixa certificada ainda.\n";
-                riajSongs.forEach(s => {
-                    let certName = 'Prata';
-                    let icn = getCertIcon(s.streams);
-                    if (s.streams >= 500000000) certName = 'Diamante';
-                    else if (s.streams >= 100000000) {
-                        let multi = Math.floor(s.streams / 100000000);
-                        certName = multi > 1 ? `${multi}x Platina` : 'Platina';
-                    } else if (s.streams >= 50000000) certName = 'Ouro';
-                    
-                    txt += `${icn} ${s.title} - ${getArtistNames(s.artist_ids, artists)} | ${certName} (${formatNumber(s.streams)})\n`;
-                });
-
+                // Gerar Texto
+                let txt = "🏆 RECORDES GLOBAIS - SPOTIFY RPG\n\n";
+                txt += `👑 Artista #1: ${artistsFinal[0].name} (${formatNumber(artistsFinal[0].streams)})\n`;
+                txt += `🔥 Música #1: ${songsFinal[0].title} (${formatNumber(songsFinal[0].total_streams)})\n`;
+                txt += `💿 Álbum #1: ${albumsFinal[0].title} (${formatNumber(albumsFinal[0].streams)})\n\n`;
+                txt += "🔝 TOP 10 MÚSICAS:\n";
+                songsFinal.slice(0,10).forEach((s,i) => txt += `${i+1}. ${s.title} - ${formatNumber(s.total_streams)} ${getCertIcon(s.total_streams)}\n`);
                 document.getElementById('textoCopia').value = txt;
 
-                // --- Exibir UI final ---
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('tabsNav').classList.remove('hidden');
                 document.getElementById('tabGeral').classList.remove('hidden');
 
-            } catch (error) {
-                console.error("Erro ao carregar recordes:", error);
-                document.getElementById('loading').innerHTML = '<span style="color: #ff4444;"><i class="fas fa-exclamation-triangle"></i> Erro ao carregar os rankings. Verifique a conexão ou o console.</span>';
-            }
+            } catch (e) { console.error(e); }
         }
 
-        window.addEventListener('DOMContentLoaded', loadCharts);
+        function exportarArte(id) {
+            const card = document.getElementById(id);
+            html2canvas(card, { useCORS: true, backgroundColor: '#181818' }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'recorde.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+
+        function copiarTexto() {
+            document.getElementById('textoCopia').select();
+            document.execCommand('copy');
+            alert("Copiado!");
+        }
+
+        window.onload = loadData;
     </script>
 </body>
 </html>
