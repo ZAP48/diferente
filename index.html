@@ -4,208 +4,439 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spotify RPG - Hall da Fama</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> 
+    
     <style>
         :root {
-            --bg-color: #000000;
-            --bg-gradient: linear-gradient(180deg, #121212 0%, #000000 100%);
+            --bg-base: #000000;
+            --bg-elevated: #121212;
             --card-bg: #181818;
             --card-hover: #282828;
-            --text-main: #ffffff;
-            --text-sec: #a7a7a7;
-            --accent: #1db954;
-            --gold: #FFD700;
-            --silver: #C0C0C0;
-            --bronze: #cd7f32;
+            --text-base: #FFFFFF;
+            --text-subdued: #b3b3b3;
+            --spotify-green: #1ed760;
+            --spotify-hover: #3be477;
+            --divider: rgba(255, 255, 255, 0.1);
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+
         body {
-            font-family: 'Montserrat', sans-serif;
-            background: var(--bg-gradient);
-            color: var(--text-main);
-            margin: 0;
-            padding: 40px 20px;
+            background-color: var(--bg-base);
+            /* Gradiente sutil no topo igual playlist do Spotify */
+            background-image: linear-gradient(180deg, #2b2b2b 0%, var(--bg-base) 400px);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: var(--text-base);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px 100px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
         }
-        h1 {
-            font-size: 48px;
+
+        /* HEADER */
+        .page-header {
+            text-align: center;
+            margin-bottom: 32px;
+            width: 100%;
+            margin-top: 24px;
+        }
+        .page-header h1 {
+            font-size: 56px;
             font-weight: 900;
-            margin-bottom: 8px;
-            text-align: center;
             letter-spacing: -2px;
-            background: linear-gradient(90deg, #ffffff, #a7a7a7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            color: var(--text-base);
         }
-        .subtitle {
-            color: var(--text-sec);
-            margin-bottom: 40px;
-            text-align: center;
-            font-size: 16px;
+        .page-header p {
+            color: var(--text-subdued);
+            font-size: 15px;
             font-weight: 500;
         }
-        
-        /* SISTEMA DE ABAS */
+
+        /* SPOTIFY PILL FILTERS (TABS) */
         .tabs {
             display: flex;
             gap: 8px;
             margin-bottom: 40px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 8px;
-            border-radius: 50px;
             flex-wrap: wrap;
             justify-content: center;
         }
         .tab-btn {
-            background: transparent;
+            background: rgba(255, 255, 255, 0.07);
             border: none;
-            color: var(--text-sec);
-            padding: 12px 24px;
+            color: var(--text-base);
+            padding: 8px 16px;
             font-size: 14px;
-            font-weight: 700;
-            border-radius: 50px;
+            font-weight: 600;
+            border-radius: 32px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
-        .tab-btn:hover { color: var(--text-main); }
+        .tab-btn:hover { background: rgba(255, 255, 255, 0.1); }
         .tab-btn.active {
-            background: var(--text-main);
-            color: #000;
+            background: var(--text-base);
+            color: #000000;
         }
 
-        /* GRID RECORDES */
+        /* LOADER */
+        .loader {
+            display: flex; flex-direction: column; align-items: center; gap: 16px;
+            margin-top: 60px; color: var(--text-subdued); font-weight: 600;
+        }
+        .spinner {
+            width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--spotify-green); border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* SPOTIFY CARDS (RECORDS #1) */
         .records-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 24px;
             width: 100%;
-            max-width: 1200px;
             margin-bottom: 60px;
         }
         .record-card {
             background-color: var(--card-bg);
-            border-radius: 16px;
-            padding: 32px 24px;
-            text-align: center;
+            border-radius: 8px;
+            padding: 20px;
             position: relative;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.3s;
+            transition: background-color 0.3s ease;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
         }
-        .record-card:hover { transform: translateY(-8px); background-color: var(--card-hover); }
+        .record-card:hover { background-color: var(--card-hover); }
+        .record-card:hover .export-btn { opacity: 1; transform: translateY(0); }
+
+        .record-category {
+            font-size: 12px; font-weight: 700; color: var(--text-subdued);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;
+        }
         
+        .record-image-wrapper {
+            width: 100%; aspect-ratio: 1/1; margin-bottom: 16px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .record-image {
+            width: 100%; height: 100%; object-fit: cover;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        .is-artist .record-image { border-radius: 50%; width: 90%; height: 90%; }
+        .is-album .record-image { border-radius: 4px; }
+
+        .record-title {
+            font-size: 24px; font-weight: 800; margin: 0 0 4px 0;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-base);
+        }
+        .record-stats { font-size: 14px; font-weight: 500; color: var(--text-subdued); }
+
         .export-btn {
             position: absolute; top: 16px; right: 16px;
-            background: rgba(0, 0, 0, 0.5); border: none; color: var(--text-sec);
-            cursor: pointer; width: 36px; height: 36px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; transition: 0.2s;
+            background: var(--spotify-green); color: #000; border: none;
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 16px; font-weight: bold;
+            opacity: 0; transform: translateY(8px); transition: all 0.3s ease;
+            box-shadow: 0 8px 8px rgba(0,0,0,0.3);
         }
-        .export-btn:hover { color: #000; background: var(--text-main); transform: scale(1.1); }
+        .export-btn:hover { background: var(--spotify-hover); transform: scale(1.05) translateY(0); }
 
-        .record-category { font-size: 11px; color: var(--text-sec); text-transform: uppercase; font-weight: 800; margin-bottom: 20px; letter-spacing: 1.5px; }
-        .record-image { width: 160px; height: 160px; object-fit: cover; border-radius: 50%; margin: 0 auto 20px; box-shadow: 0 12px 24px rgba(0,0,0,0.6); }
-        .is-album .record-image { border-radius: 8px; }
-        .record-title { font-size: 20px; font-weight: 800; margin: 0 0 6px 0; overflow: hidden; text-overflow: ellipsis; }
-        .record-stats { font-size: 26px; font-weight: 900; color: var(--text-main); background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; }
-
-        /* CHARTS */
-        .charts-container { width: 100%; max-width: 1200px; display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 32px; }
-        .chart-section { background: var(--card-bg); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); }
-        .chart-section h3 { font-size: 20px; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        /* SPOTIFY TRACKLIST (RANKINGS) */
+        .charts-container {
+            width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 40px;
+        }
+        .chart-section { width: 100%; }
+        .chart-section h3 { font-size: 24px; font-weight: 800; margin-bottom: 16px; color: var(--text-base); }
         
-        .ranking-item { display: flex; align-items: center; padding: 10px; border-radius: 8px; transition: 0.2s; }
-        .ranking-item:hover { background: rgba(255,255,255,0.1); }
-        .ranking-rank { font-size: 16px; font-weight: 800; color: var(--text-sec); width: 36px; text-align: center; }
-        .ranking-img { width: 48px; height: 48px; object-fit: cover; border-radius: 4px; margin-right: 16px; }
-        .ranking-info { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; }
-        .ranking-title { font-weight: 700; font-size: 15px; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .ranking-streams { font-weight: 800; font-size: 13px; color: var(--text-main); text-align: right; }
+        .tracklist-header {
+            display: flex; align-items: center; padding: 8px 16px;
+            border-bottom: 1px solid var(--divider); margin-bottom: 8px;
+            color: var(--text-subdued); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .col-rank { width: 40px; text-align: center; }
+        .col-info { flex: 1; padding-left: 16px; }
+        .col-streams { width: 120px; text-align: right; }
+
+        .ranking-item {
+            display: flex; align-items: center; padding: 8px 16px;
+            border-radius: 4px; transition: background-color 0.2s;
+            cursor: default;
+        }
+        .ranking-item:hover { background-color: rgba(255, 255, 255, 0.1); }
+        .ranking-item:hover .ranking-title { color: var(--text-base); }
+        
+        .ranking-rank { width: 40px; text-align: center; font-size: 16px; font-weight: 600; color: var(--text-subdued); font-variant-numeric: tabular-nums; }
+        .ranking-item:nth-child(1) .ranking-rank { color: var(--spotify-green); font-size: 18px; font-weight: 800; }
+        
+        .ranking-img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; margin-left: 16px; }
+        .is-artist-row .ranking-img { border-radius: 50%; }
+        
+        .ranking-info { flex: 1; overflow: hidden; padding-left: 16px; display: flex; flex-direction: column; justify-content: center; }
+        .ranking-title { font-size: 16px; font-weight: 600; color: var(--text-base); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+        .ranking-subtitle { font-size: 13px; font-weight: 500; color: var(--text-subdued); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .ranking-streams { width: 120px; text-align: right; font-size: 14px; font-weight: 500; color: var(--text-subdued); font-variant-numeric: tabular-nums; }
+
+        /* CERTIFICATIONS */
+        .cert-badge { font-size: 18px; margin-left: 6px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 
         .hidden { display: none !important; }
-        .loader { font-size: 20px; color: var(--accent); margin-top: 50px; text-align: center; font-weight: 700; }
-        textarea { width: 100%; height: 400px; background: #111; color: #fff; border: 1px solid #333; padding: 15px; border-radius: 10px; font-family: monospace; }
-        .copy-all-btn { background: var(--accent); color: #000; border: none; padding: 15px 30px; border-radius: 50px; font-weight: 800; cursor: pointer; margin-bottom: 20px; }
+        
+        /* TEXT AREA */
+        textarea {
+            width: 100%; height: 400px; background: var(--bg-elevated); color: var(--text-base);
+            border: 1px solid var(--divider); padding: 20px; border-radius: 8px; font-family: monospace;
+            resize: vertical; font-size: 13px; line-height: 1.5; outline: none;
+        }
+        textarea:focus { border-color: var(--text-subdued); }
+        .copy-all-btn {
+            background: var(--text-base); color: #000; border: none; padding: 14px 32px;
+            border-radius: 500px; font-weight: 800; cursor: pointer; margin-bottom: 24px;
+            transition: 0.2s; font-size: 15px;
+        }
+        .copy-all-btn:hover { transform: scale(1.04); background: #f0f0f0; }
+
+        /* POSTER ENGINE (CRIAR ARTE) - LAYOUT ANTIGO RESTAURADO */
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-subdued); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .form-group input, .form-group select { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--divider); color: #fff; padding: 14px; border-radius: 6px; font-size: 14px; outline: none; transition: 0.2s; cursor: pointer; }
+        .form-group input { cursor: text; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--spotify-green); background: rgba(255,255,255,0.1); }
+        .form-group select option { background: var(--card-bg); color: #fff; }
+
+        .poster-layout { display: grid; grid-template-columns: 350px 1fr; gap: 32px; align-items: start; margin-top: 24px; text-align: left; }
+        .poster-controls { background: var(--card-bg); padding: 24px; border-radius: 12px; border: 1px solid var(--divider); }
+        .poster-preview-area { display: flex; justify-content: center; align-items: center; background: var(--bg-elevated); border: 1px solid var(--divider); padding: 24px; border-radius: 12px; overflow: hidden; }
+        .poster-wrapper { width: 100%; max-width: 400px; aspect-ratio: 1080/1350; position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+        
+        .spotify-poster { width: 1080px; height: 1350px; background: linear-gradient(145deg, #4b134f, #121212); position: absolute; top: 0; left: 0; transform-origin: top left; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
+        .poster-content { position: relative; z-index: 2; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        .spotify-poster .poster-cover { width: 540px; height: 540px; object-fit: cover; border-radius: 12px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); margin-bottom: 40px; border: 2px solid rgba(255,255,255,0.1); }
+        .spotify-poster .poster-title { font-size: 64px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; color: #fff; text-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        .spotify-poster .poster-artist { font-size: 32px; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 80px; }
+        .spotify-poster .poster-number { font-size: 160px; font-weight: 900; letter-spacing: -4px; line-height: 1; background: linear-gradient(180deg, #FFFFFF 0%, #B3B3B3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 12px; }
+        .spotify-poster .poster-text { font-size: 38px; font-weight: 800; color: var(--spotify-green); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px; }
+        .spotify-poster .poster-timeframe { font-size: 28px; font-weight: 600; color: rgba(255,255,255,0.6); background: rgba(0,0,0,0.4); padding: 12px 32px; border-radius: 500px; }
+        .spotify-poster .poster-logo { position: absolute; bottom: 60px; display: flex; align-items: center; gap: 16px; font-size: 34px; font-weight: 700; color: #fff; }
+        .poster-badge { font-size: 24px; font-weight: 800; color: #000; background: var(--spotify-green); padding: 8px 24px; border-radius: 500px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); letter-spacing: 1px; }
+
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 40px; }
+            .charts-container { grid-template-columns: 1fr; gap: 40px; }
+            .tracklist-header { display: none; }
+            .ranking-item { padding: 8px 0; }
+            .col-streams, .ranking-streams { width: auto; padding-left: 12px; }
+            .poster-layout { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
-    <h1>🏆 Hall da Fama</h1>
-    <p class="subtitle">Os maiores recordes e rankings globais do Spotify RPG.</p>
-
-    <div class="tabs hidden" id="tabsNav">
-        <button class="tab-btn active" onclick="switchTab('geral')">Recordes Atuais</button>
-        <button class="tab-btn" onclick="switchTab('top100')">Top 100 Global</button>
-        <button class="tab-btn" onclick="switchTab('riaj')">Certificações</button>
-        <button class="tab-btn" onclick="switchTab('texto')">Versão Texto</button>
-    </div>
-
-    <div id="loading" class="loader"><i class="fas fa-spinner fa-spin"></i><br>Calculando recordes globais...</div>
-
-    <div id="tabGeral" class="hidden" style="width: 100%; max-width: 1200px;">
-        <div class="records-grid">
-            <div class="record-card" id="cardTopArtist">
-                <button onclick="exportarArte('cardTopArtist')" class="export-btn"><i class="fas fa-camera"></i></button>
-                <div class="record-category">Artista #1</div>
-                <img id="topArtistImg" src="" class="record-image">
-                <h2 id="topArtistName" class="record-title">-</h2>
-                <div id="topArtistStreams" class="record-stats">-</div>
-            </div>
-            <div class="record-card is-album" id="cardTopSong">
-                <button onclick="exportarArte('cardTopSong')" class="export-btn"><i class="fas fa-camera"></i></button>
-                <div class="record-category">Música #1</div>
-                <img id="topSongImg" src="" class="record-image">
-                <h2 id="topSongTitle" class="record-title">-</h2>
-                <div id="topSongStreams" class="record-stats">-</div>
-            </div>
-            <div class="record-card is-album" id="cardTopAlbum">
-                <button onclick="exportarArte('cardTopAlbum')" class="export-btn"><i class="fas fa-camera"></i></button>
-                <div class="record-category">Álbum/EP #1</div>
-                <img id="topAlbumImg" src="" class="record-image">
-                <h2 id="topAlbumTitle" class="record-title">-</h2>
-                <div id="topAlbumStreams" class="record-stats">-</div>
-            </div>
-        </div>
+    <div class="container">
         
-        <div class="charts-container">
-            <div class="chart-section">
-                <h3>Músicas (Top 10)</h3>
-                <div id="top10SongsList" class="ranking-list"></div>
+        <div class="page-header">
+            <h1>Hall da Fama</h1>
+            <p>Os maiores recordes e rankings globais do Spotify RPG</p>
+        </div>
+
+        <div class="tabs hidden" id="tabsNav">
+            <button class="tab-btn active" onclick="switchTab('geral')">Visão Geral</button>
+            <button class="tab-btn" onclick="switchTab('top100')">Top 100 Global</button>
+            <button class="tab-btn" onclick="switchTab('riaj')">Certificações</button>
+            <button class="tab-btn" onclick="switchTab('texto')">Exportar Texto</button>
+            <button class="tab-btn" onclick="switchTab('arte')">Criar Arte</button>
+        </div>
+
+        <div id="loading" class="loader">
+            <div class="spinner"></div>
+            <div>Calculando recordes globais...</div>
+        </div>
+
+        <!-- ABA: VISÃO GERAL -->
+        <div id="tabGeral" class="hidden" style="width: 100%;">
+            <div class="records-grid">
+                
+                <div class="record-card is-artist" id="cardTopArtist">
+                    <button onclick="exportarArte('cardTopArtist')" class="export-btn" title="Baixar Arte"><i class="fas fa-arrow-down"></i></button>
+                    <div class="record-category">Artista Global #1</div>
+                    <div class="record-image-wrapper"><img id="topArtistImg" src="" class="record-image"></div>
+                    <h2 id="topArtistName" class="record-title">-</h2>
+                    <div class="record-stats"><span id="topArtistStreams">-</span> streams totais</div>
+                </div>
+
+                <div class="record-card is-album" id="cardTopSong">
+                    <button onclick="exportarArte('cardTopSong')" class="export-btn" title="Baixar Arte"><i class="fas fa-arrow-down"></i></button>
+                    <div class="record-category">Música Global #1</div>
+                    <div class="record-image-wrapper"><img id="topSongImg" src="" class="record-image"></div>
+                    <h2 id="topSongTitle" class="record-title">-</h2>
+                    <div class="record-stats"><span id="topSongStreams">-</span> streams totais</div>
+                </div>
+
+                <div class="record-card is-album" id="cardTopAlbum">
+                    <button onclick="exportarArte('cardTopAlbum')" class="export-btn" title="Baixar Arte"><i class="fas fa-arrow-down"></i></button>
+                    <div class="record-category">Álbum Global #1</div>
+                    <div class="record-image-wrapper"><img id="topAlbumImg" src="" class="record-image"></div>
+                    <h2 id="topAlbumTitle" class="record-title">-</h2>
+                    <div class="record-stats"><span id="topAlbumStreams">-</span> streams totais</div>
+                </div>
             </div>
-            <div class="chart-section">
-                <h3>Álbuns/EPs (Top 10)</h3>
-                <div id="top10AlbumsList" class="ranking-list"></div>
+            
+            <div class="charts-container">
+                <div class="chart-section">
+                    <h3>Top 10 Músicas</h3>
+                    <div class="tracklist-header">
+                        <div class="col-rank">#</div>
+                        <div class="col-info">Título</div>
+                        <div class="col-streams"><i class="far fa-play-circle"></i></div>
+                    </div>
+                    <div id="top10SongsList"></div>
+                </div>
+                
+                <div class="chart-section">
+                    <h3>Top 10 Álbuns</h3>
+                    <div class="tracklist-header">
+                        <div class="col-rank">#</div>
+                        <div class="col-info">Álbum</div>
+                        <div class="col-streams"><i class="far fa-play-circle"></i></div>
+                    </div>
+                    <div id="top10AlbumsList"></div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="tabTop100" class="hidden" style="width: 100%; max-width: 1200px;">
-        <div class="charts-container">
-            <div class="chart-section">
-                <h3><i class="fas fa-music"></i> Top 100 Músicas</h3>
-                <div id="top100SongsList" class="ranking-list"></div>
-            </div>
-            <div class="chart-section">
-                <h3><i class="fas fa-compact-disc"></i> Top 100 Álbuns/EPs</h3>
-                <div id="top100AlbumsList" class="ranking-list"></div>
+        <!-- ABA: TOP 100 -->
+        <div id="tabTop100" class="hidden" style="width: 100%;">
+            <div class="charts-container">
+                <div class="chart-section">
+                    <h3>Top 100 Músicas</h3>
+                    <div class="tracklist-header">
+                        <div class="col-rank">#</div>
+                        <div class="col-info">Título</div>
+                        <div class="col-streams"><i class="far fa-play-circle"></i></div>
+                    </div>
+                    <div id="top100SongsList"></div>
+                </div>
+                
+                <div class="chart-section">
+                    <h3>Top 100 Álbuns e EPs</h3>
+                    <div class="tracklist-header">
+                        <div class="col-rank">#</div>
+                        <div class="col-info">Álbum</div>
+                        <div class="col-streams"><i class="far fa-play-circle"></i></div>
+                    </div>
+                    <div id="top100AlbumsList"></div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="tabRiaj" class="hidden" style="width: 100%; max-width: 800px;">
-        <div class="chart-section">
-            <h3 style="justify-content: center;">Certificações de Streaming</h3>
-            <div id="riajSongsList" class="ranking-list"></div>
+        <!-- ABA: CERTIFICAÇÕES -->
+        <div id="tabRiaj" class="hidden" style="width: 100%;">
+            <div class="charts-container" style="grid-template-columns: 1fr; max-width: 800px; margin: 0 auto;">
+                <div class="chart-section">
+                    <h3 style="text-align: center; border-bottom: none; margin-bottom: 16px;">Certificações de Streaming</h3>
+                    
+                    <div class="tabs" style="margin-bottom: 24px; gap: 8px;">
+                        <button class="tab-btn active" id="btnCertSingle" onclick="switchCertTab('single')" style="padding: 8px 24px;">Singles</button>
+                        <button class="tab-btn" id="btnCertAlbum" onclick="switchCertTab('album')" style="padding: 8px 24px;">Álbuns/EPs</button>
+                    </div>
+
+                    <p id="certLegendSingle" style="text-align: center; color: var(--text-subdued); font-size: 13px; margin-top: -10px; margin-bottom: 24px;">
+                        💎 1B+ &nbsp;•&nbsp; 💿 500M+ &nbsp;•&nbsp; 📀 50M+ &nbsp;•&nbsp; ⚪ 30M+
+                    </p>
+                    <p id="certLegendAlbum" class="hidden" style="text-align: center; color: var(--text-subdued); font-size: 13px; margin-top: -10px; margin-bottom: 24px;">
+                        💎 1B+ &nbsp;•&nbsp; 💿 500M+ &nbsp;•&nbsp; 📀 100M+ &nbsp;•&nbsp; ⚪ 50M+
+                    </p>
+
+                    <div id="certSongsList"></div>
+                    <div id="certAlbumsList" class="hidden"></div>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div id="tabTexto" class="hidden" style="width: 100%; max-width: 800px; text-align: center;">
-        <button class="copy-all-btn" onclick="copiarTexto()">Copiar Rankings para WhatsApp/Discord</button>
-        <textarea id="textoCopia" readonly></textarea>
+        <!-- ABA: EXPORTAR TEXTO -->
+        <div id="tabTexto" class="hidden" style="width: 100%; max-width: 800px; margin: 0 auto; text-align: center;">
+            <button class="copy-all-btn" onclick="copiarTexto()">Copiar para WhatsApp/Discord</button>
+            <textarea id="textoCopia" readonly></textarea>
+        </div>
+
+        <!-- ABA: CRIAR ARTE -->
+        <div id="tabArte" class="hidden" style="width: 100%;">
+            <div class="poster-layout">
+                <div class="poster-controls">
+                    <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 24px; color: var(--text-base);">Gerador de Marcos</h3>
+                    
+                    <div class="form-group">
+                        <label>1. Selecione o Artista</label>
+                        <select id="art-artist-select">
+                            <option value="" disabled selected>Aguardando dados...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="group-release-select">
+                        <label>2. Selecione o Lançamento</label>
+                        <select id="art-release-select" disabled>
+                            <option value="" disabled selected>Selecione um artista primeiro</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>3. Tipo de Arte</label>
+                        <select id="art-type-select">
+                            <option value="streams">Lançamento: Posição Global & Streams</option>
+                            <option value="cert">Lançamento: Certificação (Ouro, Platina...)</option>
+                            <option value="artist">Artista: Posição Global & Streams Totais</option>
+                        </select>
+                    </div>
+
+                    <!-- Campos Automáticos (Escondidos pois o sistema preenche sozinho) -->
+                    <input type="hidden" id="p-input-cover" value="https://i.imgur.com/AD3MbBi.png">
+                    <input type="hidden" id="p-input-title" value="Espresso">
+                    <input type="hidden" id="p-input-artist" value="Sabrina Carpenter">
+                    <input type="hidden" id="p-input-number" value="10.000.000">
+                    <input type="hidden" id="p-input-text" value="STREAMS NO SPOTIFY">
+                    <input type="hidden" id="p-input-time" value="">
+
+                    <!-- Única opção visual customizável -->
+                    <div class="form-group"><label>Cor de Fundo</label><input type="color" id="p-input-color" value="#4b134f" style="height: 48px; padding: 2px; cursor: pointer;"></div>
+
+                    <button class="copy-all-btn" style="width: 100%; margin-top: 16px; margin-bottom: 0;" onclick="downloadArte()"><i class="fas fa-download"></i> Baixar Imagem HD</button>
+                </div>
+
+                <div class="poster-preview-area">
+                    <div class="poster-wrapper" id="poster-scale-wrapper">
+                        <div class="spotify-poster" id="poster-capture-node">
+                            <div class="poster-content">
+                                <div class="poster-badge hidden" id="art-render-badge">#1 GLOBAL</div>
+                                <img class="poster-cover" id="art-render-cover" src="https://i.imgur.com/AD3MbBi.png" crossorigin="anonymous">
+                                <h2 class="poster-title" id="art-render-title">Espresso</h2>
+                                <p class="poster-artist" id="art-render-artist">Sabrina Carpenter</p>
+                                <div class="poster-number" id="art-render-main">10.000.000</div>
+                                <div class="poster-text" id="art-render-sub">STREAMS NO SPOTIFY</div>
+                                <div class="poster-timeframe hidden" id="p-render-time"></div>
+                            </div>
+                            <div class="poster-logo"><i class="fab fa-spotify"></i> Spotify</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -213,44 +444,94 @@
         const SUPABASE_ANON_KEY = 'sb_publishable_9uhuy6fpFduf-qsEXYf5wA_BDBB1OIZ'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+        window.RPGData = { artistsFinal: [], songsFinal: [], albumsFinal: [], allReleases: [] };
+        window.ArtFilteredReleases = [];
+
+        // Utility: Parse array from Postgres correctly
+        const parsePgArray = (arr) => {
+            if (!arr) return [];
+            if (Array.isArray(arr)) return arr;
+            if (typeof arr === 'string') return arr.replace(/^{|}$/g, '').split(',').map(s => s.trim().replace(/^"|"$/g, '')).filter(Boolean);
+            return [];
+        };
+
         function formatNumber(num) { return (num || 0).toLocaleString('pt-BR'); }
         
         function switchTab(tabId) {
-            ['tabGeral', 'tabTop100', 'tabRiaj', 'tabTexto'].forEach(t => document.getElementById(t).classList.add('hidden'));
+            ['tabGeral', 'tabTop100', 'tabRiaj', 'tabTexto', 'tabArte'].forEach(t => document.getElementById(t).classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('tab' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.remove('hidden');
             event.currentTarget.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (tabId === 'arte') resizeArtePreview();
+        }
+
+        function switchCertTab(type) {
+            if(type === 'single') {
+                document.getElementById('btnCertSingle').classList.add('active');
+                document.getElementById('btnCertAlbum').classList.remove('active');
+                document.getElementById('certLegendSingle').classList.remove('hidden');
+                document.getElementById('certLegendAlbum').classList.add('hidden');
+                document.getElementById('certSongsList').classList.remove('hidden');
+                document.getElementById('certAlbumsList').classList.add('hidden');
+            } else {
+                document.getElementById('btnCertAlbum').classList.add('active');
+                document.getElementById('btnCertSingle').classList.remove('active');
+                document.getElementById('certLegendAlbum').classList.remove('hidden');
+                document.getElementById('certLegendSingle').classList.add('hidden');
+                document.getElementById('certAlbumsList').classList.remove('hidden');
+                document.getElementById('certSongsList').classList.add('hidden');
+            }
+        }
+
+        function getCertInfo(streams, isAlbum) {
+            if (isAlbum) {
+                if (streams >= 1000000000) return { icon: '💎', name: 'DIAMANTE' };
+                if (streams >= 500000000) return { icon: '💿', name: 'PLATINA' };
+                if (streams >= 100000000) return { icon: '📀', name: 'OURO' };
+                if (streams >= 50000000) return { icon: '⚪', name: 'PRATA' };
+                return { icon: '', name: 'NENHUMA' };
+            } else {
+                if (streams >= 1000000000) return { icon: '💎', name: 'DIAMANTE' };
+                if (streams >= 500000000) return { icon: '💿', name: 'PLATINA' };
+                if (streams >= 50000000) return { icon: '📀', name: 'OURO' };
+                if (streams >= 30000000) return { icon: '⚪', name: 'PRATA' };
+                return { icon: '', name: 'NENHUMA' };
+            }
         }
 
         function getCertIcon(streams) {
-            if (streams >= 500000000) return '💎';
-            if (streams >= 100000000) return '💿';
-            if (streams >= 50000000) return '📀';
-            if (streams >= 30000000) return '⚪';
-            return '';
+            return getCertInfo(streams, false).icon;
         }
 
         async function loadData() {
             try {
-                const { data: artists } = await supabaseClient.from('artists').select('*');
-                const { data: songs } = await supabaseClient.from('songs').select('*').order('total_streams', { ascending: false });
-                const { data: albums } = await supabaseClient.from('albums').select('*');
-                const { data: singles } = await supabaseClient.from('singles').select('*');
+                // Fetching everything in parallel
+                const [artRes, songRes, albRes, sinRes] = await Promise.all([
+                    supabaseClient.from('artists').select('*'),
+                    supabaseClient.from('songs').select('*').order('total_streams', { ascending: false }),
+                    supabaseClient.from('albums').select('*'),
+                    supabaseClient.from('singles').select('*')
+                ]);
 
+                const artists = artRes.data || [];
+                const songs = songRes.data || [];
+                const albums = albRes.data || [];
+                const singles = sinRes.data || [];
                 const allReleases = [...albums, ...singles];
 
                 // 1. Processar Músicas
                 const songsFinal = songs.map(s => {
                     const rel = allReleases.find(r => (s.album_ids && s.album_ids.includes(r.id)) || (s.single_ids && s.single_ids.includes(r.id)));
-                    const artistNames = s.artist_ids.map(id => artists.find(a => a.id === id)?.name || "Desconhecido").join(', ');
+                    const artistNames = (s.artist_ids || []).map(id => artists.find(a => a.id === id)?.name || "Desconhecido").join(', ');
                     return { ...s, artist_name: artistNames, cover: rel?.image_url || 'https://i.imgur.com/AD3MbBi.png' };
                 });
 
-                // 2. Processar Álbuns (Filtrando apenas a tabela de albums para o Top Álbuns)
+                // 2. Processar Álbuns 
                 const albumsFinal = albums.map(a => {
                     const albumSongs = songsFinal.filter(s => s.album_ids && s.album_ids.includes(a.id));
                     const total = albumSongs.reduce((acc, s) => acc + (s.total_streams || 0), 0);
-                    const artist = artists.find(art => art.id === a.artist_id)?.name || "Vários";
+                    const artist = artists.find(art => art.id === a.artist_id)?.name || "Vários Artistas";
                     return { ...a, streams: total, artist_name: artist };
                 }).sort((a, b) => b.streams - a.streams);
 
@@ -261,84 +542,360 @@
                     return { ...a, streams: total };
                 }).sort((a, b) => b.streams - a.streams);
 
-                // Renderizar Recordes #1
-                document.getElementById('topArtistName').innerText = artistsFinal[0].name;
-                document.getElementById('topArtistStreams').innerText = formatNumber(artistsFinal[0].streams);
-                document.getElementById('topArtistImg').src = artistsFinal[0].image_url?.split('#')[0];
+                // Popular o Banco Global de Dados para o Gerador de Arte
+                window.RPGData = { artistsFinal, songsFinal, albumsFinal, allReleases };
+                
+                const artOptions = '<option value="" disabled selected>Selecione um artista...</option>' + 
+                                   artistsFinal.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+                document.getElementById('art-artist-select').innerHTML = artOptions;
 
-                document.getElementById('topSongTitle').innerText = songsFinal[0].title;
-                document.getElementById('topSongStreams').innerText = formatNumber(songsFinal[0].total_streams);
-                document.getElementById('topSongImg').src = songsFinal[0].cover;
+                // RENDER: CARDS HERÓIS #1
+                if(artistsFinal.length > 0) {
+                    document.getElementById('topArtistName').innerText = artistsFinal[0].name;
+                    document.getElementById('topArtistStreams').innerText = formatNumber(artistsFinal[0].streams);
+                    document.getElementById('topArtistImg').src = artistsFinal[0].image_url?.split('#')[0] || 'https://i.imgur.com/AD3MbBi.png';
+                }
 
-                document.getElementById('topAlbumTitle').innerText = albumsFinal[0].title;
-                document.getElementById('topAlbumStreams').innerText = formatNumber(albumsFinal[0].streams);
-                document.getElementById('topAlbumImg').src = albumsFinal[0].image_url;
+                if(songsFinal.length > 0) {
+                    document.getElementById('topSongTitle').innerText = songsFinal[0].title;
+                    document.getElementById('topSongStreams').innerText = formatNumber(songsFinal[0].total_streams);
+                    document.getElementById('topSongImg').src = songsFinal[0].cover;
+                }
 
-                // Renderizar Listas
-                const renderList = (list, elementId, limit, isAlbum = false) => {
+                if(albumsFinal.length > 0) {
+                    document.getElementById('topAlbumTitle').innerText = albumsFinal[0].title;
+                    document.getElementById('topAlbumStreams').innerText = formatNumber(albumsFinal[0].streams);
+                    document.getElementById('topAlbumImg').src = albumsFinal[0].image_url || 'https://i.imgur.com/AD3MbBi.png';
+                }
+
+                // FUNÇÃO DE RENDERIZAÇÃO DA TRACKLIST (ESTILO SPOTIFY)
+                const renderTracklist = (list, elementId, limit, isAlbum = false) => {
                     document.getElementById(elementId).innerHTML = list.slice(0, limit).map((item, i) => `
-                        <div class="ranking-item">
+                        <div class="ranking-item ${!isAlbum && !item.title ? 'is-artist-row' : ''}">
                             <div class="ranking-rank">${i+1}</div>
-                            <img src="${isAlbum ? item.image_url : item.cover}" class="ranking-img" style="${!isAlbum && 'border-radius:50%'}">
+                            <img src="${isAlbum ? item.image_url : item.cover}" class="ranking-img" crossorigin="anonymous">
                             <div class="ranking-info">
-                                <div class="ranking-title">${item.title || item.name} ${!isAlbum ? getCertIcon(item.total_streams) : ''}</div>
-                                <div style="font-size:12px; color:#aaa">${item.artist_name || 'Catálogo'}</div>
+                                <div class="ranking-title">${item.title || item.name} <span class="cert-badge">${!isAlbum ? getCertIcon(item.total_streams) : ''}</span></div>
+                                <div class="ranking-subtitle">${item.artist_name || 'Catálogo'}</div>
                             </div>
                             <div class="ranking-streams">${formatNumber(item.total_streams || item.streams)}</div>
                         </div>
                     `).join('');
                 };
 
-                renderList(songsFinal, 'top10SongsList', 10);
-                renderList(albumsFinal, 'top10AlbumsList', 10, true);
-                renderList(songsFinal, 'top100SongsList', 100);
-                renderList(albumsFinal, 'top100AlbumsList', 100, true);
+                // PREENCHER AS LISTAS
+                renderTracklist(songsFinal, 'top10SongsList', 10);
+                renderTracklist(albumsFinal, 'top10AlbumsList', 10, true);
+                renderTracklist(songsFinal, 'top100SongsList', 100);
+                renderTracklist(albumsFinal, 'top100AlbumsList', 100, true);
 
-                // RIAJ
-                document.getElementById('riajSongsList').innerHTML = songsFinal.filter(s => s.total_streams >= 30000000).map(s => `
-                    <div class="ranking-item">
-                        <div class="ranking-rank" style="font-size:24px">${getCertIcon(s.total_streams)}</div>
-                        <img src="${s.cover}" class="ranking-img">
-                        <div class="ranking-info">
-                            <div class="ranking-title">${s.title}</div>
-                            <div style="font-size:12px; color:#aaa">${s.artist_name}</div>
+                // CERTIFICAÇÕES (SINGLES / MÚSICAS)
+                const certSongs = songsFinal.filter(s => s.total_streams >= 30000000);
+                if (certSongs.length > 0) {
+                    document.getElementById('certSongsList').innerHTML = certSongs.map((s, i) => `
+                        <div class="ranking-item">
+                            <div class="ranking-rank" style="font-size:20px">${getCertIcon(s.total_streams)}</div>
+                            <img src="${s.cover}" class="ranking-img" crossorigin="anonymous">
+                            <div class="ranking-info">
+                                <div class="ranking-title">${s.title}</div>
+                                <div class="ranking-subtitle">${s.artist_name}</div>
+                            </div>
+                            <div class="ranking-streams">${formatNumber(s.total_streams)}</div>
                         </div>
-                        <div class="ranking-streams">${formatNumber(s.total_streams)}</div>
-                    </div>
-                `).join('');
+                    `).join('');
+                } else {
+                    document.getElementById('certSongsList').innerHTML = '<p style="text-align:center; color:#888;">Nenhum single certificado ainda.</p>';
+                }
 
-                // Gerar Texto
+                // CERTIFICAÇÕES (ÁLBUNS E EPS)
+                const certAlbums = albumsFinal.filter(a => a.streams >= 50000000);
+                if (certAlbums.length > 0) {
+                    document.getElementById('certAlbumsList').innerHTML = certAlbums.map((a, i) => `
+                        <div class="ranking-item">
+                            <div class="ranking-rank" style="font-size:20px">${getCertInfo(a.streams, true).icon}</div>
+                            <img src="${a.image_url || 'https://i.imgur.com/AD3MbBi.png'}" class="ranking-img" crossorigin="anonymous">
+                            <div class="ranking-info">
+                                <div class="ranking-title">${a.title}</div>
+                                <div class="ranking-subtitle">${a.artist_name}</div>
+                            </div>
+                            <div class="ranking-streams">${formatNumber(a.streams)}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('certAlbumsList').innerHTML = '<p style="text-align:center; color:#888;">Nenhum álbum certificado ainda.</p>';
+                }
+
+                // GERAR TEXTO PARA EXPORTAÇÃO
                 let txt = "🏆 RECORDES GLOBAIS - SPOTIFY RPG\n\n";
-                txt += `👑 Artista #1: ${artistsFinal[0].name} (${formatNumber(artistsFinal[0].streams)})\n`;
-                txt += `🔥 Música #1: ${songsFinal[0].title} (${formatNumber(songsFinal[0].total_streams)})\n`;
-                txt += `💿 Álbum #1: ${albumsFinal[0].title} (${formatNumber(albumsFinal[0].streams)})\n\n`;
+                if(artistsFinal[0]) txt += `👑 Artista #1: ${artistsFinal[0].name} (${formatNumber(artistsFinal[0].streams)})\n`;
+                if(songsFinal[0]) txt += `🔥 Música #1: ${songsFinal[0].title} (${formatNumber(songsFinal[0].total_streams)})\n`;
+                if(albumsFinal[0]) txt += `💿 Álbum #1: ${albumsFinal[0].title} (${formatNumber(albumsFinal[0].streams)})\n\n`;
+                
                 txt += "🔝 TOP 10 MÚSICAS:\n";
-                songsFinal.slice(0,10).forEach((s,i) => txt += `${i+1}. ${s.title} - ${formatNumber(s.total_streams)} ${getCertIcon(s.total_streams)}\n`);
+                songsFinal.slice(0,10).forEach((s,i) => {
+                    const cert = getCertIcon(s.total_streams);
+                    txt += `${i+1}. ${s.title} - ${s.artist_name} | ${formatNumber(s.total_streams)} ${cert ? cert : ''}\n`;
+                });
+                
+                txt += "\n💿 TOP 10 ÁLBUNS:\n";
+                albumsFinal.slice(0,10).forEach((a,i) => {
+                    txt += `${i+1}. ${a.title} - ${a.artist_name} | ${formatNumber(a.streams)}\n`;
+                });
+
                 document.getElementById('textoCopia').value = txt;
 
+                // FINALIZAR LOAD
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('tabsNav').classList.remove('hidden');
                 document.getElementById('tabGeral').classList.remove('hidden');
 
-            } catch (e) { console.error(e); }
+            } catch (e) { 
+                console.error(e);
+                document.getElementById('loading').innerHTML = '<i class="fas fa-exclamation-triangle" style="color:var(--danger)"></i><br>Erro ao carregar dados.';
+            }
         }
 
         function exportarArte(id) {
             const card = document.getElementById(id);
-            html2canvas(card, { useCORS: true, backgroundColor: '#181818' }).then(canvas => {
+            const btn = card.querySelector('.export-btn');
+            btn.style.display = 'none';
+
+            html2canvas(card, { 
+                useCORS: true, 
+                backgroundColor: '#181818',
+                scale: 2 
+            }).then(canvas => {
+                btn.style.display = 'flex'; 
                 const link = document.createElement('a');
-                link.download = 'recorde.png';
-                link.href = canvas.toDataURL();
+                link.download = `rpg_recorde_${id}.png`;
+                link.href = canvas.toDataURL('image/png');
                 link.click();
+            }).catch(e => {
+                alert("Erro ao exportar imagem.");
+                btn.style.display = 'flex';
             });
         }
 
         function copiarTexto() {
-            document.getElementById('textoCopia').select();
-            document.execCommand('copy');
-            alert("Copiado!");
+            const copyText = document.getElementById("textoCopia");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value).then(() => {
+                alert("Rankings copiados para a área de transferência!");
+            }).catch(err => {
+                document.execCommand('copy');
+                alert("Rankings copiados!");
+            });
         }
 
+        // LÓGICA DO GERADOR DE ARTE
+        function resizeArtePreview() {
+            const wrapper = document.getElementById('poster-scale-wrapper');
+            const capture = document.getElementById('poster-capture-node');
+            if(wrapper && capture) { capture.style.transform = `scale(${wrapper.clientWidth / 1080})`; }
+        }
+        window.addEventListener('resize', resizeArtePreview);
+
+        document.getElementById('art-artist-select').addEventListener('change', (e) => {
+            const artistId = e.target.value;
+            const sel = document.getElementById('art-release-select');
+            
+            const albs = window.RPGData.albumsFinal.filter(a => a.artist_id === artistId).map(a => ({...a, type:'Álbum', isAlbum: true}));
+            const sins = window.RPGData.allReleases.filter(r => r.artist_id === artistId && !albs.find(a=>a.id === r.id)).map(s => {
+                const singleSongs = window.RPGData.songsFinal.filter(song => song.single_ids && song.single_ids.includes(s.id));
+                const total = singleSongs.reduce((acc, song) => acc + (song.total_streams || 0), 0);
+                return {...s, type:'Single', isAlbum: false, streams: total};
+            });
+            
+            window.ArtFilteredReleases = [...albs, ...sins].sort((a,b) => (b.streams||0) - (a.streams||0));
+
+            sel.innerHTML = '<option value="" disabled selected>Selecione um lançamento...</option>' + window.ArtFilteredReleases.map((r, i) => `<option value="${i}">[${r.type}] ${r.title}</option>`).join('');
+            sel.disabled = false;
+
+            updateArte();
+        });
+
+        document.getElementById('art-release-select').addEventListener('change', (e) => {
+            const r = window.ArtFilteredReleases[e.target.value];
+            if(!r) return;
+            const total = window.RPGData.songsFinal.filter(song => parsePgArray(song.album_ids).includes(r.id) || parsePgArray(song.single_ids).includes(r.id)).reduce((acc, song) => acc + (song.total_streams || 0), 0);
+            
+            document.getElementById('p-input-title').value = r.title;
+            const artName = window.RPGData.artistsFinal.find(a => a.id === r.artist_id)?.name || "";
+            document.getElementById('p-input-artist').value = artName;
+            document.getElementById('p-input-cover').value = r.image_url || 'https://i.imgur.com/AD3MbBi.png';
+            document.getElementById('p-input-number').value = formatNumber(total).replace(/,/g, '.');
+
+            updateArte();
+        });
+
+        function updateArte() {
+            const type = document.getElementById('art-type-select').value;
+            const groupRelease = document.getElementById('group-release-select');
+            
+            let title = document.getElementById('p-input-title').value;
+            let artist = document.getElementById('p-input-artist').value;
+            let cover = document.getElementById('p-input-cover').value || 'https://i.imgur.com/AD3MbBi.png';
+            let numberTxt = document.getElementById('p-input-number').value;
+            let badgeTxt = '';
+            let showBadge = false;
+            let isCert = false;
+            let subTxt = 'STREAMS NO SPOTIFY';
+
+            if (type === 'artist') {
+                groupRelease.classList.add('hidden');
+                const artistId = document.getElementById('art-artist-select').value;
+                if(artistId) {
+                    const artObj = window.RPGData.artistsFinal.find(a => a.id === artistId);
+                    if(artObj) {
+                        const rank = window.RPGData.artistsFinal.findIndex(a => a.id === artistId) + 1;
+                        title = artObj.name;
+                        artist = 'ARTISTA GLOBAL';
+                        cover = artObj.image_url?.split('#')[0] || cover;
+                        numberTxt = formatNumber(artObj.streams).replace(/,/g, '.');
+                        if (rank > 0) { badgeTxt = `#${rank} GLOBAL`; showBadge = true; }
+                    }
+                }
+            } else {
+                groupRelease.classList.remove('hidden');
+                const relIdx = document.getElementById('art-release-select').value;
+                if(relIdx) {
+                    const r = window.ArtFilteredReleases[relIdx];
+                    if(r) {
+                        const artObj = window.RPGData.artistsFinal.find(a => a.id === r.artist_id);
+                        title = r.title;
+                        artist = artObj ? artObj.name : '';
+                        cover = r.image_url || cover;
+                        const rawStreams = r.streams;
+
+                        if (type === 'streams') {
+                            numberTxt = formatNumber(rawStreams).replace(/,/g, '.');
+                            let rank = 0;
+                            if (r.isAlbum) {
+                                rank = window.RPGData.albumsFinal.findIndex(a => a.id === r.id) + 1;
+                            } else {
+                                const singleSongs = window.RPGData.songsFinal.filter(song => song.single_ids && song.single_ids.includes(r.id)).sort((a,b)=>b.total_streams - a.total_streams);
+                                if (singleSongs.length > 0) rank = window.RPGData.songsFinal.findIndex(s => s.id === singleSongs[0].id) + 1;
+                            }
+                            if (rank > 0) { badgeTxt = `#${rank} GLOBAL`; showBadge = true; }
+
+                        } else if (type === 'cert') {
+                            const cert = getCertInfo(rawStreams, r.isAlbum);
+                            numberTxt = `${cert.icon} ${formatNumber(rawStreams).replace(/,/g, '.')}`;
+                            subTxt = cert.icon === '' ? 'SEM CERTIFICAÇÃO' : `CERTIFICADO DE ${cert.name}`;
+                            isCert = true;
+                        }
+                    }
+                }
+            }
+
+            // Sincroniza Inputs Ocultos
+            const pInpObj = {
+                title: document.getElementById('p-input-title'),
+                artist: document.getElementById('p-input-artist'),
+                cover: document.getElementById('p-input-cover'),
+                number: document.getElementById('p-input-number'),
+                text: document.getElementById('p-input-text'),
+                time: document.getElementById('p-input-time')
+            };
+
+            pInpObj.title.value = title;
+            pInpObj.artist.value = artist;
+            pInpObj.cover.value = cover;
+            pInpObj.number.value = numberTxt;
+            pInpObj.text.value = subTxt;
+            pInpObj.time.value = ''; // O Tempo ficará permanentemente vazio e oculto
+
+            // Dispara Visual Updates
+            Object.values(pInp).forEach(i => {
+                if (i) i.dispatchEvent(new Event('input'));
+            });
+
+            // Cores baseadas no tipo (Certificação vs Streams)
+            const mainEl = document.getElementById('art-render-main');
+            const subEl = document.getElementById('art-render-sub');
+            
+            if (isCert) {
+                mainEl.style.background = 'none';
+                mainEl.style.webkitTextFillColor = 'initial';
+                mainEl.style.color = '#FFFFFF';
+                subEl.style.color = '#FFFFFF';
+            } else {
+                mainEl.style.background = 'linear-gradient(180deg, #FFFFFF 0%, #B3B3B3 100%)';
+                mainEl.style.webkitBackgroundClip = 'text';
+                mainEl.style.webkitTextFillColor = 'transparent';
+                subEl.style.color = 'var(--spotify-green)';
+            }
+
+            // Exibir badge apenas se houver rank
+            const badgeEl = document.getElementById('art-render-badge');
+            if(showBadge) {
+                badgeEl.textContent = badgeTxt;
+                badgeEl.classList.remove('hidden');
+            } else {
+                badgeEl.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('art-release-select').addEventListener('change', updateArte);
+        document.getElementById('art-type-select').addEventListener('change', updateArte);
+
+        // Binding Inicial
+        const pInp = { 
+            cover: document.getElementById('p-input-cover'), 
+            title: document.getElementById('p-input-title'), 
+            artist: document.getElementById('p-input-artist'), 
+            number: document.getElementById('p-input-number'), 
+            text: document.getElementById('p-input-text'), 
+            time: document.getElementById('p-input-time'), 
+            color: document.getElementById('p-input-color') 
+        };
+        const pRen = { 
+            cover: document.getElementById('art-render-cover'), 
+            title: document.getElementById('art-render-title'), 
+            artist: document.getElementById('art-render-artist'), 
+            number: document.getElementById('art-render-main'), 
+            text: document.getElementById('art-render-sub'), 
+            time: document.getElementById('p-render-time'),
+            node: document.getElementById('poster-capture-node') 
+        };
+
+        Object.values(pInp).forEach(i => {
+            if (i) {
+                i.addEventListener('input', () => {
+                    if (pInp.cover && pRen.cover) pRen.cover.src = pInp.cover.value;
+                    if (pInp.title && pRen.title) pRen.title.textContent = pInp.title.value;
+                    if (pInp.artist && pRen.artist) pRen.artist.textContent = pInp.artist.value;
+                    if (pInp.number && pRen.number) pRen.number.textContent = pInp.number.value;
+                    if (pInp.text && pRen.text) pRen.text.textContent = pInp.text.value;
+                    
+                    if (pInp.time && pRen.time) {
+                        pRen.time.textContent = pInp.time.value;
+                        if(pInp.time.value.trim() === '') pRen.time.classList.add('hidden');
+                        else pRen.time.classList.remove('hidden');
+                    }
+
+                    if (pInp.color && pRen.node) pRen.node.style.background = `linear-gradient(145deg, ${pInp.color.value}, #121212)`;
+                });
+            }
+        });
+
+        window.downloadArte = () => {
+            const captureArea = document.getElementById('poster-capture-node');
+            html2canvas(captureArea, {
+                useCORS: true, allowTaint: true, backgroundColor: '#000000', scale: 1,
+                onclone: (doc) => { 
+                    const el = doc.getElementById('poster-capture-node'); 
+                    el.style.transform = 'none'; 
+                    el.style.position = 'relative'; 
+                }
+            }).then(canvas => {
+                const title = document.getElementById('art-render-title').textContent.replace(/\s+/g, '_');
+                const link = document.createElement('a'); link.download = `arte_${title}.png`; link.href = canvas.toDataURL('image/png'); link.click();
+            }).catch(e => alert("Falha ao gerar arte: " + e.message));
+        }
+
+        // Inicializar
         window.onload = loadData;
     </script>
 </body>
