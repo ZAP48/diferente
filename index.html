@@ -279,10 +279,25 @@
             flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; 
         }
         .poster-content { position: relative; z-index: 2; width: 100%; display: flex; flex-direction: column; align-items: center; }
-        .spotify-poster .poster-cover { width: 540px; height: 540px; object-fit: cover; border-radius: 12px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); margin-bottom: 40px; border: 2px solid rgba(255,255,255,0.1); }
+        
+        /* CORREÇÃO DO POSTER (Esticamento Resolvido) */
+        .spotify-poster .poster-cover { 
+            width: 540px; height: 540px; 
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+            border-radius: 12px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); margin-bottom: 40px; 
+            border: 2px solid rgba(255,255,255,0.1); 
+        }
+        
         .spotify-poster .poster-title { font-size: 64px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; color: #fff; text-shadow: 0 4px 12px rgba(0,0,0,0.5); }
         .spotify-poster .poster-artist { font-size: 32px; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 80px; }
-        .spotify-poster .poster-number { font-size: 160px; font-weight: 900; letter-spacing: -4px; line-height: 1; background: linear-gradient(180deg, #FFFFFF 0%, #B3B3B3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 12px; }
+        
+        /* CORREÇÃO DOS NÚMEROS (Caixa branca resolvida) */
+        .spotify-poster .poster-number { 
+            font-size: 160px; font-weight: 900; letter-spacing: -4px; line-height: 1; 
+            color: #FFFFFF; /* Cor Sólida previne o bug do html2canvas */
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 12px; 
+        }
+        
         .spotify-poster .poster-text { font-size: 38px; font-weight: 800; color: var(--spotify-green); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px; }
         .spotify-poster .poster-timeframe { font-size: 28px; font-weight: 600; color: rgba(255,255,255,0.6); background: rgba(0,0,0,0.4); padding: 12px 32px; border-radius: 500px; }
         .spotify-poster .poster-logo { position: absolute; bottom: 60px; display: flex; align-items: center; gap: 16px; font-size: 34px; font-weight: 700; color: #fff; }
@@ -479,7 +494,8 @@
                         <div class="spotify-poster" id="poster-capture-node">
                             <div class="poster-content">
                                 <div class="poster-badge hidden" id="art-render-badge">#1 GLOBAL</div>
-                                <img class="poster-cover" id="art-render-cover" src="https://i.imgur.com/AD3MbBi.png" crossorigin="anonymous">
+                                <!-- Alterado para div para corrigir bug de corte no html2canvas -->
+                                <div class="poster-cover" id="art-render-cover" style="background-image: url('https://i.imgur.com/AD3MbBi.png');"></div>
                                 <h2 class="poster-title" id="art-render-title">Espresso</h2>
                                 <p class="poster-artist" id="art-render-artist">Sabrina Carpenter</p>
                                 <div class="poster-number" id="art-render-main">10M</div>
@@ -510,7 +526,6 @@
             return [];
         };
 
-        // NOVA FUNÇÃO: Abbreviate grandes números (Ex: 1B, 2.5M, 500K)
         function formatNumberShort(num) {
             if (!num) return "0";
             if (num >= 1e9) return (num / 1e9).toFixed(2).replace(/\.00$/, '').replace(/0$/, '').replace('.', ',') + 'B';
@@ -519,7 +534,6 @@
             return num.toLocaleString('pt-BR');
         }
 
-        // FUNÇÃO ANTIGA para exportação de texto exato caso precise
         function formatNumberFull(num) { return (num || 0).toLocaleString('pt-BR'); }
         
         function switchTab(tabId) {
@@ -597,7 +611,6 @@
                     return { ...a, streams: total, artist_name: artist };
                 }).sort((a, b) => b.streams - a.streams);
 
-                // --- CÁLCULO DINÂMICO DOS OUVINTES MENSÁIS NO HALL DA FAMA ---
                 const now = new Date();
                 const artistsFinal = artists.map(a => {
                     const artistSongs = songsFinal.filter(s => s.artist_ids && s.artist_ids.includes(a.id));
@@ -611,10 +624,8 @@
                         const streamsTotais = parseInt(song.total_streams) || 0;
                         const streamsDiariosLocal = parseInt(song.streams) || 0;
 
-                        // 1. Boost Diário
                         ouvintesDiarios += Math.floor(streamsDiariosLocal * 0.80);
 
-                        // 2. Mágica dos 30 Dias (Hype vs Catálogo)
                         if (song.parentReleaseDate) {
                             const releaseDate = new Date(song.parentReleaseDate);
                             const daysOld = (now - releaseDate) / (1000 * 60 * 60 * 24);
@@ -637,7 +648,6 @@
                         }
                     });
 
-                    // 3. Fandom
                     const pontosDeImagem = parseInt(a.personal_points) || 150;
                     const ouvintesFieis = Math.floor(pontosDeImagem * 0.5) * 1000;
 
@@ -652,7 +662,6 @@
                                    artistsFinal.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
                 document.getElementById('art-artist-select').innerHTML = artOptions;
 
-                // Preenchimento de Cartões Iniciais
                 if(artistsFinal.length > 0) {
                     document.getElementById('topArtistName').innerText = artistsFinal[0].name;
                     document.getElementById('topArtistStreams').innerText = formatNumberShort(artistsFinal[0].streams);
@@ -690,7 +699,6 @@
                 renderTracklist(songsFinal, 'top100SongsList', 100);
                 renderTracklist(albumsFinal, 'top100AlbumsList', 100, true);
 
-                // --- RENDERIZANDO A ABA DOS MAIORES OUVINTES MENSÁIS ---
                 const topListeners = [...artistsFinal].sort((a,b) => b.monthlyListeners - a.monthlyListeners).slice(0, 50);
                 document.getElementById('topListenersList').innerHTML = topListeners.map((artist, i) => `
                     <div class="ranking-item is-artist-row">
@@ -929,15 +937,12 @@
             const mainEl = document.getElementById('art-render-main');
             const subEl = document.getElementById('art-render-sub');
             
+            // Removidos os webkitBackgroundClip para evitar o bug de fundo branco da biblioteca html2canvas
             if (isCert) {
-                mainEl.style.background = 'none';
-                mainEl.style.webkitTextFillColor = 'initial';
                 mainEl.style.color = '#FFFFFF';
                 subEl.style.color = '#FFFFFF';
             } else {
-                mainEl.style.background = 'linear-gradient(180deg, #FFFFFF 0%, #B3B3B3 100%)';
-                mainEl.style.webkitBackgroundClip = 'text';
-                mainEl.style.webkitTextFillColor = 'transparent';
+                mainEl.style.color = '#FFFFFF';
                 subEl.style.color = 'var(--spotify-green)';
             }
 
@@ -975,7 +980,7 @@
         Object.values(pInp).forEach(i => {
             if (i) {
                 i.addEventListener('input', () => {
-                    if (pInp.cover && pRen.cover) pRen.cover.src = pInp.cover.value;
+                    if (pInp.cover && pRen.cover) pRen.cover.style.backgroundImage = `url('${pInp.cover.value}')`;
                     if (pInp.title && pRen.title) pRen.title.textContent = pInp.title.value;
                     if (pInp.artist && pRen.artist) pRen.artist.textContent = pInp.artist.value;
                     if (pInp.number && pRen.number) pRen.number.textContent = pInp.number.value;
