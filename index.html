@@ -19,17 +19,15 @@
             --spotify-green: #1ed760;
             --spotify-hover: #3be477;
             
-            /* Efeito Liquid Glass Aprimorado para Caixas */
             --glass-bg: rgba(255, 255, 255, 0.05);
             --glass-hover: rgba(255, 255, 255, 0.09);
             --glass-border: rgba(255, 255, 255, 0.08);
             --glass-blur: blur(20px);
-            --export-solid-bg: #181818; /* Cor sólida de fallback para os prints */
+            --export-solid-bg: #181818;
         }
 
         * { 
             margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; 
-            /* CORREÇÃO DO HTML2CANVAS: Evita renderização fantasma e serrilhado */
             backface-visibility: hidden;
             -webkit-font-smoothing: antialiased;
         }
@@ -98,62 +96,29 @@
         }
         .mobile-menu-toggle:hover { background: var(--glass-hover); }
 
-        /* TABS */
+        /* TABS GERAIS */
         .tabs {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 32px;
-            width: 100%;
-            overflow-x: auto;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 8px;
-            justify-content: flex-start;
+            display: flex; gap: 12px; margin-bottom: 32px; width: 100%;
+            overflow-x: auto; scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
+            padding-bottom: 8px; justify-content: flex-start;
         }
         .tabs::-webkit-scrollbar { display: none; }
         
         .tab-btn {
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            color: var(--text-subdued);
-            padding: 12px 20px;
-            font-size: 13px;
-            font-weight: 700;
-            border-radius: 500px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            flex-shrink: 0;
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border); color: var(--text-subdued);
+            padding: 10px 18px; font-size: 13px; font-weight: 700; border-radius: 500px;
+            cursor: pointer; transition: all 0.3s ease; white-space: nowrap; flex-shrink: 0;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         .tab-btn:hover { background: var(--glass-hover); color: var(--text-base); }
-        .tab-btn.active {
-            background: var(--text-base);
-            color: var(--bg-base);
-            box-shadow: 0 0 16px rgba(255,255,255,0.2);
-        }
+        .tab-btn.active { background: var(--text-base); color: var(--bg-base); box-shadow: 0 0 16px rgba(255,255,255,0.2); }
         
-        @media (min-width: 768px) {
-            .tabs { justify-content: center; flex-wrap: wrap; }
-        }
-
-        /* MEDIA QUERY PARA O MENU HAMBÚRGUER (CELULAR) */
+        @media (min-width: 768px) { .tabs { justify-content: center; flex-wrap: wrap; } }
         @media (max-width: 767px) {
-            .mobile-menu-toggle {
-                display: flex; /* Exibe o botão hambúrguer no celular */
-            }
-            .tabs {
-                display: none; /* Oculta as abas por padrão no celular */
-                flex-direction: column;
-                width: 100%;
-                gap: 8px;
-                padding-bottom: 0;
-            }
-            .tabs.mobile-active {
-                display: flex !important; /* Exibe as abas quando o menu estiver ativo */
-            }
+            .mobile-menu-toggle { display: flex; }
+            #tabsNav { display: none; flex-direction: column; width: 100%; gap: 8px; padding-bottom: 0; }
+            #tabsNav.mobile-active { display: flex !important; }
         }
 
         /* LOADER */
@@ -168,231 +133,136 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* CARDS GERAIS DE DESTAQUE */
+        /* CARDS DE DESTAQUE */
         .records-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
-            width: 100%;
-            margin-bottom: 48px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; width: 100%; margin-bottom: 48px;
         }
-        
         .record-card {
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 24px;
-            position: relative;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border); border-radius: 20px; padding: 24px; position: relative;
+            text-align: center; display: flex; flex-direction: column; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
         
-        /* CORREÇÕES HTML2CANVAS: ISOLAMENTO GERAL E EXPORTAÇÃO BLINDADA */
-        .spotify-poster,
-        .record-card,
-        .export-card-box {
-            isolation: isolate;
-            contain: paint;
+        .spotify-poster, .record-card, .export-card-box { isolation: isolate; contain: paint; }
+        .export-mode-active, .export-mode-active * {
+            backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+            filter: none !important; transform: none !important;
         }
+        .export-mode-active { background: var(--export-solid-bg) !important; border: 1px solid rgba(255, 255, 255, 0.1) !important; }
 
-        .export-mode-active,
-        .export-mode-active * {
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
-            filter: none !important;
-            transform: none !important;
-        }
-        .export-mode-active {
-            background: var(--export-solid-bg) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        }
-
-        .record-category {
-            font-size: 11px; font-weight: 800; color: var(--text-subdued);
-            text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px;
-        }
-        .record-image-wrapper {
-            width: 100%; aspect-ratio: 1/1; margin-bottom: 20px;
-            display: flex; align-items: center; justify-content: center;
-        }
-        
-        .record-image {
-            width: 100%; height: 100%;
-            background-size: cover; background-position: center; background-repeat: no-repeat;
-            box-shadow: 0 12px 28px rgba(0,0,0,0.6);
-            isolation: isolate; /* Evita mistura de layers no print */
-        }
+        .record-category { font-size: 11px; font-weight: 800; color: var(--text-subdued); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px; }
+        .record-image-wrapper { width: 100%; aspect-ratio: 1/1; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; }
+        .record-image { width: 100%; height: 100%; background-size: cover; background-position: center; background-repeat: no-repeat; box-shadow: 0 12px 28px rgba(0,0,0,0.6); isolation: isolate; }
         .is-artist .record-image { border-radius: 50%; width: 85%; height: 85%; }
         .is-album .record-image { border-radius: 12px; }
-
-        .record-title {
-            font-size: 24px; font-weight: 800; margin: 0 0 6px 0;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-base);
-        }
+        .record-title { font-size: 24px; font-weight: 800; margin: 0 0 6px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text-base); }
         .record-stats { font-size: 14px; font-weight: 700; color: var(--spotify-green); }
 
         .export-btn {
             position: absolute; top: 16px; right: 16px;
             background: var(--spotify-green); color: #000; border: none;
-            width: 40px; height: 40px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 16px; font-weight: bold;
-            box-shadow: 0 8px 16px rgba(30, 215, 96, 0.3);
-            z-index: 10;
+            width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 16px; font-weight: bold; box-shadow: 0 8px 16px rgba(30, 215, 96, 0.3); z-index: 10;
         }
         .export-btn:active { transform: scale(0.95); }
 
-        /* TRACKLIST / CAIXAS MELHORES */
-        .charts-container {
-            width: 100%; display: grid; grid-template-columns: 1fr; gap: 40px;
-        }
-        @media (min-width: 800px) {
-            .charts-container { grid-template-columns: repeat(2, 1fr); }
-        }
+        /* ========================================================
+           NOVO SISTEMA DE RANKING: COMPACTO E RESPONSIVO (MOBILE)
+           ======================================================== */
+        .charts-container { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 40px; }
+        .chart-section { width: 100%; max-width: 650px; position: relative; } /* Limitador de largura central */
         
-        .chart-section { width: 100%; position: relative; }
-        .chart-section h3 { font-size: 24px; font-weight: 900; margin-bottom: 20px; color: var(--text-base); letter-spacing: -0.5px;}
-        
-        .tracklist-header { display: none; }
-
         .ranking-item {
-            display: flex; align-items: center; padding: 14px 16px;
+            display: flex; align-items: center; 
+            padding: 12px 14px; /* Mais compacto */
+            gap: 12px; /* Controla o espaço interno perfeitamente */
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-            transition: transform 0.2s;
+            border-radius: 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
         .ranking-rank { 
-            width: 32px; text-align: center; font-size: 16px; font-weight: 700; 
-            color: var(--text-subdued); 
+            width: 26px; text-align: center; font-size: 15px; font-weight: 700; color: var(--text-subdued); flex-shrink: 0;
         }
-        .ranking-item:nth-child(1) .ranking-rank { color: var(--spotify-green); font-size: 20px; font-weight: 900; }
-        .ranking-item:nth-child(2) .ranking-rank, .ranking-item:nth-child(3) .ranking-rank { color: #fff; font-weight: 800; font-size: 18px; }
+        .ranking-item:nth-child(1) .ranking-rank { color: var(--spotify-green); font-size: 18px; font-weight: 900; }
         
-        .ranking-img { width: 52px; height: 52px; object-fit: cover; border-radius: 8px; margin-left: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .ranking-img { 
+            width: 48px; height: 48px; object-fit: cover; border-radius: 8px; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.3); 
+        }
         .is-artist-row .ranking-img { border-radius: 50%; }
         
-        .ranking-info { flex: 1; overflow: hidden; padding-left: 14px; display: flex; flex-direction: column; justify-content: center; }
-        .ranking-title { font-size: 15px; font-weight: 700; color: var(--text-base); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
-        .ranking-subtitle { font-size: 13px; font-weight: 500; color: var(--text-subdued); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* O MIN-WIDTH: 0 EVITA QUE O TEXTO "ESTOURE" A TELA DO CELULAR */
+        .ranking-info { 
+            flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; 
+        }
+        
+        .ranking-title { 
+            font-size: 14px; font-weight: 700; color: var(--text-base); 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; 
+        }
+        .ranking-subtitle { 
+            font-size: 12px; font-weight: 500; color: var(--text-subdued); 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; 
+        }
         
         .ranking-streams { 
-            text-align: right; font-size: 14px; font-weight: 800; 
-            color: var(--text-base); padding-left: 12px;
-            background: rgba(255,255,255,0.08); padding: 6px 12px; border-radius: 50px;
+            text-align: right; font-size: 13px; font-weight: 800; color: var(--text-base); 
+            background: rgba(255,255,255,0.08); padding: 6px 10px; border-radius: 50px; flex-shrink: 0;
         }
 
-        .cert-badge { font-size: 16px; margin-left: 4px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+        .cert-badge { font-size: 14px; margin-left: 4px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
         .hidden { display: none !important; }
-        
-        /* TEXT AREA */
+
+        /* REGRAS EXTREMAS PARA TELAS MUITO PEQUENAS (< 380px) */
+        @media (max-width: 380px) {
+            .ranking-item { padding: 10px 8px; gap: 8px; border-radius: 12px; }
+            .ranking-rank { width: 22px; font-size: 14px; }
+            .ranking-img { width: 40px; height: 40px; }
+            .ranking-title { font-size: 13px; }
+            .ranking-subtitle { font-size: 11px; }
+            .ranking-streams { font-size: 11px; padding: 4px 8px; }
+            .cert-badge { font-size: 12px; }
+        }
+
+        /* TEXT AREA E OUTROS CONTROLES (Posters, Textos, etc continuam intactos) */
         textarea {
-            width: 100%; height: 350px; 
-            background: var(--glass-bg); color: var(--text-base);
-            backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border); padding: 20px; border-radius: 16px; 
-            font-family: monospace; resize: vertical; font-size: 13px; line-height: 1.6; outline: none;
-            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+            width: 100%; height: 350px; background: var(--glass-bg); color: var(--text-base); backdrop-filter: var(--glass-blur); 
+            -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); padding: 20px; border-radius: 16px; 
+            font-family: monospace; resize: vertical; font-size: 13px; line-height: 1.6; outline: none; box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
         }
         textarea:focus { border-color: var(--spotify-green); }
-        
-        .copy-all-btn {
-            background: var(--text-base); color: #000; border: none; padding: 16px 32px;
-            border-radius: 500px; font-weight: 800; cursor: pointer; margin-bottom: 24px;
-            transition: 0.2s; font-size: 15px; width: 100%; max-width: 400px;
-        }
+        .copy-all-btn { background: var(--text-base); color: #000; border: none; padding: 16px 32px; border-radius: 500px; font-weight: 800; cursor: pointer; margin-bottom: 24px; transition: 0.2s; font-size: 15px; width: 100%; max-width: 400px; }
         .copy-all-btn:active { transform: scale(0.97); }
 
-        /* POSTER ENGINE */
+        .export-card-box {
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border); border-radius: 24px; padding: 32px 16px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            position: relative; width: 100%;
+        }
+
+        /* POSTER ENGINE CSS... (mantido inalterado) */
         .form-group { margin-bottom: 20px; text-align: left; }
         .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-subdued); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-        .form-group input, .form-group select { 
-            width: 100%; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); 
-            color: #fff; padding: 14px; border-radius: 12px; font-size: 14px; outline: none; transition: 0.2s; 
-        }
+        .form-group input, .form-group select { width: 100%; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border); color: #fff; padding: 14px; border-radius: 12px; font-size: 14px; outline: none; transition: 0.2s; }
         .form-group input:focus, .form-group select:focus { border-color: var(--spotify-green); background: rgba(255,255,255,0.12); }
         .form-group select option { background: var(--bg-base); color: #fff; }
-
         .poster-layout { display: grid; grid-template-columns: 1fr; gap: 32px; align-items: start; margin-top: 16px; }
         @media (min-width: 800px) { .poster-layout { grid-template-columns: 350px 1fr; } }
-        
-        .poster-controls { 
-            background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            padding: 24px; border-radius: 20px; border: 1px solid var(--glass-border); 
-            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        }
-        
-        .poster-preview-area { 
-            display: flex; justify-content: center; align-items: center; 
-            background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border); padding: 16px; border-radius: 20px; overflow: hidden; 
-            width: 100%;
-        }
-        
-        .poster-wrapper { 
-            width: 100%; max-width: 400px; position: relative; 
-            border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); 
-        }
-        
-        .spotify-poster { 
-            width: 1080px;
-            height: 1350px;
-            background: linear-gradient(145deg, #4b134f, #121212);
-            position: absolute;
-            top: 0;
-            left: 0;
-            transform-origin: top left;
-            will-change: auto;
-            backface-visibility: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 40px;
-        }
+        .poster-controls { background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); padding: 24px; border-radius: 20px; border: 1px solid var(--glass-border); box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+        .poster-preview-area { display: flex; justify-content: center; align-items: center; background: var(--glass-bg); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); border: 1px solid var(--glass-border); padding: 16px; border-radius: 20px; overflow: hidden; width: 100%; }
+        .poster-wrapper { width: 100%; max-width: 400px; position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+        .spotify-poster { width: 1080px; height: 1350px; background: linear-gradient(145deg, #4b134f, #121212); position: absolute; top: 0; left: 0; transform-origin: top left; will-change: auto; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
         .poster-content { position: relative; z-index: 2; width: 100%; display: flex; flex-direction: column; align-items: center; }
-        
-        .spotify-poster .poster-cover { 
-            width: 540px; height: 540px; 
-            background-size: cover; background-position: center; background-repeat: no-repeat;
-            border-radius: 12px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); margin-bottom: 40px; 
-            border: 2px solid rgba(255,255,255,0.1); 
-            isolation: isolate; 
-        }
-        
+        .spotify-poster .poster-cover { width: 540px; height: 540px; background-size: cover; background-position: center; background-repeat: no-repeat; border-radius: 12px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); margin-bottom: 40px; border: 2px solid rgba(255,255,255,0.1); isolation: isolate; }
         .spotify-poster .poster-title { font-size: 64px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; color: #fff; text-shadow: 0 4px 12px rgba(0,0,0,0.5); }
         .spotify-poster .poster-artist { font-size: 32px; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 80px; }
-        
-        .spotify-poster .poster-number { 
-            font-size: 160px; font-weight: 900; letter-spacing: -4px; line-height: 1; 
-            color: #FFFFFF;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 12px; 
-        }
-        
+        .spotify-poster .poster-number { font-size: 160px; font-weight: 900; letter-spacing: -4px; line-height: 1; color: #FFFFFF; text-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 12px; }
         .spotify-poster .poster-text { font-size: 38px; font-weight: 800; color: var(--spotify-green); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px; }
         .spotify-poster .poster-timeframe { font-size: 28px; font-weight: 600; color: rgba(255,255,255,0.6); background: rgba(0,0,0,0.4); padding: 12px 32px; border-radius: 500px; }
         .spotify-poster .poster-logo { position: absolute; bottom: 60px; display: flex; align-items: center; gap: 16px; font-size: 34px; font-weight: 700; color: #fff; }
         .poster-badge { font-size: 24px; font-weight: 800; color: #000; background: var(--spotify-green); padding: 8px 24px; border-radius: 500px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); letter-spacing: 1px; }
-
-        /* CARD DOS OUVINTES MENSÁIS E TOP 10 PARA EXPORTAÇÃO */
-        .export-card-box {
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 32px 20px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-            position: relative;
-        }
 
     </style>
 </head>
@@ -405,14 +275,13 @@
             <p>Spotify RPG • Recordes Globais</p>
         </div>
 
-        <!-- BOTÃO HAMBÚRGUER (CELULAR) -->
         <button id="mobileMenuBtn" class="mobile-menu-toggle hidden" onclick="toggleMobileMenu()">
-            <i class="fas fa-bars"></i> Menu
+            <i class="fas fa-bars"></i> Menu de Navegação
         </button>
 
         <div class="tabs hidden" id="tabsNav">
             <button class="tab-btn active" onclick="switchTab('geral')">Visão Geral</button>
-            <button class="tab-btn" onclick="switchTab('top10')"><i class="fas fa-camera" style="margin-right:6px;"></i> Top 10 (Imagens)</button>
+            <button class="tab-btn" onclick="switchTab('top10')"><i class="fas fa-camera" style="margin-right:6px;"></i> Print do Top 10</button>
             <button class="tab-btn" onclick="switchTab('top100')">Top 100 Global</button>
             <button class="tab-btn" onclick="switchTab('riaj')">Certificações</button>
             <button class="tab-btn" onclick="switchTab('ouvintes')"><i class="fas fa-users" style="margin-right:6px;"></i> Ouvintes</button>
@@ -427,7 +296,6 @@
 
         <div id="tabGeral" class="hidden" style="width: 100%;">
             <div class="records-grid">
-                
                 <div class="record-card is-artist" id="cardTopArtist">
                     <button onclick="exportarCardComSeguranca('cardTopArtist')" class="export-btn" title="Baixar Arte"><i class="fas fa-camera"></i></button>
                     <div class="record-category">Artista #1</div>
@@ -453,78 +321,69 @@
                 </div>
             </div>
             
-            <div class="charts-container">
-                <div class="chart-section">
-                    <h3>Top 10 Músicas</h3>
-                    <div id="top10SongsList"></div>
+            <div class="charts-container" style="flex-direction: row; flex-wrap: wrap; justify-content: center;">
+                <div class="chart-section" style="flex: 1; min-width: 300px;">
+                    <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 16px;">Top 10 Músicas</h3>
+                    <div id="visaoTop10Songs"></div>
                 </div>
-                
-                <div class="chart-section">
-                    <h3>Top 10 Álbuns</h3>
-                    <div id="top10AlbumsList"></div>
+                <div class="chart-section" style="flex: 1; min-width: 300px;">
+                    <h3 style="font-size: 20px; font-weight: 800; margin-bottom: 16px;">Top 10 Álbuns</h3>
+                    <div id="visaoTop10Albums"></div>
                 </div>
             </div>
         </div>
 
-        <!-- NOVA ABA: EXPORTAR TOP 10 EM IMAGENS INDIVIDUAIS -->
         <div id="tabTop10" class="hidden" style="width: 100%;">
-            <div class="charts-container">
-                <!-- Card Top 10 Músicas -->
-                <div class="chart-section">
-                    <div id="exportTop10SongsCard" class="export-card-box">
-                        <button onclick="exportarCardComSeguranca('exportTop10SongsCard')" class="export-btn" title="Baixar Imagem" style="top: 16px; right: 16px;"><i class="fas fa-camera"></i></button>
-                        
-                        <div style="text-align: center; margin-bottom: 32px; margin-top: 8px;">
-                            <h3 style="font-size: 28px; font-weight: 900; margin-bottom: 4px; color: var(--text-base); text-transform: uppercase; letter-spacing: -0.5px;">Top 10 Músicas</h3>
-                            <p style="color: var(--spotify-green); font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;">Global Spotify RPG</p>
-                        </div>
-                        
-                        <div id="exportTop10SongsListHTML"></div>
+            <div class="tabs" style="justify-content: center; margin-bottom: 24px; display: flex; padding-bottom: 0;">
+                <button class="tab-btn active" id="btnTop10Songs" onclick="toggleSection('top10', 'songs')">Ver Músicas</button>
+                <button class="tab-btn" id="btnTop10Albums" onclick="toggleSection('top10', 'albums')">Ver Álbuns</button>
+            </div>
 
-                        <div style="text-align: center; margin-top: 32px; opacity: 0.6; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                            <i class="fab fa-spotify" style="font-size: 18px;"></i> Atualizado em Tempo Real
+            <div class="charts-container">
+                <div class="chart-section" id="secTop10Songs">
+                    <div id="exportTop10SongsCard" class="export-card-box">
+                        <button onclick="exportarCardComSeguranca('exportTop10SongsCard')" class="export-btn" title="Baixar Imagem"><i class="fas fa-camera"></i></button>
+                        <div style="text-align: center; margin-bottom: 24px; margin-top: 8px;">
+                            <h3 style="font-size: 24px; font-weight: 900; margin-bottom: 4px; color: var(--text-base); text-transform: uppercase;">Top 10 Músicas</h3>
+                            <p style="color: var(--spotify-green); font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;">Global Spotify RPG</p>
                         </div>
+                        <div id="exportTop10SongsListHTML"></div>
                     </div>
                 </div>
                 
-                <!-- Card Top 10 Álbuns -->
-                <div class="chart-section">
+                <div class="chart-section hidden" id="secTop10Albums">
                     <div id="exportTop10AlbumsCard" class="export-card-box">
-                        <button onclick="exportarCardComSeguranca('exportTop10AlbumsCard')" class="export-btn" title="Baixar Imagem" style="top: 16px; right: 16px;"><i class="fas fa-camera"></i></button>
-                        
-                        <div style="text-align: center; margin-bottom: 32px; margin-top: 8px;">
-                            <h3 style="font-size: 28px; font-weight: 900; margin-bottom: 4px; color: var(--text-base); text-transform: uppercase; letter-spacing: -0.5px;">Top 10 Álbuns</h3>
-                            <p style="color: var(--spotify-green); font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;">Global Spotify RPG</p>
+                        <button onclick="exportarCardComSeguranca('exportTop10AlbumsCard')" class="export-btn" title="Baixar Imagem"><i class="fas fa-camera"></i></button>
+                        <div style="text-align: center; margin-bottom: 24px; margin-top: 8px;">
+                            <h3 style="font-size: 24px; font-weight: 900; margin-bottom: 4px; color: var(--text-base); text-transform: uppercase;">Top 10 Álbuns</h3>
+                            <p style="color: var(--spotify-green); font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;">Global Spotify RPG</p>
                         </div>
-                        
                         <div id="exportTop10AlbumsListHTML"></div>
-
-                        <div style="text-align: center; margin-top: 32px; opacity: 0.6; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                            <i class="fab fa-spotify" style="font-size: 18px;"></i> Atualizado em Tempo Real
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div id="tabTop100" class="hidden" style="width: 100%;">
+            <div class="tabs" style="justify-content: center; margin-bottom: 24px; display: flex; padding-bottom: 0;">
+                <button class="tab-btn active" id="btnTop100Songs" onclick="toggleSection('top100', 'songs')">Top 100 Músicas</button>
+                <button class="tab-btn" id="btnTop100Albums" onclick="toggleSection('top100', 'albums')">Top 100 Álbuns e EPs</button>
+            </div>
+
             <div class="charts-container">
-                <div class="chart-section">
-                    <h3>Top 100 Músicas</h3>
+                <div class="chart-section" id="secTop100Songs">
                     <div id="top100SongsList"></div>
                 </div>
-                
-                <div class="chart-section">
-                    <h3>Top 100 Álbuns e EPs</h3>
+                <div class="chart-section hidden" id="secTop100Albums">
                     <div id="top100AlbumsList"></div>
                 </div>
             </div>
         </div>
 
         <div id="tabRiaj" class="hidden" style="width: 100%;">
-            <div class="charts-container" style="grid-template-columns: 1fr; max-width: 800px; margin: 0 auto;">
+            <div class="charts-container">
                 <div class="chart-section">
-                    <h3 style="text-align: center;">Certificações Oficiais</h3>
+                    <h3 style="text-align: center; font-size: 24px; font-weight: 800;">Certificações Oficiais</h3>
                     
                     <div class="tabs" style="margin-bottom: 24px; justify-content: center; gap: 8px; display: flex;">
                         <button class="tab-btn active" id="btnCertSingle" onclick="switchCertTab('single')">Singles</button>
@@ -547,24 +406,17 @@
         </div>
 
         <div id="tabOuvintes" class="hidden" style="width: 100%;">
-            <div class="charts-container" style="grid-template-columns: 1fr; max-width: 600px; margin: 0 auto;">
+            <div class="charts-container">
                 <div class="chart-section">
-                    
                     <div id="exportOuvintesCard" class="export-card-box">
-                        <button onclick="exportarCardComSeguranca('exportOuvintesCard')" class="export-btn" title="Baixar Imagem" style="top: 16px; right: 16px;"><i class="fas fa-camera"></i></button>
-                        
-                        <div style="text-align: center; margin-bottom: 32px; margin-top: 8px;">
-                            <h3 style="font-size: 28px; font-weight: 900; margin-bottom: 4px; color: var(--text-base); text-transform: uppercase; letter-spacing: -0.5px;">Mais Ouvidos do Mundo</h3>
-                            <p style="color: var(--spotify-green); font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;">Atualização Mensal de Ouvintes</p>
+                        <button onclick="exportarCardComSeguranca('exportOuvintesCard')" class="export-btn" title="Baixar Imagem"><i class="fas fa-camera"></i></button>
+                        <div style="text-align: center; margin-bottom: 24px; margin-top: 8px;">
+                            <h3 style="font-size: 24px; font-weight: 900; margin-bottom: 4px; color: var(--text-base); text-transform: uppercase;">Mais Ouvidos</h3>
+                            <p style="color: var(--spotify-green); font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;">Atualização Mensal</p>
                         </div>
-                        
                         <div id="topListenersList"></div>
-
-                        <div style="text-align: center; margin-top: 32px; opacity: 0.6; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                            <i class="fab fa-spotify" style="font-size: 18px;"></i> Atualizado em Tempo Real
-                        </div>
                     </div>
-                    </div>
+                </div>
             </div>
         </div>
 
@@ -660,7 +512,6 @@
             return num.toLocaleString('pt-BR');
         }
         
-        // FUNÇÃO DE TOGGLE DO MENU HAMBÚRGUER
         function toggleMobileMenu() {
             document.getElementById('tabsNav').classList.toggle('mobile-active');
         }
@@ -670,16 +521,42 @@
             document.querySelectorAll('#tabsNav .tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('tab' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.remove('hidden');
             
-            // Highlight na tab
             if(event && event.currentTarget) {
                 event.currentTarget.classList.add('active');
             }
             
-            // Fecha o menu de celular após o clique
             document.getElementById('tabsNav').classList.remove('mobile-active');
-            
             window.scrollTo({ top: 0, behavior: 'smooth' });
             if (tabId === 'arte') resizeArtePreview();
+        }
+
+        // Função para alternar Músicas e Álbuns nas Seções de Top 10 e Top 100
+        function toggleSection(context, type) {
+            if (context === 'top10') {
+                if (type === 'songs') {
+                    document.getElementById('btnTop10Songs').classList.add('active');
+                    document.getElementById('btnTop10Albums').classList.remove('active');
+                    document.getElementById('secTop10Songs').classList.remove('hidden');
+                    document.getElementById('secTop10Albums').classList.add('hidden');
+                } else {
+                    document.getElementById('btnTop10Albums').classList.add('active');
+                    document.getElementById('btnTop10Songs').classList.remove('active');
+                    document.getElementById('secTop10Albums').classList.remove('hidden');
+                    document.getElementById('secTop10Songs').classList.add('hidden');
+                }
+            } else if (context === 'top100') {
+                if (type === 'songs') {
+                    document.getElementById('btnTop100Songs').classList.add('active');
+                    document.getElementById('btnTop100Albums').classList.remove('active');
+                    document.getElementById('secTop100Songs').classList.remove('hidden');
+                    document.getElementById('secTop100Albums').classList.add('hidden');
+                } else {
+                    document.getElementById('btnTop100Albums').classList.add('active');
+                    document.getElementById('btnTop100Songs').classList.remove('active');
+                    document.getElementById('secTop100Albums').classList.remove('hidden');
+                    document.getElementById('secTop100Songs').classList.add('hidden');
+                }
+            }
         }
 
         function switchCertTab(type) {
@@ -716,9 +593,7 @@
             }
         }
 
-        function getCertIcon(streams) {
-            return getCertInfo(streams, false).icon;
-        }
+        function getCertIcon(streams) { return getCertInfo(streams, false).icon; }
 
         async function loadData() {
             try {
@@ -752,42 +627,26 @@
                 const artistsFinal = artists.map(a => {
                     const artistSongs = songsFinal.filter(s => s.artist_ids && s.artist_ids.includes(a.id));
                     const total = artistSongs.reduce((acc, s) => acc + (s.total_streams || 0), 0);
-
-                    let ouvintesDoHype = 0;
-                    let ouvintesDoLegado = 0;
-                    let ouvintesDiarios = 0;
+                    let ouvintesDoHype = 0; let ouvintesDoLegado = 0; let ouvintesDiarios = 0;
 
                     artistSongs.forEach(song => {
                         const streamsTotais = parseInt(song.total_streams) || 0;
                         const streamsDiariosLocal = parseInt(song.streams) || 0;
-
                         ouvintesDiarios += Math.floor(streamsDiariosLocal * 0.80);
 
                         if (song.parentReleaseDate) {
                             const releaseDate = new Date(song.parentReleaseDate);
                             const daysOld = (now - releaseDate) / (1000 * 60 * 60 * 24);
-
                             if (daysOld >= 0 && daysOld <= 30) {
-                                if (streamsTotais <= 50000000) {
-                                    ouvintesDoHype += Math.floor(streamsTotais * 0.15);
-                                } else if (streamsTotais <= 300000000) {
-                                    ouvintesDoHype += 7500000;
-                                    ouvintesDoHype += Math.floor((streamsTotais - 50000000) * 0.05);
-                                } else {
-                                    ouvintesDoHype += 20000000;
-                                    ouvintesDoHype += Math.floor((streamsTotais - 300000000) * 0.01);
-                                }
-                            } else {
-                                ouvintesDoLegado += Math.floor(streamsTotais * 0.001);
-                            }
-                        } else {
-                            ouvintesDoLegado += Math.floor(streamsTotais * 0.001);
-                        }
+                                if (streamsTotais <= 50000000) { ouvintesDoHype += Math.floor(streamsTotais * 0.15); } 
+                                else if (streamsTotais <= 300000000) { ouvintesDoHype += 7500000 + Math.floor((streamsTotais - 50000000) * 0.05); } 
+                                else { ouvintesDoHype += 20000000 + Math.floor((streamsTotais - 300000000) * 0.01); }
+                            } else { ouvintesDoLegado += Math.floor(streamsTotais * 0.001); }
+                        } else { ouvintesDoLegado += Math.floor(streamsTotais * 0.001); }
                     });
 
                     const pontosDeImagem = parseInt(a.personal_points) || 150;
                     const ouvintesFieis = Math.floor(pontosDeImagem * 0.5) * 1000;
-
                     const monthlyListeners = ouvintesFieis + ouvintesDoLegado + ouvintesDoHype + ouvintesDiarios;
 
                     return { ...a, streams: total, monthlyListeners: monthlyListeners };
@@ -795,8 +654,7 @@
 
                 window.RPGData = { artistsFinal, songsFinal, albumsFinal, allReleases };
                 
-                const artOptions = '<option value="" disabled selected>Selecione um artista...</option>' + 
-                                   artistsFinal.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+                const artOptions = '<option value="" disabled selected>Selecione um artista...</option>' + artistsFinal.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
                 document.getElementById('art-artist-select').innerHTML = artOptions;
 
                 if(artistsFinal.length > 0) {
@@ -831,15 +689,17 @@
                     `).join('');
                 };
 
-                // Popula as listas normais
-                renderTracklist(songsFinal, 'top10SongsList', 10);
-                renderTracklist(albumsFinal, 'top10AlbumsList', 10, true);
-                renderTracklist(songsFinal, 'top100SongsList', 100);
-                renderTracklist(albumsFinal, 'top100AlbumsList', 100, true);
+                // Renderiza Visão Geral
+                renderTracklist(songsFinal, 'visaoTop10Songs', 10);
+                renderTracklist(albumsFinal, 'visaoTop10Albums', 10, true);
                 
-                // Popula as novas listas do menu Exportar Top 10
+                // Renderiza Seção de Prints Isolados do Top 10 (COM AS ABAS AGORA)
                 renderTracklist(songsFinal, 'exportTop10SongsListHTML', 10);
                 renderTracklist(albumsFinal, 'exportTop10AlbumsListHTML', 10, true);
+
+                // Renderiza Seção de Top 100 GERAL (COM AS ABAS AGORA)
+                renderTracklist(songsFinal, 'top100SongsList', 100);
+                renderTracklist(albumsFinal, 'top100AlbumsList', 100, true);
 
                 const topListeners = [...artistsFinal].sort((a,b) => b.monthlyListeners - a.monthlyListeners).slice(0, 50);
                 document.getElementById('topListenersList').innerHTML = topListeners.map((artist, i) => `
@@ -848,7 +708,7 @@
                         <img src="${artist.image_url?.split('#')[0] || 'https://i.imgur.com/AD3MbBi.png'}" class="ranking-img" crossorigin="anonymous">
                         <div class="ranking-info">
                             <div class="ranking-title">${artist.name}</div>
-                            <div class="ranking-subtitle" style="color: var(--text-subdued);">Ouvintes Mensais</div>
+                            <div class="ranking-subtitle">Ouvintes Mensais</div>
                         </div>
                         <div class="ranking-streams">${formatNumberShort(artist.monthlyListeners)}</div>
                     </div>
@@ -867,9 +727,7 @@
                             <div class="ranking-streams">${formatNumberShort(s.total_streams)}</div>
                         </div>
                     `).join('');
-                } else {
-                    document.getElementById('certSongsList').innerHTML = '<p style="text-align:center; color:#888;">Nenhum single certificado ainda.</p>';
-                }
+                } else { document.getElementById('certSongsList').innerHTML = '<p style="text-align:center; color:#888;">Nenhum single certificado.</p>'; }
 
                 const certAlbums = albumsFinal.filter(a => a.streams >= 50000000);
                 if (certAlbums.length > 0) {
@@ -884,39 +742,23 @@
                             <div class="ranking-streams">${formatNumberShort(a.streams)}</div>
                         </div>
                     `).join('');
-                } else {
-                    document.getElementById('certAlbumsList').innerHTML = '<p style="text-align:center; color:#888;">Nenhum álbum certificado ainda.</p>';
-                }
+                } else { document.getElementById('certAlbumsList').innerHTML = '<p style="text-align:center; color:#888;">Nenhum álbum certificado.</p>'; }
 
                 let txt = "🏆 RECORDES GLOBAIS - SPOTIFY RPG\n\n";
                 if(artistsFinal[0]) txt += `👑 Artista #1: ${artistsFinal[0].name} (${formatNumberShort(artistsFinal[0].streams)})\n`;
                 if(songsFinal[0]) txt += `🔥 Música #1: ${songsFinal[0].title} (${formatNumberShort(songsFinal[0].total_streams)})\n`;
                 if(albumsFinal[0]) txt += `💿 Álbum #1: ${albumsFinal[0].title} (${formatNumberShort(albumsFinal[0].streams)})\n\n`;
-                
                 txt += "🎧 TOP 5 OUVINTES MENSÁIS:\n";
-                topListeners.slice(0,5).forEach((a,i) => {
-                    txt += `${i+1}. ${a.name} | ${formatNumberShort(a.monthlyListeners)} ouvintes\n`;
-                });
-
+                topListeners.slice(0,5).forEach((a,i) => { txt += `${i+1}. ${a.name} | ${formatNumberShort(a.monthlyListeners)} ouvintes\n`; });
                 txt += "\n🔝 TOP 10 MÚSICAS:\n";
-                songsFinal.slice(0,10).forEach((s,i) => {
-                    const cert = getCertIcon(s.total_streams);
-                    txt += `${i+1}. ${s.title} - ${s.artist_name} | ${formatNumberShort(s.total_streams)} ${cert ? cert : ''}\n`;
-                });
-                
+                songsFinal.slice(0,10).forEach((s,i) => { const cert = getCertIcon(s.total_streams); txt += `${i+1}. ${s.title} - ${s.artist_name} | ${formatNumberShort(s.total_streams)} ${cert ? cert : ''}\n`; });
                 txt += "\n💿 TOP 10 ÁLBUNS:\n";
-                albumsFinal.slice(0,10).forEach((a,i) => {
-                    txt += `${i+1}. ${a.title} - ${a.artist_name} | ${formatNumberShort(a.streams)}\n`;
-                });
-
+                albumsFinal.slice(0,10).forEach((a,i) => { txt += `${i+1}. ${a.title} - ${a.artist_name} | ${formatNumberShort(a.streams)}\n`; });
                 document.getElementById('textoCopia').value = txt;
 
                 document.getElementById('loading').classList.add('hidden');
-                
-                // Exibe os controles de abas
                 document.getElementById('tabsNav').classList.remove('hidden');
-                document.getElementById('mobileMenuBtn').classList.remove('hidden'); // Mostra o botão do celular
-                
+                document.getElementById('mobileMenuBtn').classList.remove('hidden'); 
                 document.getElementById('tabGeral').classList.remove('hidden');
 
             } catch (e) { 
@@ -926,42 +768,26 @@
         }
 
         // =========================================================
-        // FUNÇÕES BLINDADAS PARA O HTML2CANVAS (Sem Bugs de Layers)
+        // EXPORTAÇÃO
         // =========================================================
-        
         function exportarCardComSeguranca(id) {
             const card = document.getElementById(id);
             const btn = card.querySelector('.export-btn');
-            
             if (btn) btn.style.display = 'none';
             card.classList.add('export-mode-active');
 
             html2canvas(card, { 
-                useCORS: true, 
-                allowTaint: false,
-                backgroundColor: '#181818',
-                scale: window.devicePixelRatio || 2,
-                logging: false,
-                foreignObjectRendering: false,
-                removeContainer: true,
-                imageTimeout: 0,
+                useCORS: true, allowTaint: false, backgroundColor: '#181818', scale: window.devicePixelRatio || 2,
+                logging: false, foreignObjectRendering: false, removeContainer: true, imageTimeout: 0,
                 onclone: (doc) => {
                     const clonedCard = doc.getElementById(id);
-                    
                     clonedCard.querySelectorAll('*').forEach(el => {
-                        el.style.backdropFilter = 'none';
-                        el.style.webkitBackdropFilter = 'none';
-                        el.style.transform = 'none';
-                        el.style.willChange = 'auto';
-                        el.style.filter = 'none';
+                        el.style.backdropFilter = 'none'; el.style.webkitBackdropFilter = 'none'; el.style.transform = 'none'; el.style.willChange = 'auto'; el.style.filter = 'none';
                     });
-
-                    clonedCard.style.background = '#181818';
                 }
             }).then(canvas => {
                 if (btn) btn.style.display = 'flex';
                 card.classList.remove('export-mode-active');
-                
                 const link = document.createElement('a');
                 link.download = `rpg_export_${id}.png`;
                 link.href = canvas.toDataURL('image/png');
@@ -975,46 +801,27 @@
 
         window.downloadPosterComSeguranca = () => {
             const captureArea = document.getElementById('poster-capture-node');
-            
             captureArea.classList.add('export-mode-active');
-
-            // Salva o transform atual (scale) e remove antes de capturar
             const oldTransform = captureArea.style.transform;
             captureArea.style.transform = 'none';
 
             html2canvas(captureArea, {
-                useCORS: true, 
-                allowTaint: false, 
-                backgroundColor: '#121212',
-                scale: window.devicePixelRatio || 2,
-                logging: false,
-                foreignObjectRendering: false,
-                removeContainer: true,
-                imageTimeout: 0,
+                useCORS: true, allowTaint: false, backgroundColor: '#121212', scale: window.devicePixelRatio || 2,
+                logging: false, foreignObjectRendering: false, removeContainer: true, imageTimeout: 0,
                 onclone: (doc) => { 
                     const clonedCard = doc.getElementById('poster-capture-node'); 
-                    
                     clonedCard.querySelectorAll('*').forEach(el => {
-                        el.style.backdropFilter = 'none';
-                        el.style.webkitBackdropFilter = 'none';
-                        el.style.transform = 'none';
-                        el.style.willChange = 'auto';
-                        el.style.filter = 'none';
+                        el.style.backdropFilter = 'none'; el.style.webkitBackdropFilter = 'none'; el.style.transform = 'none'; el.style.willChange = 'auto'; el.style.filter = 'none';
                     });
                 }
             }).then(canvas => {
-                // Restaura o transform logo após gerar o canvas
                 captureArea.classList.remove('export-mode-active');
                 captureArea.style.transform = oldTransform;
-
                 const title = document.getElementById('art-render-title').textContent.replace(/\s+/g, '_');
                 const link = document.createElement('a'); 
-                link.download = `arte_${title}.png`; 
-                link.href = canvas.toDataURL('image/png'); 
-                link.click();
+                link.download = `arte_${title}.png`; link.href = canvas.toDataURL('image/png'); link.click();
             }).catch(e => {
-                // Restaura mesmo se der erro
-                alert("Falha ao gerar arte: " + e.message);
+                alert("Falha ao gerar arte.");
                 captureArea.classList.remove('export-mode-active');
                 captureArea.style.transform = oldTransform;
             });
@@ -1024,12 +831,7 @@
             const copyText = document.getElementById("textoCopia");
             copyText.select();
             copyText.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(copyText.value).then(() => {
-                alert("Rankings copiados para a área de transferência!");
-            }).catch(err => {
-                document.execCommand('copy');
-                alert("Rankings copiados!");
-            });
+            navigator.clipboard.writeText(copyText.value).then(() => { alert("Rankings copiados!"); }).catch(err => { document.execCommand('copy'); alert("Rankings copiados!"); });
         }
 
         function resizeArtePreview() {
@@ -1047,48 +849,37 @@
         document.getElementById('art-artist-select').addEventListener('change', (e) => {
             const artistId = e.target.value;
             const sel = document.getElementById('art-release-select');
-            
             const albs = window.RPGData.albumsFinal.filter(a => a.artist_id === artistId).map(a => ({...a, type:'Álbum', isAlbum: true}));
             const sins = window.RPGData.allReleases.filter(r => r.artist_id === artistId && !albs.find(a=>a.id === r.id)).map(s => {
                 const singleSongs = window.RPGData.songsFinal.filter(song => song.single_ids && song.single_ids.includes(s.id));
                 const total = singleSongs.reduce((acc, song) => acc + (song.total_streams || 0), 0);
                 return {...s, type:'Single', isAlbum: false, streams: total};
             });
-            
             window.ArtFilteredReleases = [...albs, ...sins].sort((a,b) => (b.streams||0) - (a.streams||0));
-
             sel.innerHTML = '<option value="" disabled selected>Selecione um lançamento...</option>' + window.ArtFilteredReleases.map((r, i) => `<option value="${i}">[${r.type}] ${r.title}</option>`).join('');
-            sel.disabled = false;
-
-            updateArte();
+            sel.disabled = false; updateArte();
         });
 
         document.getElementById('art-release-select').addEventListener('change', (e) => {
             const r = window.ArtFilteredReleases[e.target.value];
             if(!r) return;
             const total = window.RPGData.songsFinal.filter(song => parsePgArray(song.album_ids).includes(r.id) || parsePgArray(song.single_ids).includes(r.id)).reduce((acc, song) => acc + (song.total_streams || 0), 0);
-            
             document.getElementById('p-input-title').value = r.title;
             const artName = window.RPGData.artistsFinal.find(a => a.id === r.artist_id)?.name || "";
             document.getElementById('p-input-artist').value = artName;
             document.getElementById('p-input-cover').value = r.image_url || 'https://i.imgur.com/AD3MbBi.png';
             document.getElementById('p-input-number').value = formatNumberShort(total);
-
             updateArte();
         });
 
         function updateArte() {
             const type = document.getElementById('art-type-select').value;
             const groupRelease = document.getElementById('group-release-select');
-            
             let title = document.getElementById('p-input-title').value;
             let artist = document.getElementById('p-input-artist').value;
             let cover = document.getElementById('p-input-cover').value || 'https://i.imgur.com/AD3MbBi.png';
             let numberTxt = document.getElementById('p-input-number').value;
-            let badgeTxt = '';
-            let showBadge = false;
-            let isCert = false;
-            let subTxt = 'STREAMS NO SPOTIFY';
+            let badgeTxt = ''; let showBadge = false; let isCert = false; let subTxt = 'STREAMS NO SPOTIFY';
 
             if (type === 'artist') {
                 groupRelease.classList.add('hidden');
@@ -1097,9 +888,7 @@
                     const artObj = window.RPGData.artistsFinal.find(a => a.id === artistId);
                     if(artObj) {
                         const rank = window.RPGData.artistsFinal.findIndex(a => a.id === artistId) + 1;
-                        title = artObj.name;
-                        artist = 'ARTISTA GLOBAL';
-                        cover = artObj.image_url?.split('#')[0] || cover;
+                        title = artObj.name; artist = 'ARTISTA GLOBAL'; cover = artObj.image_url?.split('#')[0] || cover;
                         numberTxt = formatNumberShort(artObj.streams);
                         if (rank > 0) { badgeTxt = `#${rank} GLOBAL`; showBadge = true; }
                     }
@@ -1111,93 +900,47 @@
                     const r = window.ArtFilteredReleases[relIdx];
                     if(r) {
                         const artObj = window.RPGData.artistsFinal.find(a => a.id === r.artist_id);
-                        title = r.title;
-                        artist = artObj ? artObj.name : '';
-                        cover = r.image_url || cover;
+                        title = r.title; artist = artObj ? artObj.name : ''; cover = r.image_url || cover;
                         const rawStreams = r.streams;
 
                         if (type === 'streams') {
                             numberTxt = formatNumberShort(rawStreams);
                             let rank = 0;
-                            if (r.isAlbum) {
-                                rank = window.RPGData.albumsFinal.findIndex(a => a.id === r.id) + 1;
-                            } else {
-                                const singleSongs = window.RPGData.songsFinal.filter(song => song.single_ids && song.single_ids.includes(r.id)).sort((a,b)=>b.total_streams - a.total_streams);
-                                if (singleSongs.length > 0) rank = window.RPGData.songsFinal.findIndex(s => s.id === singleSongs[0].id) + 1;
-                            }
+                            if (r.isAlbum) { rank = window.RPGData.albumsFinal.findIndex(a => a.id === r.id) + 1; } 
+                            else { const singleSongs = window.RPGData.songsFinal.filter(song => song.single_ids && song.single_ids.includes(r.id)).sort((a,b)=>b.total_streams - a.total_streams);
+                                if (singleSongs.length > 0) rank = window.RPGData.songsFinal.findIndex(s => s.id === singleSongs[0].id) + 1; }
                             if (rank > 0) { badgeTxt = `#${rank} GLOBAL`; showBadge = true; }
-
                         } else if (type === 'cert') {
                             const cert = getCertInfo(rawStreams, r.isAlbum);
                             numberTxt = `${cert.icon} ${formatNumberShort(rawStreams)}`;
-                            subTxt = cert.icon === '' ? 'SEM CERTIFICAÇÃO' : `CERTIFICADO DE ${cert.name}`;
-                            isCert = true;
+                            subTxt = cert.icon === '' ? 'SEM CERTIFICAÇÃO' : `CERTIFICADO DE ${cert.name}`; isCert = true;
                         }
                     }
                 }
             }
 
-            const pInpObj = {
-                title: document.getElementById('p-input-title'),
-                artist: document.getElementById('p-input-artist'),
-                cover: document.getElementById('p-input-cover'),
-                number: document.getElementById('p-input-number'),
-                text: document.getElementById('p-input-text'),
-                time: document.getElementById('p-input-time')
-            };
+            document.getElementById('p-input-title').value = title;
+            document.getElementById('p-input-artist').value = artist;
+            document.getElementById('p-input-cover').value = cover;
+            document.getElementById('p-input-number').value = numberTxt;
+            document.getElementById('p-input-text').value = subTxt;
+            document.getElementById('p-input-time').value = '';
 
-            pInpObj.title.value = title;
-            pInpObj.artist.value = artist;
-            pInpObj.cover.value = cover;
-            pInpObj.number.value = numberTxt;
-            pInpObj.text.value = subTxt;
-            pInpObj.time.value = '';
-
-            Object.values(pInp).forEach(i => {
-                if (i) i.dispatchEvent(new Event('input'));
-            });
+            Object.values(pInp).forEach(i => { if (i) i.dispatchEvent(new Event('input')); });
 
             const mainEl = document.getElementById('art-render-main');
             const subEl = document.getElementById('art-render-sub');
-            
-            if (isCert) {
-                mainEl.style.color = '#FFFFFF';
-                subEl.style.color = '#FFFFFF';
-            } else {
-                mainEl.style.color = '#FFFFFF';
-                subEl.style.color = 'var(--spotify-green)';
-            }
+            mainEl.style.color = '#FFFFFF'; subEl.style.color = isCert ? '#FFFFFF' : 'var(--spotify-green)';
 
             const badgeEl = document.getElementById('art-render-badge');
-            if(showBadge) {
-                badgeEl.textContent = badgeTxt;
-                badgeEl.classList.remove('hidden');
-            } else {
-                badgeEl.classList.add('hidden');
-            }
+            if(showBadge) { badgeEl.textContent = badgeTxt; badgeEl.classList.remove('hidden'); } else { badgeEl.classList.add('hidden'); }
         }
 
         document.getElementById('art-release-select').addEventListener('change', updateArte);
         document.getElementById('art-type-select').addEventListener('change', updateArte);
 
-        const pInp = { 
-            cover: document.getElementById('p-input-cover'), 
-            title: document.getElementById('p-input-title'), 
-            artist: document.getElementById('p-input-artist'), 
-            number: document.getElementById('p-input-number'), 
-            text: document.getElementById('p-input-text'), 
-            time: document.getElementById('p-input-time'), 
-            color: document.getElementById('p-input-color') 
-        };
-        const pRen = { 
-            cover: document.getElementById('art-render-cover'), 
-            title: document.getElementById('art-render-title'), 
-            artist: document.getElementById('art-render-artist'), 
-            number: document.getElementById('art-render-main'), 
-            text: document.getElementById('art-render-sub'), 
-            time: document.getElementById('p-render-time'),
-            node: document.getElementById('poster-capture-node') 
-        };
+        const pInp = { cover: document.getElementById('p-input-cover'), title: document.getElementById('p-input-title'), artist: document.getElementById('p-input-artist'), number: document.getElementById('p-input-number'), text: document.getElementById('p-input-text'), time: document.getElementById('p-input-time'), color: document.getElementById('p-input-color') };
+        const pRen = { cover: document.getElementById('art-render-cover'), title: document.getElementById('art-render-title'), artist: document.getElementById('art-render-artist'), number: document.getElementById('art-render-main'), text: document.getElementById('art-render-sub'), time: document.getElementById('p-render-time'), node: document.getElementById('poster-capture-node') };
 
         Object.values(pInp).forEach(i => {
             if (i) {
@@ -1207,13 +950,7 @@
                     if (pInp.artist && pRen.artist) pRen.artist.textContent = pInp.artist.value;
                     if (pInp.number && pRen.number) pRen.number.textContent = pInp.number.value;
                     if (pInp.text && pRen.text) pRen.text.textContent = pInp.text.value;
-                    
-                    if (pInp.time && pRen.time) {
-                        pRen.time.textContent = pInp.time.value;
-                        if(pInp.time.value.trim() === '') pRen.time.classList.add('hidden');
-                        else pRen.time.classList.remove('hidden');
-                    }
-
+                    if (pInp.time && pRen.time) { pRen.time.textContent = pInp.time.value; if(pInp.time.value.trim() === '') pRen.time.classList.add('hidden'); else pRen.time.classList.remove('hidden'); }
                     if (pInp.color && pRen.node) pRen.node.style.background = `linear-gradient(145deg, ${pInp.color.value}, #121212)`;
                 });
             }
