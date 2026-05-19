@@ -68,7 +68,7 @@
             font-weight: 500;
         }
 
-        /* TABS (LIQUID GLASS) */
+        /* TABS (LIQUID Glass) */
         .tabs {
             display: flex;
             gap: 10px;
@@ -176,7 +176,7 @@
         .charts-container {
             width: 100%; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 32px;
         }
-        .chart-section { width: 100%; }
+        .chart-section { width: 100%; position: relative; }
         .chart-section h3 { font-size: 22px; font-weight: 800; margin-bottom: 16px; color: var(--text-base); }
         
         .tracklist-header {
@@ -198,6 +198,7 @@
         
         .ranking-rank { width: 30px; text-align: center; font-size: 15px; font-weight: 600; color: var(--text-subdued); font-variant-numeric: tabular-nums; }
         .ranking-item:nth-child(1) .ranking-rank { color: var(--spotify-green); font-size: 18px; font-weight: 800; }
+        .ranking-item:nth-child(2) .ranking-rank, .ranking-item:nth-child(3) .ranking-rank { color: #fff; font-weight: 700; }
         
         .ranking-img { width: 44px; height: 44px; object-fit: cover; border-radius: 6px; margin-left: 12px; }
         .is-artist-row .ranking-img { border-radius: 50%; }
@@ -274,6 +275,18 @@
         .spotify-poster .poster-logo { position: absolute; bottom: 60px; display: flex; align-items: center; gap: 16px; font-size: 34px; font-weight: 700; color: #fff; }
         .poster-badge { font-size: 24px; font-weight: 800; color: #000; background: var(--spotify-green); padding: 8px 24px; border-radius: 500px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); letter-spacing: 1px; }
 
+        /* NOVO: CARD DOS OUVINTES MENSÁIS */
+        .export-card-box {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 24px 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
         /* RESPONSIVIDADE MOBILE */
         @media (max-width: 768px) {
             .container { padding: 20px 16px 80px; }
@@ -303,6 +316,7 @@
             <button class="tab-btn active" onclick="switchTab('geral')">Visão Geral</button>
             <button class="tab-btn" onclick="switchTab('top100')">Top 100 Global</button>
             <button class="tab-btn" onclick="switchTab('riaj')">Certificações</button>
+            <button class="tab-btn" onclick="switchTab('ouvintes')"><i class="fas fa-users" style="margin-right:4px;"></i> Ouvintes</button>
             <button class="tab-btn" onclick="switchTab('texto')">Exportar</button>
             <button class="tab-btn" onclick="switchTab('arte')">Criar Arte</button>
         </div>
@@ -410,6 +424,28 @@
             </div>
         </div>
 
+        <div id="tabOuvintes" class="hidden" style="width: 100%;">
+            <div class="charts-container" style="grid-template-columns: 1fr; max-width: 600px; margin: 0 auto;">
+                <div class="chart-section">
+                    
+                    <div id="exportOuvintesCard" class="export-card-box">
+                        <button onclick="exportarArte('exportOuvintesCard')" class="export-btn" title="Baixar Imagem" style="top: 16px; right: 16px;"><i class="fas fa-camera"></i></button>
+                        
+                        <div style="text-align: center; margin-bottom: 24px; margin-top: 8px;">
+                            <h3 style="font-size: 24px; font-weight: 900; margin-bottom: 4px; color: var(--text-base); text-transform: uppercase; letter-spacing: -0.5px;">Mais Ouvidos do Mundo</h3>
+                            <p style="color: var(--spotify-green); font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Spotify RPG Atualização Mensal</p>
+                        </div>
+                        
+                        <div id="topListenersList"></div>
+
+                        <div style="text-align: center; margin-top: 24px; opacity: 0.5; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i class="fab fa-spotify"></i> Atualizado em Tempo Real
+                        </div>
+                    </div>
+                    </div>
+            </div>
+        </div>
+
         <div id="tabTexto" class="hidden" style="width: 100%; max-width: 800px; margin: 0 auto; text-align: center;">
             <button class="copy-all-btn" onclick="copiarTexto()">Copiar para WhatsApp/Discord</button>
             <textarea id="textoCopia" readonly></textarea>
@@ -497,7 +533,7 @@
         function formatNumber(num) { return (num || 0).toLocaleString('pt-BR'); }
         
         function switchTab(tabId) {
-            ['tabGeral', 'tabTop100', 'tabRiaj', 'tabTexto', 'tabArte'].forEach(t => document.getElementById(t).classList.add('hidden'));
+            ['tabGeral', 'tabTop100', 'tabRiaj', 'tabTexto', 'tabArte', 'tabOuvintes'].forEach(t => document.getElementById(t).classList.add('hidden'));
             document.querySelectorAll('#tabsNav .tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('tab' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.remove('hidden');
             event.currentTarget.classList.add('active');
@@ -561,7 +597,7 @@
                 const songsFinal = songs.map(s => {
                     const rel = allReleases.find(r => (s.album_ids && s.album_ids.includes(r.id)) || (s.single_ids && s.single_ids.includes(r.id)));
                     const artistNames = (s.artist_ids || []).map(id => artists.find(a => a.id === id)?.name || "Desconhecido").join(', ');
-                    return { ...s, artist_name: artistNames, cover: rel?.image_url || 'https://i.imgur.com/AD3MbBi.png' };
+                    return { ...s, artist_name: artistNames, cover: rel?.image_url || 'https://i.imgur.com/AD3MbBi.png', parentReleaseDate: rel?.release_date };
                 });
 
                 const albumsFinal = albums.map(a => {
@@ -571,10 +607,53 @@
                     return { ...a, streams: total, artist_name: artist };
                 }).sort((a, b) => b.streams - a.streams);
 
+                // --- CÁLCULO DINÂMICO DOS OUVINTES MENSÁIS NO HALL DA FAMA ---
+                const now = new Date();
                 const artistsFinal = artists.map(a => {
                     const artistSongs = songsFinal.filter(s => s.artist_ids && s.artist_ids.includes(a.id));
                     const total = artistSongs.reduce((acc, s) => acc + (s.total_streams || 0), 0);
-                    return { ...a, streams: total };
+
+                    let ouvintesDoHype = 0;
+                    let ouvintesDoLegado = 0;
+                    let ouvintesDiarios = 0;
+
+                    artistSongs.forEach(song => {
+                        const streamsTotais = parseInt(song.total_streams) || 0;
+                        const streamsDiariosLocal = parseInt(song.streams) || 0;
+
+                        // 1. Boost Diário
+                        ouvintesDiarios += Math.floor(streamsDiariosLocal * 0.80);
+
+                        // 2. Mágica dos 30 Dias (Hype vs Catálogo)
+                        if (song.parentReleaseDate) {
+                            const releaseDate = new Date(song.parentReleaseDate);
+                            const daysOld = (now - releaseDate) / (1000 * 60 * 60 * 24);
+
+                            if (daysOld >= 0 && daysOld <= 30) {
+                                if (streamsTotais <= 50000000) {
+                                    ouvintesDoHype += Math.floor(streamsTotais * 0.15);
+                                } else if (streamsTotais <= 300000000) {
+                                    ouvintesDoHype += 7500000;
+                                    ouvintesDoHype += Math.floor((streamsTotais - 50000000) * 0.05);
+                                } else {
+                                    ouvintesDoHype += 20000000;
+                                    ouvintesDoHype += Math.floor((streamsTotais - 300000000) * 0.01);
+                                }
+                            } else {
+                                ouvintesDoLegado += Math.floor(streamsTotais * 0.001);
+                            }
+                        } else {
+                            ouvintesDoLegado += Math.floor(streamsTotais * 0.001);
+                        }
+                    });
+
+                    // 3. Fandom
+                    const pontosDeImagem = parseInt(a.personal_points) || 150;
+                    const ouvintesFieis = Math.floor(pontosDeImagem * 0.5) * 1000;
+
+                    const monthlyListeners = ouvintesFieis + ouvintesDoLegado + ouvintesDoHype + ouvintesDiarios;
+
+                    return { ...a, streams: total, monthlyListeners: monthlyListeners };
                 }).sort((a, b) => b.streams - a.streams);
 
                 window.RPGData = { artistsFinal, songsFinal, albumsFinal, allReleases };
@@ -583,6 +662,7 @@
                                    artistsFinal.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
                 document.getElementById('art-artist-select').innerHTML = artOptions;
 
+                // Preenchimento de Cartões Iniciais
                 if(artistsFinal.length > 0) {
                     document.getElementById('topArtistName').innerText = artistsFinal[0].name;
                     document.getElementById('topArtistStreams').innerText = formatNumber(artistsFinal[0].streams);
@@ -619,6 +699,19 @@
                 renderTracklist(albumsFinal, 'top10AlbumsList', 10, true);
                 renderTracklist(songsFinal, 'top100SongsList', 100);
                 renderTracklist(albumsFinal, 'top100AlbumsList', 100, true);
+
+                // --- RENDERIZANDO A ABA DOS MAIORES OUVINTES MENSÁIS ---
+                const topListeners = [...artistsFinal].sort((a,b) => b.monthlyListeners - a.monthlyListeners).slice(0, 50);
+                document.getElementById('topListenersList').innerHTML = topListeners.map((artist, i) => `
+                    <div class="ranking-item is-artist-row" style="margin-bottom: 6px;">
+                        <div class="ranking-rank">${i+1}</div>
+                        <img src="${artist.image_url?.split('#')[0] || 'https://i.imgur.com/AD3MbBi.png'}" class="ranking-img" crossorigin="anonymous">
+                        <div class="ranking-info">
+                            <div class="ranking-title">${artist.name}</div>
+                            <div class="ranking-subtitle" style="color: var(--text-subdued);">${formatNumber(artist.monthlyListeners)} ouvintes mensais</div>
+                        </div>
+                    </div>
+                `).join('');
 
                 const certSongs = songsFinal.filter(s => s.total_streams >= 30000000);
                 if (certSongs.length > 0) {
@@ -659,7 +752,12 @@
                 if(songsFinal[0]) txt += `🔥 Música #1: ${songsFinal[0].title} (${formatNumber(songsFinal[0].total_streams)})\n`;
                 if(albumsFinal[0]) txt += `💿 Álbum #1: ${albumsFinal[0].title} (${formatNumber(albumsFinal[0].streams)})\n\n`;
                 
-                txt += "🔝 TOP 10 MÚSICAS:\n";
+                txt += "🎧 TOP 5 OUVINTES MENSÁIS:\n";
+                topListeners.slice(0,5).forEach((a,i) => {
+                    txt += `${i+1}. ${a.name} | ${formatNumber(a.monthlyListeners)} ouvintes\n`;
+                });
+
+                txt += "\n🔝 TOP 10 MÚSICAS:\n";
                 songsFinal.slice(0,10).forEach((s,i) => {
                     const cert = getCertIcon(s.total_streams);
                     txt += `${i+1}. ${s.title} - ${s.artist_name} | ${formatNumber(s.total_streams)} ${cert ? cert : ''}\n`;
@@ -685,21 +783,21 @@
         function exportarArte(id) {
             const card = document.getElementById(id);
             const btn = card.querySelector('.export-btn');
-            btn.style.opacity = '0';
+            if (btn) btn.style.opacity = '0';
 
             html2canvas(card, { 
                 useCORS: true, 
-                backgroundColor: '#181818',
+                backgroundColor: '#121212',
                 scale: 2 
             }).then(canvas => {
-                btn.style.opacity = ''; 
+                if (btn) btn.style.opacity = ''; 
                 const link = document.createElement('a');
-                link.download = `rpg_recorde_${id}.png`;
+                link.download = `rpg_export_${id}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             }).catch(e => {
                 alert("Erro ao exportar imagem.");
-                btn.style.opacity = '';
+                if (btn) btn.style.opacity = '';
             });
         }
 
