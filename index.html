@@ -24,6 +24,7 @@
             --glass-hover: rgba(255, 255, 255, 0.09);
             --glass-border: rgba(255, 255, 255, 0.08);
             --glass-blur: blur(20px);
+            --export-solid-bg: #181818; /* Cor sólida de fallback para os prints */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
@@ -132,6 +133,7 @@
             width: 100%;
             margin-bottom: 48px;
         }
+        
         .record-card {
             background: var(--glass-bg);
             backdrop-filter: var(--glass-blur);
@@ -145,6 +147,15 @@
             flex-direction: column;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
+        
+        /* Classe usada SÓ na hora de printar para evitar o bug do backdrop-filter preto */
+        .export-mode-active {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            background: var(--export-solid-bg) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+
         .record-category {
             font-size: 11px; font-weight: 800; color: var(--text-subdued);
             text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px;
@@ -153,8 +164,11 @@
             width: 100%; aspect-ratio: 1/1; margin-bottom: 20px;
             display: flex; align-items: center; justify-content: center;
         }
+        
+        /* Modificado para divs com bg-image pra evitar bugs do gerador */
         .record-image {
-            width: 100%; height: 100%; object-fit: cover;
+            width: 100%; height: 100%;
+            background-size: cover; background-position: center; background-repeat: no-repeat;
             box-shadow: 0 12px 28px rgba(0,0,0,0.6);
         }
         .is-artist .record-image { border-radius: 50%; width: 85%; height: 85%; }
@@ -280,7 +294,7 @@
         }
         .poster-content { position: relative; z-index: 2; width: 100%; display: flex; flex-direction: column; align-items: center; }
         
-        /* CORREÇÃO DO POSTER (Esticamento Resolvido) */
+        /* CORREÇÃO DO POSTER (Esticamento Resolvido usando BG Image ao invés de IMG) */
         .spotify-poster .poster-cover { 
             width: 540px; height: 540px; 
             background-size: cover; background-position: center; background-repeat: no-repeat;
@@ -291,10 +305,10 @@
         .spotify-poster .poster-title { font-size: 64px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; color: #fff; text-shadow: 0 4px 12px rgba(0,0,0,0.5); }
         .spotify-poster .poster-artist { font-size: 32px; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 80px; }
         
-        /* CORREÇÃO DOS NÚMEROS (Caixa branca resolvida) */
+        /* CORREÇÃO DOS NÚMEROS (Caixa branca resolvida com cor sólida) */
         .spotify-poster .poster-number { 
             font-size: 160px; font-weight: 900; letter-spacing: -4px; line-height: 1; 
-            color: #FFFFFF; /* Cor Sólida previne o bug do html2canvas */
+            color: #FFFFFF;
             text-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-bottom: 12px; 
         }
         
@@ -314,6 +328,7 @@
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
             position: relative;
         }
+
     </style>
 </head>
 <body>
@@ -343,25 +358,25 @@
             <div class="records-grid">
                 
                 <div class="record-card is-artist" id="cardTopArtist">
-                    <button onclick="exportarArte('cardTopArtist')" class="export-btn" title="Baixar Arte"><i class="fas fa-camera"></i></button>
+                    <button onclick="exportarCardComSeguranca('cardTopArtist')" class="export-btn" title="Baixar Arte"><i class="fas fa-camera"></i></button>
                     <div class="record-category">Artista #1</div>
-                    <div class="record-image-wrapper"><img id="topArtistImg" src="" class="record-image"></div>
+                    <div class="record-image-wrapper"><div id="topArtistImg" class="record-image"></div></div>
                     <h2 id="topArtistName" class="record-title">-</h2>
                     <div class="record-stats"><span id="topArtistStreams">-</span> streams</div>
                 </div>
 
                 <div class="record-card is-album" id="cardTopSong">
-                    <button onclick="exportarArte('cardTopSong')" class="export-btn" title="Baixar Arte"><i class="fas fa-camera"></i></button>
+                    <button onclick="exportarCardComSeguranca('cardTopSong')" class="export-btn" title="Baixar Arte"><i class="fas fa-camera"></i></button>
                     <div class="record-category">Música #1</div>
-                    <div class="record-image-wrapper"><img id="topSongImg" src="" class="record-image"></div>
+                    <div class="record-image-wrapper"><div id="topSongImg" class="record-image"></div></div>
                     <h2 id="topSongTitle" class="record-title">-</h2>
                     <div class="record-stats"><span id="topSongStreams">-</span> streams</div>
                 </div>
 
                 <div class="record-card is-album" id="cardTopAlbum">
-                    <button onclick="exportarArte('cardTopAlbum')" class="export-btn" title="Baixar Arte"><i class="fas fa-camera"></i></button>
+                    <button onclick="exportarCardComSeguranca('cardTopAlbum')" class="export-btn" title="Baixar Arte"><i class="fas fa-camera"></i></button>
                     <div class="record-category">Álbum #1</div>
-                    <div class="record-image-wrapper"><img id="topAlbumImg" src="" class="record-image"></div>
+                    <div class="record-image-wrapper"><div id="topAlbumImg" class="record-image"></div></div>
                     <h2 id="topAlbumTitle" class="record-title">-</h2>
                     <div class="record-stats"><span id="topAlbumStreams">-</span> streams</div>
                 </div>
@@ -424,7 +439,7 @@
                 <div class="chart-section">
                     
                     <div id="exportOuvintesCard" class="export-card-box">
-                        <button onclick="exportarArte('exportOuvintesCard')" class="export-btn" title="Baixar Imagem" style="top: 16px; right: 16px;"><i class="fas fa-camera"></i></button>
+                        <button onclick="exportarCardComSeguranca('exportOuvintesCard')" class="export-btn" title="Baixar Imagem" style="top: 16px; right: 16px;"><i class="fas fa-camera"></i></button>
                         
                         <div style="text-align: center; margin-bottom: 32px; margin-top: 8px;">
                             <h3 style="font-size: 28px; font-weight: 900; margin-bottom: 4px; color: var(--text-base); text-transform: uppercase; letter-spacing: -0.5px;">Mais Ouvidos do Mundo</h3>
@@ -486,7 +501,7 @@
                         <input type="color" id="p-input-color" value="#4b134f" style="height: 48px; padding: 2px; cursor: pointer; border-radius: 12px; width: 100%; border: none;">
                     </div>
 
-                    <button class="copy-all-btn" style="width: 100%; margin-top: 16px; margin-bottom: 0;" onclick="downloadArte()"><i class="fas fa-download"></i> Salvar Imagem</button>
+                    <button class="copy-all-btn" style="width: 100%; margin-top: 16px; margin-bottom: 0;" onclick="downloadPosterComSeguranca()"><i class="fas fa-download"></i> Salvar Imagem</button>
                 </div>
 
                 <div class="poster-preview-area">
@@ -494,7 +509,6 @@
                         <div class="spotify-poster" id="poster-capture-node">
                             <div class="poster-content">
                                 <div class="poster-badge hidden" id="art-render-badge">#1 GLOBAL</div>
-                                <!-- Alterado para div para corrigir bug de corte no html2canvas -->
                                 <div class="poster-cover" id="art-render-cover" style="background-image: url('https://i.imgur.com/AD3MbBi.png');"></div>
                                 <h2 class="poster-title" id="art-render-title">Espresso</h2>
                                 <p class="poster-artist" id="art-render-artist">Sabrina Carpenter</p>
@@ -665,19 +679,19 @@
                 if(artistsFinal.length > 0) {
                     document.getElementById('topArtistName').innerText = artistsFinal[0].name;
                     document.getElementById('topArtistStreams').innerText = formatNumberShort(artistsFinal[0].streams);
-                    document.getElementById('topArtistImg').src = artistsFinal[0].image_url?.split('#')[0] || 'https://i.imgur.com/AD3MbBi.png';
+                    document.getElementById('topArtistImg').style.backgroundImage = `url('${artistsFinal[0].image_url?.split('#')[0] || 'https://i.imgur.com/AD3MbBi.png'}')`;
                 }
 
                 if(songsFinal.length > 0) {
                     document.getElementById('topSongTitle').innerText = songsFinal[0].title;
                     document.getElementById('topSongStreams').innerText = formatNumberShort(songsFinal[0].total_streams);
-                    document.getElementById('topSongImg').src = songsFinal[0].cover;
+                    document.getElementById('topSongImg').style.backgroundImage = `url('${songsFinal[0].cover}')`;
                 }
 
                 if(albumsFinal.length > 0) {
                     document.getElementById('topAlbumTitle').innerText = albumsFinal[0].title;
                     document.getElementById('topAlbumStreams').innerText = formatNumberShort(albumsFinal[0].streams);
-                    document.getElementById('topAlbumImg').src = albumsFinal[0].image_url || 'https://i.imgur.com/AD3MbBi.png';
+                    document.getElementById('topAlbumImg').style.backgroundImage = `url('${albumsFinal[0].image_url || 'https://i.imgur.com/AD3MbBi.png'}')`;
                 }
 
                 const renderTracklist = (list, elementId, limit, isAlbum = false) => {
@@ -779,25 +793,60 @@
             }
         }
 
-        function exportarArte(id) {
+        // ==========================================
+        // NOVO: SISTEMA DE EXPORTAÇÃO SEGURO SEM BUGS
+        // ==========================================
+        
+        function exportarCardComSeguranca(id) {
             const card = document.getElementById(id);
             const btn = card.querySelector('.export-btn');
-            if (btn) btn.style.opacity = '0';
+            
+            // 1. Prepara para foto (Esconde botão e tira o fundo bugado de vidro)
+            if (btn) btn.style.display = 'none';
+            card.classList.add('export-mode-active');
 
             html2canvas(card, { 
                 useCORS: true, 
-                backgroundColor: '#121212',
+                allowTaint: true,
+                backgroundColor: '#181818', // Força fundo sólido seguro
                 scale: 2 
             }).then(canvas => {
-                if (btn) btn.style.opacity = ''; 
+                // 2. Restaura o visual normal
+                if (btn) btn.style.display = 'flex';
+                card.classList.remove('export-mode-active');
+                
+                // 3. Baixa
                 const link = document.createElement('a');
                 link.download = `rpg_export_${id}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             }).catch(e => {
                 alert("Erro ao exportar imagem.");
-                if (btn) btn.style.opacity = '';
+                if (btn) btn.style.display = 'flex';
+                card.classList.remove('export-mode-active');
             });
+        }
+
+        window.downloadPosterComSeguranca = () => {
+            const captureArea = document.getElementById('poster-capture-node');
+            
+            html2canvas(captureArea, {
+                useCORS: true, 
+                allowTaint: true, 
+                backgroundColor: null, // Deixa o fundo do degradê brilhar
+                scale: 1,
+                onclone: (doc) => { 
+                    const el = doc.getElementById('poster-capture-node'); 
+                    el.style.transform = 'none'; 
+                    el.style.position = 'relative'; 
+                }
+            }).then(canvas => {
+                const title = document.getElementById('art-render-title').textContent.replace(/\s+/g, '_');
+                const link = document.createElement('a'); 
+                link.download = `arte_${title}.png`; 
+                link.href = canvas.toDataURL('image/png'); 
+                link.click();
+            }).catch(e => alert("Falha ao gerar arte: " + e.message));
         }
 
         function copiarTexto() {
@@ -937,7 +986,6 @@
             const mainEl = document.getElementById('art-render-main');
             const subEl = document.getElementById('art-render-sub');
             
-            // Removidos os webkitBackgroundClip para evitar o bug de fundo branco da biblioteca html2canvas
             if (isCert) {
                 mainEl.style.color = '#FFFFFF';
                 subEl.style.color = '#FFFFFF';
@@ -996,21 +1044,6 @@
                 });
             }
         });
-
-        window.downloadArte = () => {
-            const captureArea = document.getElementById('poster-capture-node');
-            html2canvas(captureArea, {
-                useCORS: true, allowTaint: true, backgroundColor: '#000000', scale: 1,
-                onclone: (doc) => { 
-                    const el = doc.getElementById('poster-capture-node'); 
-                    el.style.transform = 'none'; 
-                    el.style.position = 'relative'; 
-                }
-            }).then(canvas => {
-                const title = document.getElementById('art-render-title').textContent.replace(/\s+/g, '_');
-                const link = document.createElement('a'); link.download = `arte_${title}.png`; link.href = canvas.toDataURL('image/png'); link.click();
-            }).catch(e => alert("Falha ao gerar arte: " + e.message));
-        }
 
         window.onload = loadData;
     </script>
