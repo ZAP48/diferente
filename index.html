@@ -299,14 +299,26 @@
         }
         
         .poster-wrapper { 
-            width: 100%; max-width: 400px; aspect-ratio: 1080/1350; position: relative; 
+            width: 100%; max-width: 400px; position: relative; 
             border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.6); 
         }
         
         .spotify-poster { 
-            width: 1080px; height: 1350px; background: linear-gradient(145deg, #4b134f, #121212); 
-            position: absolute; top: 0; left: 0; transform-origin: top left; display: flex; 
-            flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; 
+            width: 1080px;
+            height: 1350px;
+            background: linear-gradient(145deg, #4b134f, #121212);
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: top left;
+            will-change: auto;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
         }
         .poster-content { position: relative; z-index: 2; width: 100%; display: flex; flex-direction: column; align-items: center; }
         
@@ -315,7 +327,7 @@
             background-size: cover; background-position: center; background-repeat: no-repeat;
             border-radius: 12px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); margin-bottom: 40px; 
             border: 2px solid rgba(255,255,255,0.1); 
-            isolation: isolate; /* Proteção HTML2Canvas */
+            isolation: isolate; 
         }
         
         .spotify-poster .poster-title { font-size: 64px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; color: #fff; text-shadow: 0 4px 12px rgba(0,0,0,0.5); }
@@ -829,7 +841,6 @@
                 onclone: (doc) => {
                     const clonedCard = doc.getElementById(id);
                     
-                    // Limpeza brutal de qualquer propriedade CSS que quebra o html2canvas
                     clonedCard.querySelectorAll('*').forEach(el => {
                         el.style.backdropFilter = 'none';
                         el.style.webkitBackdropFilter = 'none';
@@ -858,13 +869,16 @@
         window.downloadPosterComSeguranca = () => {
             const captureArea = document.getElementById('poster-capture-node');
             
-            // Adiciona classe de segurança para blindar o render inicial
             captureArea.classList.add('export-mode-active');
+
+            // Salva o transform atual (scale) e remove antes de capturar
+            const oldTransform = captureArea.style.transform;
+            captureArea.style.transform = 'none';
 
             html2canvas(captureArea, {
                 useCORS: true, 
                 allowTaint: false, 
-                backgroundColor: '#121212', // SEMPRE fundo fixo, NUNCA nulo
+                backgroundColor: '#121212',
                 scale: window.devicePixelRatio || 2,
                 logging: false,
                 foreignObjectRendering: false,
@@ -873,7 +887,6 @@
                 onclone: (doc) => { 
                     const clonedCard = doc.getElementById('poster-capture-node'); 
                     
-                    // Limpeza brutal nos filhos clonados
                     clonedCard.querySelectorAll('*').forEach(el => {
                         el.style.backdropFilter = 'none';
                         el.style.webkitBackdropFilter = 'none';
@@ -883,15 +896,20 @@
                     });
                 }
             }).then(canvas => {
+                // Restaura o transform logo após gerar o canvas
                 captureArea.classList.remove('export-mode-active');
+                captureArea.style.transform = oldTransform;
+
                 const title = document.getElementById('art-render-title').textContent.replace(/\s+/g, '_');
                 const link = document.createElement('a'); 
                 link.download = `arte_${title}.png`; 
                 link.href = canvas.toDataURL('image/png'); 
                 link.click();
             }).catch(e => {
+                // Restaura mesmo se der erro
                 alert("Falha ao gerar arte: " + e.message);
                 captureArea.classList.remove('export-mode-active');
+                captureArea.style.transform = oldTransform;
             });
         }
 
@@ -911,10 +929,10 @@
             const wrapper = document.getElementById('poster-scale-wrapper');
             const capture = document.getElementById('poster-capture-node');
             if(wrapper && capture) { 
-                // SUBSTITUIÇÃO CHAVE: Usar zoom no lugar de transform: scale 
-                // Isso evita que o navegador separe o elemento numa layer 3D separada
-                capture.style.zoom = (wrapper.clientWidth / 1080);
-                capture.style.transform = 'none'; 
+                const scale = wrapper.clientWidth / 1080;
+                capture.style.transform = `scale(${scale})`;
+                capture.style.transformOrigin = 'top left';
+                wrapper.style.height = `${1350 * scale}px`;
             }
         }
         window.addEventListener('resize', resizeArtePreview);
