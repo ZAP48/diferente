@@ -77,6 +77,27 @@
             letter-spacing: 1px;
         }
 
+        /* MENU MOBILE TOGGLE */
+        .mobile-menu-toggle {
+            display: none;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 500px;
+            font-size: 15px;
+            font-weight: 700;
+            margin: 0 auto 24px;
+            cursor: pointer;
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        .mobile-menu-toggle:hover { background: var(--glass-hover); }
+
         /* TABS */
         .tabs {
             display: flex;
@@ -115,7 +136,24 @@
         }
         
         @media (min-width: 768px) {
-            .tabs { justify-content: center; }
+            .tabs { justify-content: center; flex-wrap: wrap; }
+        }
+
+        /* MEDIA QUERY PARA O MENU HAMBÚRGUER (CELULAR) */
+        @media (max-width: 767px) {
+            .mobile-menu-toggle {
+                display: flex; /* Exibe o botão hambúrguer no celular */
+            }
+            .tabs {
+                display: none; /* Oculta as abas por padrão no celular */
+                flex-direction: column;
+                width: 100%;
+                gap: 8px;
+                padding-bottom: 0;
+            }
+            .tabs.mobile-active {
+                display: flex !important; /* Exibe as abas quando o menu estiver ativo */
+            }
         }
 
         /* LOADER */
@@ -344,7 +382,7 @@
         .spotify-poster .poster-logo { position: absolute; bottom: 60px; display: flex; align-items: center; gap: 16px; font-size: 34px; font-weight: 700; color: #fff; }
         .poster-badge { font-size: 24px; font-weight: 800; color: #000; background: var(--spotify-green); padding: 8px 24px; border-radius: 500px; margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); letter-spacing: 1px; }
 
-        /* CARD DOS OUVINTES MENSÁIS PARA EXPORTAÇÃO */
+        /* CARD DOS OUVINTES MENSÁIS E TOP 10 PARA EXPORTAÇÃO */
         .export-card-box {
             background: var(--glass-bg);
             backdrop-filter: var(--glass-blur);
@@ -367,8 +405,14 @@
             <p>Spotify RPG • Recordes Globais</p>
         </div>
 
+        <!-- BOTÃO HAMBÚRGUER (CELULAR) -->
+        <button id="mobileMenuBtn" class="mobile-menu-toggle hidden" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars"></i> Menu
+        </button>
+
         <div class="tabs hidden" id="tabsNav">
             <button class="tab-btn active" onclick="switchTab('geral')">Visão Geral</button>
+            <button class="tab-btn" onclick="switchTab('top10')"><i class="fas fa-camera" style="margin-right:6px;"></i> Top 10 (Imagens)</button>
             <button class="tab-btn" onclick="switchTab('top100')">Top 100 Global</button>
             <button class="tab-btn" onclick="switchTab('riaj')">Certificações</button>
             <button class="tab-btn" onclick="switchTab('ouvintes')"><i class="fas fa-users" style="margin-right:6px;"></i> Ouvintes</button>
@@ -422,6 +466,47 @@
             </div>
         </div>
 
+        <!-- NOVA ABA: EXPORTAR TOP 10 EM IMAGENS INDIVIDUAIS -->
+        <div id="tabTop10" class="hidden" style="width: 100%;">
+            <div class="charts-container">
+                <!-- Card Top 10 Músicas -->
+                <div class="chart-section">
+                    <div id="exportTop10SongsCard" class="export-card-box">
+                        <button onclick="exportarCardComSeguranca('exportTop10SongsCard')" class="export-btn" title="Baixar Imagem" style="top: 16px; right: 16px;"><i class="fas fa-camera"></i></button>
+                        
+                        <div style="text-align: center; margin-bottom: 32px; margin-top: 8px;">
+                            <h3 style="font-size: 28px; font-weight: 900; margin-bottom: 4px; color: var(--text-base); text-transform: uppercase; letter-spacing: -0.5px;">Top 10 Músicas</h3>
+                            <p style="color: var(--spotify-green); font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;">Global Spotify RPG</p>
+                        </div>
+                        
+                        <div id="exportTop10SongsListHTML"></div>
+
+                        <div style="text-align: center; margin-top: 32px; opacity: 0.6; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i class="fab fa-spotify" style="font-size: 18px;"></i> Atualizado em Tempo Real
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card Top 10 Álbuns -->
+                <div class="chart-section">
+                    <div id="exportTop10AlbumsCard" class="export-card-box">
+                        <button onclick="exportarCardComSeguranca('exportTop10AlbumsCard')" class="export-btn" title="Baixar Imagem" style="top: 16px; right: 16px;"><i class="fas fa-camera"></i></button>
+                        
+                        <div style="text-align: center; margin-bottom: 32px; margin-top: 8px;">
+                            <h3 style="font-size: 28px; font-weight: 900; margin-bottom: 4px; color: var(--text-base); text-transform: uppercase; letter-spacing: -0.5px;">Top 10 Álbuns</h3>
+                            <p style="color: var(--spotify-green); font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;">Global Spotify RPG</p>
+                        </div>
+                        
+                        <div id="exportTop10AlbumsListHTML"></div>
+
+                        <div style="text-align: center; margin-top: 32px; opacity: 0.6; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i class="fab fa-spotify" style="font-size: 18px;"></i> Atualizado em Tempo Real
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="tabTop100" class="hidden" style="width: 100%;">
             <div class="charts-container">
                 <div class="chart-section">
@@ -441,7 +526,7 @@
                 <div class="chart-section">
                     <h3 style="text-align: center;">Certificações Oficiais</h3>
                     
-                    <div class="tabs" style="margin-bottom: 24px; justify-content: center; gap: 8px;">
+                    <div class="tabs" style="margin-bottom: 24px; justify-content: center; gap: 8px; display: flex;">
                         <button class="tab-btn active" id="btnCertSingle" onclick="switchCertTab('single')">Singles</button>
                         <button class="tab-btn" id="btnCertAlbum" onclick="switchCertTab('album')">Álbuns/EPs</button>
                     </div>
@@ -575,11 +660,24 @@
             return num.toLocaleString('pt-BR');
         }
         
+        // FUNÇÃO DE TOGGLE DO MENU HAMBÚRGUER
+        function toggleMobileMenu() {
+            document.getElementById('tabsNav').classList.toggle('mobile-active');
+        }
+
         function switchTab(tabId) {
-            ['tabGeral', 'tabTop100', 'tabRiaj', 'tabTexto', 'tabArte', 'tabOuvintes'].forEach(t => document.getElementById(t).classList.add('hidden'));
+            ['tabGeral', 'tabTop10', 'tabTop100', 'tabRiaj', 'tabTexto', 'tabArte', 'tabOuvintes'].forEach(t => document.getElementById(t).classList.add('hidden'));
             document.querySelectorAll('#tabsNav .tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('tab' + tabId.charAt(0).toUpperCase() + tabId.slice(1)).classList.remove('hidden');
-            event.currentTarget.classList.add('active');
+            
+            // Highlight na tab
+            if(event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
+            
+            // Fecha o menu de celular após o clique
+            document.getElementById('tabsNav').classList.remove('mobile-active');
+            
             window.scrollTo({ top: 0, behavior: 'smooth' });
             if (tabId === 'arte') resizeArtePreview();
         }
@@ -733,10 +831,15 @@
                     `).join('');
                 };
 
+                // Popula as listas normais
                 renderTracklist(songsFinal, 'top10SongsList', 10);
                 renderTracklist(albumsFinal, 'top10AlbumsList', 10, true);
                 renderTracklist(songsFinal, 'top100SongsList', 100);
                 renderTracklist(albumsFinal, 'top100AlbumsList', 100, true);
+                
+                // Popula as novas listas do menu Exportar Top 10
+                renderTracklist(songsFinal, 'exportTop10SongsListHTML', 10);
+                renderTracklist(albumsFinal, 'exportTop10AlbumsListHTML', 10, true);
 
                 const topListeners = [...artistsFinal].sort((a,b) => b.monthlyListeners - a.monthlyListeners).slice(0, 50);
                 document.getElementById('topListenersList').innerHTML = topListeners.map((artist, i) => `
@@ -809,7 +912,11 @@
                 document.getElementById('textoCopia').value = txt;
 
                 document.getElementById('loading').classList.add('hidden');
+                
+                // Exibe os controles de abas
                 document.getElementById('tabsNav').classList.remove('hidden');
+                document.getElementById('mobileMenuBtn').classList.remove('hidden'); // Mostra o botão do celular
+                
                 document.getElementById('tabGeral').classList.remove('hidden');
 
             } catch (e) { 
