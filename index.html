@@ -27,7 +27,12 @@
             --export-solid-bg: #181818; /* Cor sólida de fallback para os prints */
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; 
+            /* CORREÇÃO DO HTML2CANVAS: Evita renderização fantasma e serrilhado */
+            backface-visibility: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
 
         body {
             background-color: var(--bg-base);
@@ -72,7 +77,7 @@
             letter-spacing: 1px;
         }
 
-        /* TABS (Native Mobile Feel) */
+        /* TABS */
         .tabs {
             display: flex;
             gap: 12px;
@@ -81,10 +86,10 @@
             overflow-x: auto;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
-            padding-bottom: 8px; /* space for scrollbar/shadows */
+            padding-bottom: 8px;
             justify-content: flex-start;
         }
-        .tabs::-webkit-scrollbar { display: none; } /* Hide scrollbar for cleaner look */
+        .tabs::-webkit-scrollbar { display: none; }
         
         .tab-btn {
             background: var(--glass-bg);
@@ -148,10 +153,22 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
         
-        /* Classe usada SÓ na hora de printar para evitar o bug do backdrop-filter preto */
-        .export-mode-active {
+        /* CORREÇÕES HTML2CANVAS: ISOLAMENTO GERAL E EXPORTAÇÃO BLINDADA */
+        .spotify-poster,
+        .record-card,
+        .export-card-box {
+            isolation: isolate;
+            contain: paint;
+        }
+
+        .export-mode-active,
+        .export-mode-active * {
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
+            filter: none !important;
+            transform: none !important;
+        }
+        .export-mode-active {
             background: var(--export-solid-bg) !important;
             border: 1px solid rgba(255, 255, 255, 0.1) !important;
         }
@@ -165,11 +182,11 @@
             display: flex; align-items: center; justify-content: center;
         }
         
-        /* Modificado para divs com bg-image pra evitar bugs do gerador */
         .record-image {
             width: 100%; height: 100%;
             background-size: cover; background-position: center; background-repeat: no-repeat;
             box-shadow: 0 12px 28px rgba(0,0,0,0.6);
+            isolation: isolate; /* Evita mistura de layers no print */
         }
         .is-artist .record-image { border-radius: 50%; width: 85%; height: 85%; }
         .is-album .record-image { border-radius: 12px; }
@@ -202,9 +219,8 @@
         .chart-section { width: 100%; position: relative; }
         .chart-section h3 { font-size: 24px; font-weight: 900; margin-bottom: 20px; color: var(--text-base); letter-spacing: -0.5px;}
         
-        .tracklist-header { display: none; } /* Removido para priorizar visualização em cards */
+        .tracklist-header { display: none; }
 
-        /* NOVA ESTILIZAÇÃO EM CAIXA (CARD) */
         .ranking-item {
             display: flex; align-items: center; padding: 14px 16px;
             background: var(--glass-bg);
@@ -294,18 +310,17 @@
         }
         .poster-content { position: relative; z-index: 2; width: 100%; display: flex; flex-direction: column; align-items: center; }
         
-        /* CORREÇÃO DO POSTER (Esticamento Resolvido usando BG Image ao invés de IMG) */
         .spotify-poster .poster-cover { 
             width: 540px; height: 540px; 
             background-size: cover; background-position: center; background-repeat: no-repeat;
             border-radius: 12px; box-shadow: 0 30px 60px rgba(0,0,0,0.6); margin-bottom: 40px; 
             border: 2px solid rgba(255,255,255,0.1); 
+            isolation: isolate; /* Proteção HTML2Canvas */
         }
         
         .spotify-poster .poster-title { font-size: 64px; font-weight: 800; letter-spacing: -1px; margin-bottom: 8px; color: #fff; text-shadow: 0 4px 12px rgba(0,0,0,0.5); }
         .spotify-poster .poster-artist { font-size: 32px; font-weight: 500; color: rgba(255,255,255,0.8); margin-bottom: 80px; }
         
-        /* CORREÇÃO DOS NÚMEROS (Caixa branca resolvida com cor sólida) */
         .spotify-poster .poster-number { 
             font-size: 160px; font-weight: 900; letter-spacing: -4px; line-height: 1; 
             color: #FFFFFF;
@@ -547,8 +562,6 @@
             if (num >= 1e3) return (num / 1e3).toFixed(1).replace(/\.0$/, '').replace('.', ',') + 'K';
             return num.toLocaleString('pt-BR');
         }
-
-        function formatNumberFull(num) { return (num || 0).toLocaleString('pt-BR'); }
         
         function switchTab(tabId) {
             ['tabGeral', 'tabTop100', 'tabRiaj', 'tabTexto', 'tabArte', 'tabOuvintes'].forEach(t => document.getElementById(t).classList.add('hidden'));
@@ -793,29 +806,44 @@
             }
         }
 
-        // ==========================================
-        // NOVO: SISTEMA DE EXPORTAÇÃO SEGURO SEM BUGS
-        // ==========================================
+        // =========================================================
+        // FUNÇÕES BLINDADAS PARA O HTML2CANVAS (Sem Bugs de Layers)
+        // =========================================================
         
         function exportarCardComSeguranca(id) {
             const card = document.getElementById(id);
             const btn = card.querySelector('.export-btn');
             
-            // 1. Prepara para foto (Esconde botão e tira o fundo bugado de vidro)
             if (btn) btn.style.display = 'none';
             card.classList.add('export-mode-active');
 
             html2canvas(card, { 
                 useCORS: true, 
-                allowTaint: true,
-                backgroundColor: '#181818', // Força fundo sólido seguro
-                scale: 2 
+                allowTaint: false,
+                backgroundColor: '#181818',
+                scale: window.devicePixelRatio || 2,
+                logging: false,
+                foreignObjectRendering: false,
+                removeContainer: true,
+                imageTimeout: 0,
+                onclone: (doc) => {
+                    const clonedCard = doc.getElementById(id);
+                    
+                    // Limpeza brutal de qualquer propriedade CSS que quebra o html2canvas
+                    clonedCard.querySelectorAll('*').forEach(el => {
+                        el.style.backdropFilter = 'none';
+                        el.style.webkitBackdropFilter = 'none';
+                        el.style.transform = 'none';
+                        el.style.willChange = 'auto';
+                        el.style.filter = 'none';
+                    });
+
+                    clonedCard.style.background = '#181818';
+                }
             }).then(canvas => {
-                // 2. Restaura o visual normal
                 if (btn) btn.style.display = 'flex';
                 card.classList.remove('export-mode-active');
                 
-                // 3. Baixa
                 const link = document.createElement('a');
                 link.download = `rpg_export_${id}.png`;
                 link.href = canvas.toDataURL('image/png');
@@ -830,23 +858,41 @@
         window.downloadPosterComSeguranca = () => {
             const captureArea = document.getElementById('poster-capture-node');
             
+            // Adiciona classe de segurança para blindar o render inicial
+            captureArea.classList.add('export-mode-active');
+
             html2canvas(captureArea, {
                 useCORS: true, 
-                allowTaint: true, 
-                backgroundColor: null, // Deixa o fundo do degradê brilhar
-                scale: 1,
+                allowTaint: false, 
+                backgroundColor: '#121212', // SEMPRE fundo fixo, NUNCA nulo
+                scale: window.devicePixelRatio || 2,
+                logging: false,
+                foreignObjectRendering: false,
+                removeContainer: true,
+                imageTimeout: 0,
                 onclone: (doc) => { 
-                    const el = doc.getElementById('poster-capture-node'); 
-                    el.style.transform = 'none'; 
-                    el.style.position = 'relative'; 
+                    const clonedCard = doc.getElementById('poster-capture-node'); 
+                    
+                    // Limpeza brutal nos filhos clonados
+                    clonedCard.querySelectorAll('*').forEach(el => {
+                        el.style.backdropFilter = 'none';
+                        el.style.webkitBackdropFilter = 'none';
+                        el.style.transform = 'none';
+                        el.style.willChange = 'auto';
+                        el.style.filter = 'none';
+                    });
                 }
             }).then(canvas => {
+                captureArea.classList.remove('export-mode-active');
                 const title = document.getElementById('art-render-title').textContent.replace(/\s+/g, '_');
                 const link = document.createElement('a'); 
                 link.download = `arte_${title}.png`; 
                 link.href = canvas.toDataURL('image/png'); 
                 link.click();
-            }).catch(e => alert("Falha ao gerar arte: " + e.message));
+            }).catch(e => {
+                alert("Falha ao gerar arte: " + e.message);
+                captureArea.classList.remove('export-mode-active');
+            });
         }
 
         function copiarTexto() {
@@ -865,7 +911,10 @@
             const wrapper = document.getElementById('poster-scale-wrapper');
             const capture = document.getElementById('poster-capture-node');
             if(wrapper && capture) { 
-                capture.style.transform = `scale(${wrapper.clientWidth / 1080})`; 
+                // SUBSTITUIÇÃO CHAVE: Usar zoom no lugar de transform: scale 
+                // Isso evita que o navegador separe o elemento numa layer 3D separada
+                capture.style.zoom = (wrapper.clientWidth / 1080);
+                capture.style.transform = 'none'; 
             }
         }
         window.addEventListener('resize', resizeArtePreview);
